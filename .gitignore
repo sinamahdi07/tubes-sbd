@@ -1,0 +1,4 @@
+composer.lock
+*.php
+/vendor
+*.json
