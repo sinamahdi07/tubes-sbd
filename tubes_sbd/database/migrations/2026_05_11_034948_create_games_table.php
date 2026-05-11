@@ -30,8 +30,25 @@ return new class extends Migration
             // release_date
             $table->date('release_date')->nullable();
 
+            /*
+            |--------------------------------------------------------------------------
+            | THUMBNAIL
+            |--------------------------------------------------------------------------
+            | Dipakai untuk gambar game di halaman store/detail game
+            */
+
             // thumbnail_url
             $table->string('thumbnail_url', 500)->nullable();
+
+            /*
+            |--------------------------------------------------------------------------
+            | STOCK
+            |--------------------------------------------------------------------------
+            | Stok digital default
+            */
+
+            // stock
+            $table->integer('stock')->default(999);
 
             // developer_id (FK → developers)
             $table->unsignedBigInteger('developer_id');

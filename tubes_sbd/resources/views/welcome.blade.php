@@ -249,7 +249,7 @@ use Illuminate\Support\Str;
                         cursor-pointer">
 
                 <img
-                    src="https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?q=80&w=2070&auto=format&fit=crop"
+                    src="{{ $game->thumbnail_url ?? 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?q=80&w=2070&auto=format&fit=crop' }}"
                     class="h-52 w-full object-cover"
                 >
 
