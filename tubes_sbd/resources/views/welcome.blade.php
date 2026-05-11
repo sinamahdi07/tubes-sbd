@@ -1,3 +1,6 @@
+@php
+use Illuminate\Support\Str;
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -158,20 +161,38 @@
 
     <!-- SEARCH BAR -->
     <section class="bg-[#1f2f42] border-y border-[#2a475e] py-5">
-        <div class="max-w-7xl mx-auto px-6">
-            <div class="flex gap-4">
-                <input
-                    type="text"
-                    placeholder="Search for games"
-                    class="w-full bg-[#0f1923] border border-[#316282] focus:border-[#66c0f4] outline-none px-5 py-4 rounded-xl text-white"
-                >
 
-                <button class="steam-blue px-8 rounded-xl font-semibold">
-                    Search
-                </button>
-            </div>
-        </div>
-    </section>
+    <div class="max-w-7xl mx-auto px-6">
+
+        <form action="/" method="GET" class="flex gap-4">
+
+            <input
+                type="text"
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Search games..."
+                class="w-full
+                       bg-[#0f1923]
+                       border border-[#316282]
+                       focus:border-[#66c0f4]
+                       outline-none
+                       px-5 py-4
+                       rounded-xl
+                       text-white"
+            >
+
+            <button
+                type="submit"
+                class="steam-blue px-8 rounded-xl font-semibold"
+            >
+                Search
+            </button>
+
+        </form>
+
+    </div>
+
+</section>
 
     <!-- FEATURED SECTION -->
     <section class="max-w-7xl mx-auto px-6 py-14">
@@ -189,27 +210,95 @@
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
 
             <!-- CARD 1 -->
-            <div class="game-card bg-[#16202d] rounded-2xl overflow-hidden border border-[#2a475e] transition duration-300 cursor-pointer">
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+
+    @forelse($games as $game)
+
+        <a href="{{ url('/game/' . $game->game_id) }}">
+
+            <div class="game-card
+                        bg-[#16202d]
+                        rounded-2xl
+                        overflow-hidden
+                        border border-[#2a475e]
+                        transition duration-300
+                        cursor-pointer">
+
                 <img
                     src="https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?q=80&w=2070&auto=format&fit=crop"
                     class="h-52 w-full object-cover"
                 >
 
                 <div class="p-5">
-                    <h3 class="text-xl font-bold mb-2">Shadow Strike</h3>
-                    <p class="text-gray-400 text-sm mb-4">
-                        Tactical stealth action with immersive multiplayer gameplay.
+
+                    <!-- GAME TITLE -->
+                    <h3 class="text-xl font-bold mb-2">
+                        {{ $game->title }}
+                    </h3>
+
+                    <!-- DESCRIPTION -->
+                    <p class="text-gray-400 text-sm mb-4 line-clamp-2">
+
+                        {{ Str::limit($game->description, 80) }}
+
                     </p>
 
-                    <div class="flex justify-between items-center">
-                        <span class="text-[#66c0f4] font-bold text-lg">$29.99</span>
+                    <!-- PUBLISHER -->
+                    <div class="text-xs text-[#66c0f4] mb-3">
 
-                        <button class="bg-[#2a475e] hover:bg-[#3b6a8b] px-4 py-2 rounded-lg text-sm transition">
-                            Buy
-                        </button>
+                        Publisher:
+                        {{ $game->publisher->name ?? 'Unknown' }}
+
                     </div>
+
+                    <!-- PRICE -->
+                    <div class="flex justify-between items-center">
+
+                        <span class="text-[#66c0f4] font-bold text-lg">
+
+                            Rp {{ number_format($game->price, 0, ',', '.') }}
+
+                        </span>
+
+                        <button class="bg-[#2a475e]
+                                       hover:bg-[#3b6a8b]
+                                       px-4 py-2
+                                       rounded-lg
+                                       text-sm
+                                       transition">
+
+                            View
+
+                        </button>
+
+                    </div>
+
                 </div>
             </div>
+
+        </a>
+
+    @empty
+
+        <div class="col-span-4 text-center py-20">
+
+            <h2 class="text-3xl font-bold text-gray-300">
+
+                Game not found
+
+            </h2>
+
+            <p class="text-gray-500 mt-3">
+
+                Try another keyword.
+
+            </p>
+
+        </div>
+
+    @endforelse
+
+</div>
 
             <!-- CARD 2 -->
             <div class="game-card bg-[#16202d] rounded-2xl overflow-hidden border border-[#2a475e] transition duration-300 cursor-pointer">
