@@ -8,6 +8,8 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     * NOTE: Requires developers, publishers tables to exist first.
+     * Rename this file timestamp to run AFTER those migrations if needed.
      */
     public function up(): void
     {
@@ -23,19 +25,19 @@ return new class extends Migration
             $table->text('description')->nullable();
 
             // price
-            $table->decimal('price', 10, 2);
+            $table->decimal('price', 10, 2)->default(0);
 
             // release_date
             $table->date('release_date')->nullable();
 
-            // publisher_id
-            $table->unsignedBigInteger('publisher_id');
+            // thumbnail_url
+            $table->string('thumbnail_url', 500)->nullable();
 
-            // developer_id
+            // developer_id (FK → developers)
             $table->unsignedBigInteger('developer_id');
 
-            // stock
-            $table->integer('stock')->default(999);
+            // publisher_id (FK → publishers)
+            $table->unsignedBigInteger('publisher_id');
 
             // timestamps
             $table->timestamps();
@@ -46,14 +48,14 @@ return new class extends Migration
             |--------------------------------------------------------------------------
             */
 
-            $table->foreign('publisher_id')
-                  ->references('publisher_id')
-                  ->on('publishers')
-                  ->onDelete('cascade');
-
             $table->foreign('developer_id')
                   ->references('developer_id')
                   ->on('developers')
+                  ->onDelete('cascade');
+
+            $table->foreign('publisher_id')
+                  ->references('publisher_id')
+                  ->on('publishers')
                   ->onDelete('cascade');
         });
     }

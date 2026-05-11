@@ -36,9 +36,9 @@ class Game extends Model
         'description',
         'price',
         'release_date',
-        'publisher_id',
+        'thumbnail_url',
         'developer_id',
-        'stock',
+        'publisher_id',
     ];
 
     /*
@@ -48,7 +48,7 @@ class Game extends Model
     */
 
     protected $casts = [
-        'price' => 'decimal:2',
+        'price'        => 'decimal:2',
         'release_date' => 'date',
     ];
 
@@ -58,7 +58,17 @@ class Game extends Model
     |--------------------------------------------------------------------------
     */
 
-    // Relasi ke Publisher
+    // Relasi ke Developer (Many-to-One)
+    public function developer()
+    {
+        return $this->belongsTo(
+            Developer::class,
+            'developer_id',
+            'developer_id'
+        );
+    }
+
+    // Relasi ke Publisher (Many-to-One)
     public function publisher()
     {
         return $this->belongsTo(
@@ -68,13 +78,24 @@ class Game extends Model
         );
     }
 
-    // Relasi ke Developer
-    public function developer()
+    // Relasi ke Genre (Many-to-Many via game_genres)
+    public function genres()
     {
-        return $this->belongsTo(
-            Developer::class,
-            'developer_id',
-            'developer_id'
+        return $this->belongsToMany(
+            Genre::class,
+            'game_genres',  // pivot table
+            'game_id',      // FK di pivot pointing to Game
+            'genre_id'      // FK di pivot pointing to Genre
         );
+    }
+
+    // Relasi ke Screenshot (One-to-Many)
+    public function screenshots()
+    {
+        return $this->hasMany(
+            GameScreenshot::class,
+            'game_id',
+            'game_id'
+        )->orderBy('order');
     }
 }
