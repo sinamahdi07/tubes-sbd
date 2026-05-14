@@ -97,6 +97,21 @@
                         <textarea name="description" rows="5" class="w-full p-3 steam-input rounded text-white resize-y"
                                   placeholder="Deskripsi singkat tentang game...">{{ old('description') }}</textarea>
                     </div>
+
+                    {{-- Screenshots Section --}}
+                    <div class="md:col-span-2">
+                        <label class="block text-sm text-gray-300 mb-2">Screenshots</label>
+                        <div>
+                            <p class="text-xs text-gray-400 mb-2">Tambah screenshot game:</p>
+                            <div id="screenshots-container" class="space-y-3">
+                                <!-- Screenshot inputs will be added here -->
+                            </div>
+                            <button type="button" onclick="addScreenshotInput()" 
+                                    class="mt-3 px-4 py-2 bg-[#1b2838] hover:bg-[#2a475e] border border-[#66c0f4] text-[#66c0f4] rounded text-sm transition">
+                                + Tambah Screenshot
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="flex gap-4 pt-4 border-t border-[#2a475e]">
@@ -133,5 +148,56 @@
         img.src = input.value.trim();
         preview.classList.remove('hidden');
     }
+
+    // Screenshot management
+    let screenshotIndex = 0;
+
+    function addScreenshotInput() {
+        const container = document.getElementById('screenshots-container');
+        const div = document.createElement('div');
+        div.className = 'flex gap-2 items-start screenshot-input-group';
+        div.innerHTML = `
+            <div class="flex-1">
+                <input type="url" 
+                       name="screenshots[${screenshotIndex}][url]" 
+                       placeholder="https://..." 
+                       class="w-full p-3 steam-input rounded text-white screenshot-url-input"
+                       data-index="${screenshotIndex}">
+                <input type="hidden" name="screenshots[${screenshotIndex}][order]" value="${screenshotIndex}">
+                <div class="screenshot-preview-${screenshotIndex} hidden mt-2">
+                    <img src="" alt="Preview" class="h-20 rounded border border-gray-700">
+                </div>
+            </div>
+            <button type="button" onclick="removeScreenshotInput(this)" 
+                    class="mt-3 px-3 py-2 bg-red-600 hover:bg-red-700 text-white rounded text-sm transition">
+                Hapus
+            </button>
+        `;
+        container.appendChild(div);
+
+        // Add preview functionality
+        const urlInput = div.querySelector('.screenshot-url-input');
+        const previewDiv = div.querySelector(`.screenshot-preview-${screenshotIndex}`);
+        const previewImg = previewDiv.querySelector('img');
+        
+        urlInput.addEventListener('input', function() {
+            const url = this.value.trim();
+            if (url.startsWith('http')) {
+                previewImg.src = url;
+                previewDiv.classList.remove('hidden');
+            } else {
+                previewDiv.classList.add('hidden');
+            }
+        });
+
+        screenshotIndex++;
+    }
+
+    function removeScreenshotInput(button) {
+        button.closest('.screenshot-input-group').remove();
+    }
+
+    // Add one screenshot input by default
+    addScreenshotInput();
 </script>
 @endpush

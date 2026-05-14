@@ -50,6 +50,9 @@ class AdminGameController extends Controller
             'publisher_id'  => 'required|exists:publishers,publisher_id',
             'genres'        => 'nullable|array',
             'genres.*'      => 'exists:genres,genre_id',
+            'screenshots'   => 'nullable|array',
+            'screenshots.*.url' => 'required|url|max:500',
+            'screenshots.*.order' => 'nullable|integer|min:0',
         ]);
 
         $game = Game::create([
@@ -66,8 +69,25 @@ class AdminGameController extends Controller
             $game->genres()->sync($validated['genres']);
         }
 
+        if (!empty($validated['screenshots'])) {
+            foreach ($validated['screenshots'] as $index => $screenshotData) {
+                if (!empty($screenshotData['url'])) {
+                    $game->screenshots()->create([
+                        'url' => $screenshotData['url'],
+                        'order' => $screenshotData['order'] ?? $index,
+                    ]);
+                }
+            }
+        }
+
         return redirect()->route('admin.games.index')
             ->with('success', 'Game berhasil ditambahkan!');
+    }
+
+    public function show(Game $game)
+    {
+        $game->load(['developer', 'publisher', 'genres', 'screenshots']);
+        return view('admin.games.show', compact('game'));
     }
 
     public function edit(Game $game)
@@ -76,6 +96,9 @@ class AdminGameController extends Controller
         $publishers    = Publisher::orderBy('name')->get();
         $genres        = Genre::orderBy('name')->get();
         $selectedGenres = $game->genres->pluck('genre_id')->toArray();
+        
+        // Load screenshots
+        $game->load('screenshots');
 
         return view('admin.games.edit', compact('game', 'developers', 'publishers', 'genres', 'selectedGenres'));
     }
@@ -92,6 +115,11 @@ class AdminGameController extends Controller
             'publisher_id'  => 'required|exists:publishers,publisher_id',
             'genres'        => 'nullable|array',
             'genres.*'      => 'exists:genres,genre_id',
+            'screenshots'   => 'nullable|array',
+            'screenshots.*.url' => 'required|url|max:500',
+            'screenshots.*.order' => 'nullable|integer|min:0',
+            'delete_screenshots' => 'nullable|array',
+            'delete_screenshots.*' => 'exists:game_screenshots,screenshot_id',
         ]);
 
         $game->update([
@@ -105,6 +133,23 @@ class AdminGameController extends Controller
         ]);
 
         $game->genres()->sync($validated['genres'] ?? []);
+
+        // Handle screenshot deletions
+        if (!empty($validated['delete_screenshots'])) {
+            $game->screenshots()->whereIn('screenshot_id', $validated['delete_screenshots'])->delete();
+        }
+
+        // Handle screenshot updates and additions
+        if (!empty($validated['screenshots'])) {
+            foreach ($validated['screenshots'] as $index => $screenshotData) {
+                if (!empty($screenshotData['url'])) {
+                    $game->screenshots()->create([
+                        'url' => $screenshotData['url'],
+                        'order' => $screenshotData['order'] ?? $index,
+                    ]);
+                }
+            }
+        }
 
         return redirect()->route('admin.games.index')
             ->with('success', 'Game berhasil diperbarui!');

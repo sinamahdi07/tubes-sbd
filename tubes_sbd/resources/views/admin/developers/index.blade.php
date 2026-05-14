@@ -83,7 +83,7 @@
     </div>
 
     {{-- Edit Modal --}}
-    <div id="edit-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center">
+    <div id="edit-modal" class="fixed inset-0 bg-black/70 z-50 hidden items-center justify-center">
         <div class="steam-card rounded-lg w-full max-w-md p-6">
             <h3 class="text-lg font-bold text-white mb-4">Edit Developer</h3>
             <form id="edit-form" method="POST">
@@ -107,9 +107,11 @@ function openEditModal(type, id, name) {
     document.getElementById('edit-name').value = name;
     document.getElementById('edit-form').action = '/admin/developers/' + id;
     document.getElementById('edit-modal').classList.remove('hidden');
+    document.getElementById('edit-modal').classList.add('flex');
 }
 function closeEditModal() {
     document.getElementById('edit-modal').classList.add('hidden');
+    document.getElementById('edit-modal').classList.remove('flex');
 }
 document.getElementById('edit-modal').addEventListener('click', function(e) {
     if (e.target === this) closeEditModal();

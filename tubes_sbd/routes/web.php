@@ -59,7 +59,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/users/{user}', [\App\Http\Controllers\Admin\AdminUserController::class, 'destroy'])->name('users.destroy');
     
     // Games
-    Route::resource('games', \App\Http\Controllers\Admin\AdminGameController::class)->except(['show']);
+    Route::resource('games', \App\Http\Controllers\Admin\AdminGameController::class);
     
     // Developers
     Route::resource('developers', \App\Http\Controllers\Admin\AdminDeveloperController::class)->except(['create', 'show', 'edit']);

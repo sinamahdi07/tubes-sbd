@@ -77,6 +77,10 @@
                             <td class="p-4 text-gray-400 text-sm">{{ $game->release_date ? $game->release_date->format('d M Y') : '-' }}</td>
                             <td class="p-4 text-center">
                                 <div class="flex justify-center gap-2">
+                                    <a href="{{ route('admin.games.show', $game->game_id) }}"
+                                       class="px-3 py-1 text-xs bg-purple-900/50 hover:bg-purple-800 text-purple-300 border border-purple-800 rounded transition">
+                                        Detail
+                                    </a>
                                     <a href="{{ route('admin.games.edit', $game->game_id) }}"
                                        class="px-3 py-1 text-xs bg-[#1b2838] hover:bg-[#2a475e] text-[#66c0f4] border border-[#2a475e] rounded transition">
                                         Edit

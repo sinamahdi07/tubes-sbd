@@ -68,25 +68,34 @@
             <!-- LEFT -->
             <div class="lg:col-span-2">
 
-                <!-- MAIN IMAGE -->
-                <img
-                    src="{{ $game->thumbnail_url }}"
-                    class="w-full h-[500px] object-cover rounded-2xl mb-6"
-                >
+                @if($game->screenshots->count() > 0)
+                    <!-- MAIN SCREENSHOT VIEWER -->
+                    <div class="relative rounded-2xl overflow-hidden bg-black mb-6 w-full" style="aspect-ratio: 16/9;">
+                        <img id="main-screenshot"
+                             src="{{ $game->screenshots->first()->url }}"
+                             class="w-full h-full object-contain transition-all duration-300"
+                             alt="{{ $game->title }} screenshot">
+                    </div>
 
-                <!-- SCREENSHOTS -->
-                <div class="grid grid-cols-4 gap-4 mb-10">
-
-                    @foreach($game->screenshots as $shot)
-
-                        <img
-                            src="{{ $shot->image_url }}"
-                            class="rounded-xl h-28 w-full object-cover hover:scale-105 transition cursor-pointer"
-                        >
-
-                    @endforeach
-
-                </div>
+                    <!-- SCREENSHOT THUMBNAILS -->
+                    <div class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-3 mb-10">
+                        @foreach($game->screenshots as $i => $shot)
+                            <button onclick="changeScreenshot('{{ $shot->url }}', this)"
+                                    class="screenshot-thumb rounded-xl overflow-hidden border-2 {{ $i === 0 ? 'border-[#66c0f4]' : 'border-transparent' }} hover:border-[#66c0f4] transition focus:outline-none"
+                                    title="Screenshot {{ $i + 1 }}">
+                                <img src="{{ $shot->url }}"
+                                     class="w-full aspect-video object-cover"
+                                     alt="Screenshot thumbnail {{ $i + 1 }}">
+                            </button>
+                        @endforeach
+                    </div>
+                @else
+                    <!-- MAIN IMAGE (FALLBACK) -->
+                    <img
+                        src="{{ $game->thumbnail_url }}"
+                        class="w-full h-[500px] object-cover rounded-2xl mb-6"
+                    >
+                @endif
 
                 <!-- DESCRIPTION -->
                 <div class="bg-[#16202d] p-8 rounded-2xl border border-[#2a475e]">
@@ -192,7 +201,7 @@
 
                         <div class="text-3xl font-bold text-[#66c0f4]">
 
-                            Rp {{ number_format($game->price, 0, ',', '.') }}
+                            {{ $game->price == 0 ? 'Gratis' : 'Rp ' . number_format($game->price, 0, ',', '.') }}
 
                         </div>
 
@@ -221,5 +230,20 @@
 
     </section>
 
+    <script>
+        function changeScreenshot(url, btn) {
+            document.getElementById('main-screenshot').src = url;
+
+            // Update border highlight on thumbnails
+            if (btn) {
+                document.querySelectorAll('.screenshot-thumb').forEach(el => {
+                    el.classList.remove('border-[#66c0f4]');
+                    el.classList.add('border-transparent');
+                });
+                btn.classList.remove('border-transparent');
+                btn.classList.add('border-[#66c0f4]');
+            }
+        }
+    </script>
 </body>
 </html>
