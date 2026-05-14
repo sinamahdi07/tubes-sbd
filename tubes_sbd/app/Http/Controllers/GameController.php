@@ -37,7 +37,7 @@ class GameController extends Controller
 
     public function show($id)
     {
-        $game = Game::with(['publisher', 'developer'])
+        $game = Game::with(['publisher', 'developer', 'screenshots', 'genres'])
             ->findOrFail($id);
 
         return view('game.show', compact('game'));
