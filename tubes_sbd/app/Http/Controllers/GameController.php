@@ -24,9 +24,12 @@ class GameController extends Controller
 
             })
             ->latest()
-            ->get();
+            ->paginate(12)
+            ->withQueryString();
 
-        return view('welcome', compact('games', 'search'));
+        $featuredGame = Game::with('publisher')->latest()->first();
+
+        return view('welcome', compact('games', 'search', 'featuredGame'));
     }
 
     /*

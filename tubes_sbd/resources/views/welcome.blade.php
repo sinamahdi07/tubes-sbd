@@ -59,7 +59,7 @@ use Illuminate\Support\Str;
                         G
                     </div>
                     <h1 class="text-2xl font-bold tracking-wide text-[#66c0f4]">
-                        cihuyy
+                        PlayMart
                     </h1>
                 </div>
 
@@ -137,8 +137,8 @@ use Illuminate\Support\Str;
                 <div class="glass rounded-3xl overflow-hidden shadow-2xl border border-[#2a475e]">
 
                     <img
-                        src="https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2071&auto=format&fit=crop"
-                        class="w-full h-[420px] object-cover"
+                    src="{{ $featuredGame->thumbnail_url }}"
+                    class="w-full h-[420px] object-cover"
                     >
 
                     <div class="p-8 bg-gradient-to-b from-[#1b2838] to-[#0f1923]">
@@ -146,13 +146,11 @@ use Illuminate\Support\Str;
 
                             <div>
                                 <h1 class="text-5xl font-bold mb-4 leading-tight">
-                                    CYBER
-                                    <span class="text-[#66c0f4]">HORIZON</span>
+                                    {{ $featuredGame->title }}
                                 </h1>
 
                                 <p class="text-gray-300 max-w-2xl leading-relaxed text-lg">
-                                    Explore a futuristic open world filled with advanced AI, brutal combat,
-                                    cybernetic upgrades, and stunning neon cities.
+                                    {{ Str::limit($featuredGame->description, 200) }}
                                 </p>
                             </div>
 
@@ -164,17 +162,21 @@ use Illuminate\Support\Str;
 
                                     <div>
                                         <div class="text-gray-400 line-through text-sm">
-                                            $59.99
+                                            Rp 500
                                         </div>
                                         <div class="text-3xl font-bold text-white">
-                                            $38.99
+                                            Rp {{ number_format($featuredGame->price, 0, ',', '.') }}
                                         </div>
                                     </div>
                                 </div>
 
-                                <button class="steam-blue px-8 py-4 rounded-xl font-bold text-lg hover:opacity-90 transition">
-                                    Add to Cart
-                                </button>
+                                <a
+                                    href="{{ url('/game/' . $featuredGame->game_id) }}"
+                                    class="steam-blue px-8 py-4 rounded-xl font-bold text-lg hover:opacity-90 transition inline-block"
+                                >
+                                    View Game
+                                </a>
+
                             </div>
                         </div>
                     </div>
@@ -231,16 +233,19 @@ use Illuminate\Support\Str;
             </a>
         </div>
 
-        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
 
             <!-- CARD 1 -->
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
 
     @forelse($games as $game)
 
-        <a href="{{ url('/game/' . $game->game_id) }}">
+        <a href="{{ url('/game/' . $game->game_id) }}" class="block h-full">
 
             <div class="game-card
+                        h-full
+                        flex
+                        flex-col
                         bg-[#16202d]
                         rounded-2xl
                         overflow-hidden
@@ -253,7 +258,7 @@ use Illuminate\Support\Str;
                     class="h-52 w-full object-cover"
                 >
 
-                <div class="p-5">
+                <div class="p-5" flex flex-col flex-1>
 
                     <!-- GAME TITLE -->
                     <h3 class="text-xl font-bold mb-2">
@@ -276,7 +281,7 @@ use Illuminate\Support\Str;
                     </div>
 
                     <!-- PRICE -->
-                    <div class="flex justify-between items-center">
+                    <div class="flex justify-between items-center mt-auto">
 
                         <span class="text-[#66c0f4] font-bold text-lg">
 
@@ -322,78 +327,13 @@ use Illuminate\Support\Str;
 
     @endforelse
 
+    </div>
+
+<div class="flex justify-center mt-12">
+    <div class="bg-[#16202d] border border-[#2a475e] rounded-xl px-4 py-2">
+        {{ $games->links() }}
+    </div>
 </div>
-
-            <!-- CARD 2 -->
-            <div class="game-card bg-[#16202d] rounded-2xl overflow-hidden border border-[#2a475e] transition duration-300 cursor-pointer">
-                <img
-                    src="https://images.unsplash.com/photo-1547394765-185e1e68f34e?q=80&w=2070&auto=format&fit=crop"
-                    class="h-52 w-full object-cover"
-                >
-
-                <div class="p-5">
-                    <h3 class="text-xl font-bold mb-2">Night Racer</h3>
-                    <p class="text-gray-400 text-sm mb-4">
-                        High speed racing experience across neon-lit cities.
-                    </p>
-
-                    <div class="flex justify-between items-center">
-                        <span class="text-[#66c0f4] font-bold text-lg">$24.99</span>
-
-                        <button class="bg-[#2a475e] hover:bg-[#3b6a8b] px-4 py-2 rounded-lg text-sm transition">
-                            Buy
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CARD 3 -->
-            <div class="game-card bg-[#16202d] rounded-2xl overflow-hidden border border-[#2a475e] transition duration-300 cursor-pointer">
-                <img
-                    src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=2070&auto=format&fit=crop"
-                    class="h-52 w-full object-cover"
-                >
-
-                <div class="p-5">
-                    <h3 class="text-xl font-bold mb-2">Galaxy Arena</h3>
-                    <p class="text-gray-400 text-sm mb-4">
-                        Competitive arena battles with futuristic weapons.
-                    </p>
-
-                    <div class="flex justify-between items-center">
-                        <span class="text-[#66c0f4] font-bold text-lg">$19.99</span>
-
-                        <button class="bg-[#2a475e] hover:bg-[#3b6a8b] px-4 py-2 rounded-lg text-sm transition">
-                            Buy
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CARD 4 -->
-            <div class="game-card bg-[#16202d] rounded-2xl overflow-hidden border border-[#2a475e] transition duration-300 cursor-pointer">
-                <img
-                    src="https://images.unsplash.com/photo-1511882150382-421056c89033?q=80&w=1974&auto=format&fit=crop"
-                    class="h-52 w-full object-cover"
-                >
-
-                <div class="p-5">
-                    <h3 class="text-xl font-bold mb-2">Warzone X</h3>
-                    <p class="text-gray-400 text-sm mb-4">
-                        Massive warfare battles with realistic environments.
-                    </p>
-
-                    <div class="flex justify-between items-center">
-                        <span class="text-[#66c0f4] font-bold text-lg">$49.99</span>
-
-                        <button class="bg-[#2a475e] hover:bg-[#3b6a8b] px-4 py-2 rounded-lg text-sm transition">
-                            Buy
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- FOOTER -->
     <footer class="bg-[#171a21] border-t border-[#2a475e] mt-20">

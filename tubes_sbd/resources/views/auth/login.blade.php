@@ -124,7 +124,9 @@ body{
 <div class="login-box">
 
     <div class="login-title">
-        <h1>PlayMart</h1>
+        <h1 class="text-2xl font-bold tracking-wide text-[#66c0f4]">
+                        PlayMart
+                    </h1>
         <p>Sign in to your account</p>
     </div>
 
