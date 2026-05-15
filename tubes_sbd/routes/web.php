@@ -3,6 +3,9 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\GameImportController;
+use App\Http\Controllers\HomeController;
+use App\Models\Game;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
@@ -16,7 +19,8 @@ Route::get('/dashboard', function () {
 |--------------------------------------------------------------------------
 */
 
-Route::get('/', [GameController::class, 'index']);
+Route::get('/', [GameController::class, 'index'])
+    ->name('home');
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +29,18 @@ Route::get('/', [GameController::class, 'index']);
 */
 
 Route::get('/game/{id}', [GameController::class, 'show']);
+
+// Search Games
+    Route::get('/search', [HomeController::class, 'search'])
+    ->name('games.search');
+
+    Route::get('/search-games', function (Request $request) {
+        $search = $request->search;
+        $games = Game::where('title', 'LIKE', "%{$search}%")
+        ->take(5)
+        ->get();
+        return response()->json($games);
+    });
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

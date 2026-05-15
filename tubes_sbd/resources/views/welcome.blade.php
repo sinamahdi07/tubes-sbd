@@ -200,35 +200,56 @@ use Illuminate\Support\Str;
     </section>
 
     <!-- SEARCH BAR -->
-    <section class="bg-[#1f2f42] border-y border-[#2a475e] py-5">
+    <section class="bg-[#1f2f42] border-y border-[#2a475e] py-5 relative z-50">
 
     <div class="max-w-7xl mx-auto px-6">
 
-        <form action="/" method="GET" class="flex gap-4">
+        <div class="relative">
 
-            <input
-                type="text"
-                name="search"
-                value="{{ request('search') }}"
-                placeholder="Search games..."
-                class="w-full
-                       bg-[#0f1923]
-                       border border-[#316282]
-                       focus:border-[#66c0f4]
-                       outline-none
-                       px-5 py-4
-                       rounded-xl
-                       text-white"
-            >
+            <form action="{{ route('games.search') }}" method="GET" class="flex gap-4">
 
-            <button
-                type="submit"
-                class="steam-blue px-8 rounded-xl font-semibold"
-            >
-                Search
-            </button>
+                <input
+                    type="text"
+                    id="search-input"
+                    name="search"
+                    autocomplete="off"
+                    placeholder="Search games..."
+                    class="w-full
+                           bg-[#0f1923]
+                           border border-[#316282]
+                           focus:border-[#66c0f4]
+                           outline-none
+                           px-5 py-4
+                           rounded-xl
+                           text-white"
+                >
 
-        </form>
+                <button
+                    type="submit"
+                    class="steam-blue px-8 rounded-xl font-semibold"
+                >
+                    Search
+                </button>
+
+            </form>
+
+            <!-- DROPDOWN -->
+            <div id="search-results"
+                 class="absolute
+                        top-full
+                        left-0
+                        w-full
+                        bg-[#16202d]
+                        border border-[#2a475e]
+                        rounded-xl
+                        mt-2
+                        hidden
+                        overflow-hidden
+                        shadow-2xl
+                        z-[999]">
+            </div>
+
+        </div>
 
     </div>
 
@@ -389,6 +410,93 @@ use Illuminate\Support\Str;
             </div>
         </div>
     </footer>
+<script>
 
+const searchInput = document.getElementById('search-input');
+const searchResults = document.getElementById('search-results');
+
+searchInput.addEventListener('input', async function () {
+
+    const query = this.value.trim();
+
+    if(query.length === 0){
+
+        searchResults.classList.add('hidden');
+        return;
+
+    }
+
+    try {
+
+        const response = await fetch(`/search-games?search=${query}`);
+
+        const games = await response.json();
+
+        let html = '';
+
+        if(games.length > 0){
+
+            games.forEach(game => {
+
+                html += `
+                    <a href="/game/${game.game_id}"
+                       class="flex items-center gap-4 p-3 hover:bg-[#1f2f42] transition">
+
+                        <img
+                            src="${game.thumbnail_url}"
+                            class="w-24 h-14 object-cover rounded"
+                        >
+
+                        <div>
+
+                            <div class="text-white font-semibold">
+                                ${game.title}
+                            </div>
+
+                            <div class="text-[#66c0f4] text-sm">
+                                Rp ${Number(game.price).toLocaleString('id-ID')}
+                            </div>
+
+                        </div>
+
+                    </a>
+                `;
+
+            });
+
+        } else {
+
+            html = `
+                <div class="p-4 text-gray-400">
+                    Game not found
+                </div>
+            `;
+
+        }
+
+        searchResults.innerHTML = html;
+        searchResults.classList.remove('hidden');
+
+    } catch(error){
+
+        console.log(error);
+
+    }
+
+});
+
+// klik luar
+document.addEventListener('click', function(e){
+
+    if(!searchInput.contains(e.target) &&
+       !searchResults.contains(e.target)){
+
+        searchResults.classList.add('hidden');
+
+    }
+
+});
+
+</script>
 </body>
 </html>
