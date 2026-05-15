@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Game;
+use App\Models\Genre;
 
 class GameController extends Controller
 {
@@ -17,19 +18,36 @@ class GameController extends Controller
     {
         $search = $request->search;
 
-        $games = Game::with(['publisher', 'developer'])
+        $genres = Genre::all();
+
+        $games = Game::with(['publisher', 'developer', 'genres'])
             ->when($search, function ($query) use ($search) {
 
                 $query->where('title', 'like', '%' . $search . '%');
 
             })
+
+            ->when($request->genre, function ($query) use ($request)  {
+                $query->whereHas('genres', function ($q) use ($request) {
+                    $q->where('genres.genre_id', $request->genre);
+                });
+            })
             ->latest()
             ->paginate(12)
             ->withQueryString();
 
-        $featuredGame = Game::with('publisher')->latest()->first();
+        $featuredGame = Game::with(['publisher', 'genres'])
+        
+        ->when($request->genre, function ($query) use ($request)  {
+            $query->whereHas('genres', function ($q) use ($request) {
+                $q->where('genres.genre_id', $request->genre);
+            });
 
-        return view('welcome', compact('games', 'search', 'featuredGame'));
+        })
+        
+        ->latest()->first();
+
+        return view('welcome', compact('games', 'search', 'featuredGame', 'genres'));
     }
 
     /*

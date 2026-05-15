@@ -121,15 +121,29 @@ use Illuminate\Support\Str;
                 </h2>
 
                 <div class="space-y-2 text-gray-300 text-sm">
-                    <div class="sidebar-item p-3 rounded-lg cursor-pointer transition">Action</div>
-                    <div class="sidebar-item p-3 rounded-lg cursor-pointer transition">Adventure</div>
-                    <div class="sidebar-item p-3 rounded-lg cursor-pointer transition">Open World</div>
-                    <div class="sidebar-item p-3 rounded-lg cursor-pointer transition">Survival</div>
-                    <div class="sidebar-item p-3 rounded-lg cursor-pointer transition">Racing</div>
-                    <div class="sidebar-item p-3 rounded-lg cursor-pointer transition">Sports</div>
-                    <div class="sidebar-item p-3 rounded-lg cursor-pointer transition">Horror</div>
-                    <div class="sidebar-item p-3 rounded-lg cursor-pointer transition">Multiplayer</div>
-                </div>
+
+    <a href="/"
+       class="sidebar-item block p-3 rounded-lg transition
+       {{ !request('genre') ? 'bg-[#66c0f4] text-black font-semibold' : '' }}">
+        All Games
+    </a>
+
+    @foreach($genres as $genre)
+
+        <a href="/?genre={{ $genre->genre_id }}"
+           class="sidebar-item block p-3 rounded-lg transition
+
+           {{ request('genre') == $genre->genre_id
+               ? 'bg-[#66c0f4] text-black font-semibold'
+               : '' }}">
+
+            {{ $genre->name }}
+
+        </a>
+
+    @endforeach
+
+</div>
             </div>
 
             <!-- FEATURED GAME -->
