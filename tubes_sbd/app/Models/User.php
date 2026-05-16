@@ -5,6 +5,7 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -49,6 +50,7 @@ class User extends Authenticatable
         ];
     }
 
+<<<<<<< HEAD
     /*
     |--------------------------------------------------------------------------
     | RELATIONSHIPS
@@ -60,3 +62,15 @@ class User extends Authenticatable
         return $this->hasMany(Cart::class);
     }
 }
+=======
+    public function sentFriendships(): HasMany
+    {
+        return $this->hasMany(Friendship::class, 'requester_id');
+    }
+
+    public function receivedFriendships(): HasMany
+    {
+        return $this->hasMany(Friendship::class, 'addressee_id');
+    }
+}
+>>>>>>> 683c62f7a7e3d9a40a800d77f99c5818ab135a6a
