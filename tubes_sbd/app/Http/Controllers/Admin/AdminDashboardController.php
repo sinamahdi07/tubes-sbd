@@ -8,6 +8,7 @@ use App\Models\User;
 use App\Models\Developer;
 use App\Models\Publisher;
 use App\Models\Genre;
+use App\Models\Payment;
 
 class AdminDashboardController extends Controller
 {
@@ -19,6 +20,8 @@ class AdminDashboardController extends Controller
             'total_developers' => Developer::count(),
             'total_publishers' => Publisher::count(),
             'total_genres'     => Genre::count(),
+            'total_payments'   => Payment::count(),
+            'total_revenue'    => Payment::where('status', 'paid')->sum('total'),
         ];
 
         $recentGames = Game::with(['developer', 'publisher'])
@@ -28,6 +31,12 @@ class AdminDashboardController extends Controller
 
         $recentUsers = User::latest()->take(5)->get();
 
-        return view('admin.dashboard', compact('stats', 'recentGames', 'recentUsers'));
+        $recentPayments = Payment::with('user')
+            ->withCount('items')
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('admin.dashboard', compact('stats', 'recentGames', 'recentUsers', 'recentPayments'));
     }
 }

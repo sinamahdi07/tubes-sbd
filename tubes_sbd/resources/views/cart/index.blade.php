@@ -47,24 +47,7 @@ use Illuminate\Support\Str;
         </a>
 
         <div class="flex items-center gap-4">
-
-            <span class="text-sm text-gray-300">
-                Halo,
-                <span class="text-[#66c0f4] font-semibold">
-                    {{ auth()->user()->name }}
-                </span>
-            </span>
-
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-
-                <button
-                    type="submit"
-                    class="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg text-sm font-semibold transition">
-                    Logout
-                </button>
-            </form>
-
+            <x-store-user-menu />
         </div>
     </div>
 </nav>
@@ -72,6 +55,18 @@ use Illuminate\Support\Str;
 
 <!-- PAGE -->
 <section class="max-w-7xl mx-auto px-6 py-12">
+
+    @if(session('success'))
+        <div class="mb-6 glass border border-green-500/50 rounded-2xl p-5 text-green-200">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="mb-6 glass border border-red-500/50 rounded-2xl p-5 text-red-200">
+            {{ session('error') }}
+        </div>
+    @endif
 
     <div class="flex items-center justify-between mb-10">
 
@@ -81,14 +76,21 @@ use Illuminate\Support\Str;
             </h1>
 
             <p class="text-gray-400">
-                {{ $carts->count() }} game in your cart
+                {{ $totalItems }} game in your cart
             </p>
         </div>
 
-        <a href="/"
-           class="steam-blue px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition">
-            Continue Shopping
-        </a>
+        <div class="flex flex-wrap gap-3">
+            <a href="{{ route('payments.history') }}"
+               class="bg-[#2a475e] px-6 py-3 rounded-xl font-semibold hover:bg-[#35617d] transition">
+                Riwayat Payment
+            </a>
+
+            <a href="/"
+               class="steam-blue px-6 py-3 rounded-xl font-semibold hover:opacity-90 transition">
+                Continue Shopping
+            </a>
+        </div>
 
     </div>
 
@@ -138,6 +140,9 @@ use Illuminate\Support\Str;
                                         Rp {{ number_format($cart->game->price, 0, ',', '.') }}
                                     </div>
 
+                                    <div class="text-sm text-gray-400">
+                                        Qty: {{ $cart->quantity }}
+                                    </div>
 
                                     <!-- REMOVE -->
                                     <form action="{{ route('cart.remove', $cart->id) }}"
@@ -180,7 +185,7 @@ use Illuminate\Support\Str;
 
                         <div class="flex justify-between text-gray-300">
                             <span>Total Item</span>
-                            <span>{{ $carts->count() }}</span>
+                            <span>{{ $totalItems }}</span>
                         </div>
 
                         <div class="flex justify-between text-gray-300">
@@ -199,17 +204,18 @@ use Illuminate\Support\Str;
                             </span>
 
                             <span class="text-3xl font-bold text-[#66c0f4]">
-                                Rp {{ number_format($carts->sum(fn($cart) => $cart->game->price), 0, ',', '.') }}
+                                Rp {{ number_format($totalPrice, 0, ',', '.') }}
                             </span>
 
                         </div>
 
                     </div>
 
-                    <button
-                        class="w-full steam-blue py-4 rounded-xl font-bold text-lg hover:opacity-90 transition">
+                    <a
+                        href="{{ route('payments.checkout') }}"
+                        class="block text-center w-full steam-blue py-4 rounded-xl font-bold text-lg hover:opacity-90 transition">
                         Checkout
-                    </button>
+                    </a>
 
                 </div>
 

@@ -20,14 +20,11 @@ class GameController extends Controller
 
         $genres = Genre::all();
 
-        $games = Game::with(['publisher', 'developer', 'genres'])
+        $games = Game::with(['publisher', 'developer', 'genres', 'detail'])
             ->when($search, function ($query) use ($search) {
-
                 $query->where('title', 'like', '%' . $search . '%');
-
             })
-
-            ->when($request->genre, function ($query) use ($request)  {
+            ->when($request->genre, function ($query) use ($request) {
                 $query->whereHas('genres', function ($q) use ($request) {
                     $q->where('genres.genre_id', $request->genre);
                 });
@@ -36,16 +33,13 @@ class GameController extends Controller
             ->paginate(12)
             ->withQueryString();
 
-        $featuredGame = Game::with(['publisher', 'genres'])
-        
-        ->when($request->genre, function ($query) use ($request)  {
-            $query->whereHas('genres', function ($q) use ($request) {
-                $q->where('genres.genre_id', $request->genre);
-            });
-
-        })
-        
-        ->latest()->first();
+        $featuredGame = Game::with(['publisher', 'genres', 'detail'])
+            ->when($request->genre, function ($query) use ($request) {
+                $query->whereHas('genres', function ($q) use ($request) {
+                    $q->where('genres.genre_id', $request->genre);
+                });
+            })
+            ->latest()->first();
 
         return view('welcome', compact('games', 'search', 'featuredGame', 'genres'));
     }
@@ -58,8 +52,14 @@ class GameController extends Controller
 
     public function show($id)
     {
-        $game = Game::with(['publisher', 'developer', 'screenshots', 'genres'])
-            ->findOrFail($id);
+        $game = Game::with([
+            'publisher',
+            'developer',
+            'screenshots',
+            'genres',
+            'platforms',
+            'detail',
+        ])->findOrFail($id);
 
         return view('game.show', compact('game'));
     }

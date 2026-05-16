@@ -6,12 +6,10 @@ use App\Http\Controllers\GameController;
 use App\Http\Controllers\GameImportController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\PaymentController;
 use App\Models\Game;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-
-Route::redirect('/dashboard', '/')->name('dashboard');
 
 /*
 |--------------------------------------------------------------------------
@@ -56,6 +54,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/friends/{friendship}', [FriendController::class, 'destroy'])->name('friends.destroy');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/profile/detail', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/games', [ProfileController::class, 'games'])->name('profile.games');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
@@ -64,6 +64,18 @@ Route::middleware('auth')->group(function () {
 
     Route::delete('/cart/{id}', [CartController::class, 'remove'])
     ->name('cart.remove');
+
+    Route::get('/checkout', [PaymentController::class, 'checkout'])
+        ->name('payments.checkout');
+
+    Route::post('/checkout', [PaymentController::class, 'store'])
+        ->name('payments.store');
+
+    Route::get('/payments', [PaymentController::class, 'history'])
+        ->name('payments.history');
+
+    Route::get('/payments/{payment}', [PaymentController::class, 'show'])
+        ->name('payments.show');
 });
 
 
@@ -91,6 +103,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/users', [\App\Http\Controllers\Admin\AdminUserController::class, 'index'])->name('users.index');
     Route::post('/users/{user}/toggle-admin', [\App\Http\Controllers\Admin\AdminUserController::class, 'toggleAdmin'])->name('users.toggle-admin');
     Route::delete('/users/{user}', [\App\Http\Controllers\Admin\AdminUserController::class, 'destroy'])->name('users.destroy');
+
+    // Payments
+    Route::get('/payments', [\App\Http\Controllers\Admin\AdminPaymentController::class, 'index'])->name('payments.index');
+    Route::get('/payments/{payment}', [\App\Http\Controllers\Admin\AdminPaymentController::class, 'show'])->name('payments.show');
     
     // Games
     Route::resource('games', \App\Http\Controllers\Admin\AdminGameController::class);
@@ -103,4 +119,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     
     // Genres
     Route::resource('genres', \App\Http\Controllers\Admin\AdminGenreController::class)->except(['create', 'show', 'edit']);
+
+    // Categories
+    Route::resource('categories', \App\Http\Controllers\Admin\AdminCategoryController::class);
+
+    // Platforms
+    Route::resource('platforms', \App\Http\Controllers\Admin\AdminPlatformController::class);
 });

@@ -127,6 +127,14 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ route('admin.payments.index') }}" class="nav-link flex items-center px-6 py-3 {{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2m0-6h2a2 2 0 012 2v2a2 2 0 01-2 2h-2m0-6v6"></path>
+                        </svg>
+                        Payments
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('admin.developers.index') }}" class="nav-link flex items-center px-6 py-3 {{ request()->routeIs('admin.developers.*') ? 'active' : '' }}">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
                         Developers

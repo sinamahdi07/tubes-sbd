@@ -65,53 +65,14 @@ use Illuminate\Support\Str;
 
                 <div class="hidden md:flex gap-8 text-sm uppercase tracking-wider font-semibold text-gray-300">
                     <a href="{{ route('home') }}" class="hover:text-white">Store</a>
-                    @auth
-                        <a href="{{ route('friends.index') }}" class="hover:text-white">Teman</a>
-                    @else
-                        <a href="{{ route('login') }}" class="hover:text-white">Teman</a>
-                    @endauth
                     <a href="#" class="hover:text-white">About</a>
                     <a href="#" class="hover:text-white">Support</a>
-                    <a href="{{ route('cart.index') }}">Cart</a>
+                    <a href="{{ route('cart.index') }}" class="hover:text-white">Cart</a>
                 </div>
             </div>
 
             <div class="flex items-center gap-4">
-
-                @auth
-                    @if(auth()->user()->is_admin)
-                        <a href="{{ route('admin.dashboard') }}"
-                           class="flex items-center gap-2 px-4 py-2 rounded text-sm font-bold transition"
-                           style="background: linear-gradient(90deg, #1a44c2, #06bfff); color: #fff;">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                            </svg>
-                            Admin Panel
-                        </a>
-                    @endif
-
-                    <a href="{{ route('friends.index') }}" class="text-sm text-gray-300 hover:text-white font-semibold">
-                        Teman
-                    </a>
-
-                    <span class="text-sm text-gray-300">Halo, <span class="text-[#66c0f4] font-semibold">{{ auth()->user()->name }}</span></span>
-
-                    <form method="POST" action="{{ route('logout') }}" class="inline">
-                        @csrf
-                        <button type="submit" class="bg-gray-700 hover:bg-red-700 px-4 py-2 rounded text-sm font-semibold transition text-white">
-                            Logout
-                        </button>
-                    </form>
-                @else
-                    <a href="{{ route('login') }}" class="text-sm text-gray-300 hover:text-white font-semibold">
-                        Login
-                    </a>
-                    <a href="{{ route('register') }}"
-                       class="bg-[#5c7e10] hover:bg-[#7ea64b] px-4 py-2 rounded text-sm font-semibold transition">
-                        Register
-                    </a>
-                @endauth
+                <x-store-user-menu />
             </div>
         </div>
     </nav>
@@ -123,36 +84,62 @@ use Illuminate\Support\Str;
 
         <div class="relative z-10 max-w-7xl mx-auto px-6 w-full grid lg:grid-cols-3 gap-8 items-center">
 
-            <!-- LEFT MENU -->
-            <div class="glass rounded-2xl p-5 hidden lg:block">
-                <h2 class="text-xl font-bold mb-4 text-[#66c0f4]">
-                    Browse Categories
-                </h2>
+            <!-- CATEGORY DROPDOWN -->
+            <div class="glass rounded-2xl p-5">
+                @php
+                    $selectedGenre = $genres->firstWhere('genre_id', (int) request('genre'));
+                @endphp
 
-                <div class="space-y-2 text-gray-300 text-sm">
+                <div class="mb-4">
+                    <p class="text-xs font-bold uppercase tracking-[0.25em] text-gray-400">
+                        Filter
+                    </p>
+                    <h2 class="text-2xl font-bold text-[#66c0f4]">
+                        Browse Categories
+                    </h2>
+                    <p class="mt-1 text-sm text-gray-400">
+                        {{ $selectedGenre ? 'Aktif: ' . $selectedGenre->name : 'Pilih genre favoritmu' }}
+                    </p>
+                </div>
 
-    <a href="/"
-       class="sidebar-item block p-3 rounded-lg transition
-       {{ !request('genre') ? 'bg-[#66c0f4] text-black font-semibold' : '' }}">
-        All Games
-    </a>
+                <form action="{{ route('home') }}" method="GET">
+                    @if(request('search'))
+                        <input type="hidden" name="search" value="{{ request('search') }}">
+                    @endif
 
-    @foreach($genres as $genre)
+                    <div class="rounded-2xl bg-gradient-to-r from-[#06bfff] via-[#2d73ff] to-[#5c7e10] p-[1px] shadow-lg shadow-[#06bfff]/10">
+                        <div class="relative">
+                            <select
+                                name="genre"
+                                onchange="this.form.submit()"
+                                class="w-full appearance-none rounded-2xl border-0 bg-[#0f1923] px-5 py-4 pr-12 text-white outline-none transition focus:bg-[#16202d]"
+                            >
+                                <option value="" {{ !request('genre') ? 'selected' : '' }}>
+                                    All Games
+                                </option>
 
-        <a href="/?genre={{ $genre->genre_id }}"
-           class="sidebar-item block p-3 rounded-lg transition
+                                @foreach($genres as $genre)
+                                    <option value="{{ $genre->genre_id }}" {{ request('genre') == $genre->genre_id ? 'selected' : '' }}>
+                                        {{ $genre->name }}
+                                    </option>
+                                @endforeach
+                            </select>
 
-           {{ request('genre') == $genre->genre_id
-               ? 'bg-[#66c0f4] text-black font-semibold'
-               : '' }}">
+                            <div class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-[#66c0f4]">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
 
-            {{ $genre->name }}
-
-        </a>
-
-    @endforeach
-
-</div>
+                    @if(request('genre'))
+                        <a href="{{ route('home', request('search') ? ['search' => request('search')] : []) }}"
+                           class="mt-3 inline-block text-sm font-semibold text-[#66c0f4] hover:text-white">
+                            Reset kategori
+                        </a>
+                    @endif
+                </form>
             </div>
 
             <!-- FEATURED GAME -->
@@ -169,38 +156,44 @@ use Illuminate\Support\Str;
                             <div class="flex flex-col lg:flex-row justify-between gap-6">
 
                                 <div>
-                                    <h1 class="text-5xl font-bold mb-4 leading-tight">
+                                    <h2 class="text-5xl font-bold mb-4 leading-tight">
                                         {{ $featuredGame->title }}
-                                    </h1>
-
+                                    </h2>
                                     <p class="text-gray-300 max-w-2xl leading-relaxed text-lg">
-                                        {{ Str::limit($featuredGame->description, 200) }}
+                                        {{ Str::limit($featuredGame->detail->short_description ?? $featuredGame->description, 200) }}
                                     </p>
                                 </div>
 
                                 <div class="flex flex-col justify-end items-start lg:items-end gap-4">
+                                    @php
+                                        $fDiscount = $featuredGame->detail->discount ?? 0;
+                                        $fOriginal = $featuredGame->price;
+                                        $fFinal = $fDiscount > 0 ? $fOriginal * (1 - $fDiscount / 100) : $fOriginal;
+                                    @endphp
                                     <div class="flex items-center gap-3">
+                                        @if($fDiscount > 0)
                                         <span class="bg-[#4c6b22] text-[#beee11] px-3 py-2 rounded font-bold text-lg">
-                                            -35%
+                                            -{{ $fDiscount }}%
                                         </span>
-
                                         <div>
                                             <div class="text-gray-400 line-through text-sm">
-                                                Rp 500
+                                                Rp {{ number_format($fOriginal, 0, ',', '.') }}
                                             </div>
                                             <div class="text-3xl font-bold text-white">
-                                                Rp {{ number_format($featuredGame->price, 0, ',', '.') }}
+                                                Rp {{ number_format($fFinal, 0, ',', '.') }}
                                             </div>
                                         </div>
+                                        @else
+                                        <div class="text-3xl font-bold text-white">
+                                            {{ $fOriginal == 0 ? 'Gratis' : 'Rp ' . number_format($fOriginal, 0, ',', '.') }}
+                                        </div>
+                                        @endif
                                     </div>
 
-                                    <a
-                                        href="{{ url('/game/' . $featuredGame->game_id) }}"
-                                        class="steam-blue px-8 py-4 rounded-xl font-bold text-lg hover:opacity-90 transition inline-block"
-                                    >
+                                    <a href="{{ url('/game/' . $featuredGame->game_id) }}"
+                                       class="steam-blue px-8 py-4 rounded-xl font-bold text-lg hover:opacity-90 transition inline-block">
                                         View Game
                                     </a>
-
                                 </div>
                             </div>
                         </div>
@@ -313,7 +306,7 @@ use Illuminate\Support\Str;
                     class="h-52 w-full object-cover"
                 >
 
-                <div class="p-5" flex flex-col flex-1>
+                <div class="p-5 flex flex-col flex-1">
 
                     <!-- GAME TITLE -->
                     <h3 class="text-xl font-bold mb-2">
@@ -322,37 +315,44 @@ use Illuminate\Support\Str;
 
                     <!-- DESCRIPTION -->
                     <p class="text-gray-400 text-sm mb-4 line-clamp-2">
-
-                        {{ Str::limit($game->description, 80) }}
-
+                        {{ Str::limit($game->detail->short_description ?? $game->description, 80) }}
                     </p>
 
                     <!-- PUBLISHER -->
                     <div class="text-xs text-[#66c0f4] mb-3">
-
-                        Publisher:
                         {{ $game->publisher->name ?? 'Unknown' }}
-
                     </div>
 
                     <!-- PRICE -->
+                    @php
+                        $disc = $game->detail->discount ?? 0;
+                        $orig = $game->price;
+                        $final = $disc > 0 ? $orig * (1 - $disc / 100) : $orig;
+                    @endphp
                     <div class="flex justify-between items-center mt-auto">
 
+                        @if($disc > 0)
+                        <div class="flex items-center gap-2">
+                            <span class="bg-[#4c6b22] text-[#beee11] text-xs font-black px-2 py-0.5 rounded">
+                                -{{ $disc }}%
+                            </span>
+                            <div>
+                                <div class="text-gray-500 line-through text-xs">
+                                    Rp {{ number_format($orig, 0, ',', '.') }}
+                                </div>
+                                <div class="text-[#66c0f4] font-bold text-base">
+                                    Rp {{ number_format($final, 0, ',', '.') }}
+                                </div>
+                            </div>
+                        </div>
+                        @else
                         <span class="text-[#66c0f4] font-bold text-lg">
-
-                            Rp {{ number_format($game->price, 0, ',', '.') }}
-
+                            {{ $orig == 0 ? 'Gratis' : 'Rp ' . number_format($orig, 0, ',', '.') }}
                         </span>
+                        @endif
 
-                        <button class="bg-[#2a475e]
-                                       hover:bg-[#3b6a8b]
-                                       px-4 py-2
-                                       rounded-lg
-                                       text-sm
-                                       transition">
-
+                        <button class="bg-[#2a475e] hover:bg-[#3b6a8b] px-4 py-2 rounded-lg text-sm transition">
                             View
-
                         </button>
 
                     </div>

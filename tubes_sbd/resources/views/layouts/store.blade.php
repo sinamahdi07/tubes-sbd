@@ -62,53 +62,24 @@
 
                 <div class="hidden md:flex gap-8 text-sm uppercase tracking-wider font-semibold text-gray-300">
                     <a href="{{ route('home') }}" class="hover:text-white">Store</a>
-                    @auth
-                        <a href="{{ route('friends.index') }}" class="hover:text-white">Teman</a>
-                    @else
-                        <a href="{{ route('login') }}" class="hover:text-white">Teman</a>
-                    @endauth
                     <a href="#" class="hover:text-white">About</a>
                     <a href="#" class="hover:text-white">Support</a>
-                    <a href="{{ route('cart.index') }}">Cart</a>
+                    <a href="{{ route('cart.index') }}" class="hover:text-white relative">
+                        Cart
+                        @php
+                            $cartCount = auth()->check() ? auth()->user()->carts()->sum('quantity') : 0;
+                        @endphp
+                        @if($cartCount > 0)
+                            <span class="absolute -top-2 -right-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
+                                {{ $cartCount }}
+                            </span>
+                        @endif
+                    </a>
                 </div>
             </div>
 
             <div class="flex items-center gap-4">
-
-                @auth
-                    @if(auth()->user()->is_admin)
-                        <a href="{{ route('admin.dashboard') }}"
-                           class="flex items-center gap-2 px-4 py-2 rounded text-sm font-bold transition"
-                           style="background: linear-gradient(90deg, #1a44c2, #06bfff); color: #fff;">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                            </svg>
-                            Admin Panel
-                        </a>
-                    @endif
-
-                    <a href="{{ route('friends.index') }}" class="text-sm text-gray-300 hover:text-white font-semibold">
-                        Teman
-                    </a>
-
-                    <span class="text-sm text-gray-300">Halo, <span class="text-[#66c0f4] font-semibold">{{ auth()->user()->name }}</span></span>
-
-                    <form method="POST" action="{{ route('logout') }}" class="inline">
-                        @csrf
-                        <button type="submit" class="bg-gray-700 hover:bg-red-700 px-4 py-2 rounded text-sm font-semibold transition text-white">
-                            Logout
-                        </button>
-                    </form>
-                @else
-                    <a href="{{ route('login') }}" class="text-sm text-gray-300 hover:text-white font-semibold">
-                        Login
-                    </a>
-                    <a href="{{ route('register') }}"
-                       class="bg-[#5c7e10] hover:bg-[#7ea64b] px-4 py-2 rounded text-sm font-semibold transition">
-                        Register
-                    </a>
-                @endauth
+                <x-store-user-menu />
             </div>
         </div>
     </nav>

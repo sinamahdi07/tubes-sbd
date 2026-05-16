@@ -89,6 +89,28 @@ class Game extends Model
         );
     }
 
+    // Relasi ke Category (Many-to-Many via game_categories)
+    public function categories()
+    {
+        return $this->belongsToMany(
+            Category::class,
+            'game_categories',
+            'game_id',
+            'category_id'
+        );
+    }
+
+    // Relasi ke Platform (Many-to-Many via game_platforms)
+    public function platforms()
+    {
+        return $this->belongsToMany(
+            Platform::class,
+            'game_platforms',
+            'game_id',
+            'platform_id'
+        );
+    }
+
     // Relasi ke Screenshot (One-to-Many)
     public function screenshots()
     {
@@ -99,14 +121,35 @@ class Game extends Model
         )->orderBy('order');
     }
 
+    // Relasi ke Trailer (One-to-Many)
+    public function trailers()
+    {
+        return $this->hasMany(
+            GameTrailer::class,
+            'game_id',
+            'game_id'
+        )->orderBy('order');
+    }
+
     // Relasi ke Cart (One-to-Many)
     public function carts()
     {
-        return $this->hasMany(Cart::class, 'game_id');
+        return $this->hasMany(Cart::class, 'game_id', 'game_id');
+    }
+
+    public function paymentItems()
+    {
+        return $this->hasMany(PaymentItem::class, 'game_id', 'game_id');
     }
 
     public function getRouteKeyName()
     {
         return 'game_id';
+    }
+
+    // Relasi ke GameDetail (One-to-One)
+    public function detail()
+    {
+        return $this->hasOne(GameDetail::class, 'game_id', 'game_id');
     }
 }

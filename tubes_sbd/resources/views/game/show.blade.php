@@ -20,6 +20,34 @@
 
 <body class="text-white min-h-screen">
 
+    <!-- NAVBAR -->
+    <nav class="bg-[#171a21] border-b border-[#2a475e] sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+
+            <div class="flex items-center gap-10">
+                <a href="{{ route('home') }}" class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full steam-blue flex items-center justify-center font-bold text-xl">
+                        G
+                    </div>
+                    <h1 class="text-2xl font-bold tracking-wide text-[#66c0f4]">
+                        PlayMart
+                    </h1>
+                </a>
+
+                <div class="hidden md:flex gap-8 text-sm uppercase tracking-wider font-semibold text-gray-300">
+                    <a href="{{ route('home') }}" class="hover:text-white">Store</a>
+                    <a href="#" class="hover:text-white">About</a>
+                    <a href="#" class="hover:text-white">Support</a>
+                    <a href="{{ route('cart.index') }}" class="hover:text-white">Cart</a>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <x-store-user-menu />
+            </div>
+        </div>
+    </nav>
+
     <!-- TOP HERO -->
     <section class="relative h-[500px]">
 
@@ -34,24 +62,27 @@
 
             <div>
 
+                {{-- Discount Badge --}}
+                @if($game->detail && $game->detail->discount > 0)
+                <div class="inline-block bg-[#4c6b22] text-[#beee11] font-bold text-sm px-3 py-1 rounded mb-3">
+                    -{{ $game->detail->discount }}%
+                </div>
+                @endif
+
                 <h1 class="text-6xl font-bold mb-4">
-
                     {{ $game->title }}
-
                 </h1>
 
-                <div class="flex gap-4 text-sm text-[#66c0f4]">
+                {{-- Short description --}}
+                @if($game->detail && $game->detail->short_description)
+                <p class="text-gray-300 text-base max-w-2xl mb-4">
+                    {{ $game->detail->short_description }}
+                </p>
+                @endif
 
-                    <span>
-                        Developer:
-                        {{ $game->developer->name ?? '-' }}
-                    </span>
-
-                    <span>
-                        Publisher:
-                        {{ $game->publisher->name ?? '-' }}
-                    </span>
-
+                <div class="flex flex-wrap gap-4 text-sm text-[#66c0f4]">
+                    <span>Developer: {{ $game->developer->name ?? '-' }}</span>
+                    <span>Publisher: {{ $game->publisher->name ?? '-' }}</span>
                 </div>
 
             </div>
@@ -100,17 +131,26 @@
                 <!-- DESCRIPTION -->
                 <div class="bg-[#16202d] p-8 rounded-2xl border border-[#2a475e]">
 
-                    <h2 class="text-3xl font-bold mb-6">
+                    <h2 class="text-3xl font-bold mb-6">About This Game</h2>
 
-                        About This Game
-
-                    </h2>
+                    @if($game->detail && $game->detail->short_description)
+                        <p class="text-[#66c0f4] font-semibold text-base mb-4 leading-relaxed">
+                            {{ $game->detail->short_description }}
+                        </p>
+                    @endif
 
                     <p class="text-gray-300 leading-relaxed text-lg">
-
                         {{ $game->description }}
-
                     </p>
+
+                    @if($game->detail && $game->detail->minimum_requirements)
+                    <div class="mt-8">
+                        <h3 class="text-lg font-bold text-white mb-3">System Requirements</h3>
+                        <div class="bg-[#0f1923] rounded-xl p-5 text-gray-400 text-sm leading-relaxed">
+                            {{ $game->detail->minimum_requirements }}
+                        </div>
+                    </div>
+                    @endif
 
                 </div>
 
@@ -193,41 +233,102 @@
 
                     </div>
 
-                    <!-- PRICE -->
-                    <div class="bg-[#0f1923]
-                                p-5
-                                rounded-xl
-                                flex justify-between items-center">
+                    <!-- PLATFORMS -->
+                    @if($game->platforms->count() > 0)
+                    <div class="mb-6">
 
-                        <div class="text-3xl font-bold text-[#66c0f4]">
+                        <div class="text-gray-400 text-sm mb-2">Available On</div>
 
-                            {{ $game->price == 0 ? 'Gratis' : 'Rp ' . number_format($game->price, 0, ',', '.') }}
+                        <div class="flex items-center gap-3">
+
+                            @foreach($game->platforms as $platform)
+
+                                <div class="flex items-center gap-1.5
+                                            bg-[#2a475e]
+                                            px-3 py-2
+                                            rounded-lg
+                                            text-white
+                                            text-sm
+                                            hover:bg-[#3a5a74]
+                                            transition"
+                                     title="{{ $platform->name }}">
+
+                                    @if($platform->icon)
+                                        {!! $platform->icon !!}
+                                    @endif
+
+                                    <span>{{ $platform->name }}</span>
+
+                                </div>
+
+                            @endforeach
 
                         </div>
 
                     </div>
+                    @endif
+
+
+                    <!-- PRICE + DISCOUNT -->
+                    @php
+                        $discount = $game->detail->discount ?? 0;
+                        $originalPrice = $game->price;
+                        $finalPrice = $discount > 0
+                            ? $originalPrice * (1 - $discount / 100)
+                            : $originalPrice;
+                    @endphp
+
+                    <div class="bg-[#0f1923] p-5 rounded-xl">
+                        @if($discount > 0)
+                            <div class="flex items-center gap-3 mb-2">
+                                <span class="bg-[#4c6b22] text-[#beee11] font-black text-lg px-3 py-1 rounded">
+                                    -{{ $discount }}%
+                                </span>
+                                <span class="text-gray-400 line-through text-base">
+                                    Rp {{ number_format($originalPrice, 0, ',', '.') }}
+                                </span>
+                            </div>
+                        @endif
+                        <div class="text-3xl font-bold text-[#66c0f4]">
+                            {{ $originalPrice == 0 ? 'Gratis' : 'Rp ' . number_format($finalPrice, 0, ',', '.') }}
+                        </div>
+                    </div>
+
+                    {{-- Website --}}
+                    @if($game->detail && $game->detail->website)
+                    <a href="{{ $game->detail->website }}" target="_blank"
+                       class="flex items-center gap-2 text-[#66c0f4] text-sm hover:underline mt-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                        Official Website
+                    </a>
+                    @endif
 
                     <!-- BUTTON -->
-                    <form action="{{ route('cart.add', $game->game_id) }}"
-      method="POST">
+                    @php
+                        $isPurchased = false;
+                        if(auth()->check()) {
+                            $isPurchased = \App\Models\Payment::join('payment_items', 'payments.id', '=', 'payment_items.payment_id')
+                                ->where('payments.user_id', auth()->id())
+                                ->where('payment_items.game_id', $game->game_id)
+                                ->where('payments.status', 'completed')
+                                ->exists();
+                        }
+                    @endphp
 
-    @csrf
-
-    <button class="steam-blue
-                                   w-full
-                                   mt-5
-                                   py-4
-                                   rounded-xl
-                                   text-lg
-                                   font-bold
-                                   hover:opacity-90
-                                   transition">
-
-        Add to Cart
-
-    </button>
-
-</form>
+                    @if($isPurchased)
+                        <div class="w-full mt-5 py-4 rounded-xl text-lg font-bold bg-green-600/20 border border-green-600 text-green-400 text-center">
+                            ✓ Already Owned
+                        </div>
+                    @else
+                        <form action="{{ route('cart.add', $game->game_id) }}" method="POST">
+                            @csrf
+                            <button class="steam-blue w-full mt-5 py-4 rounded-xl text-lg font-bold hover:opacity-90 transition">
+                                Add to Cart
+                            </button>
+                        </form>
+                    @endif
 
                 </div>
 

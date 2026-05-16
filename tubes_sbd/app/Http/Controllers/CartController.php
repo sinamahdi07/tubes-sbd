@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\Game;
+use App\Models\Payment;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -11,6 +12,16 @@ class CartController extends Controller
     public function add(Game $game)
     {
         $user = auth()->user();
+
+        $alreadyPurchased = Payment::join('payment_items', 'payments.id', '=', 'payment_items.payment_id')
+            ->where('payments.user_id', $user->id)
+            ->where('payment_items.game_id', $game->game_id)
+            ->where('payments.status', 'completed')
+            ->exists();
+
+        if($alreadyPurchased){
+            return back()->with('error', 'You have already purchased this game!');
+        }
 
         // cek apakah game sudah ada di cart
         $existingCart = Cart::where('user_id', $user->id)
@@ -39,7 +50,12 @@ class CartController extends Controller
             ->where('user_id', auth()->id())
             ->get();
 
-        return view('cart.index', compact('carts'));
+        $totalItems = $carts->sum('quantity');
+        $totalPrice = $carts->sum(function (Cart $cart) {
+            return (float) ($cart->game->price ?? 0) * max(1, (int) $cart->quantity);
+        });
+
+        return view('cart.index', compact('carts', 'totalItems', 'totalPrice'));
     }
 
     public function remove($id)

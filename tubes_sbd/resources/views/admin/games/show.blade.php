@@ -33,23 +33,33 @@
         <div class="lg:col-span-2 space-y-6">
 
             {{-- Hero Thumbnail + Title --}}
-            <div class="steam-card rounded-lg overflow-hidden">
-                @if($game->thumbnail_url)
-                    <div class="relative">
-                        <img src="{{ $game->thumbnail_url }}" alt="{{ $game->title }}"
-                             class="w-full h-64 object-cover">
-                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                        <div class="absolute bottom-0 left-0 p-6">
-                            <h1 class="text-3xl font-bold text-white drop-shadow">{{ $game->title }}</h1>
-                            <p class="text-gray-300 text-sm mt-1">ID: {{ $game->game_id }}</p>
-                        </div>
+        <div class="steam-card rounded-lg overflow-hidden">
+            @if($game->thumbnail_url)
+                <div class="relative">
+                    <img src="{{ $game->thumbnail_url }}" alt="{{ $game->title }}"
+                         class="w-full h-64 object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 p-6">
+                        {{-- Discount badge --}}
+                        @if($game->detail && $game->detail->discount > 0)
+                            <span class="inline-block bg-[#4c6b22] text-[#beee11] font-black text-sm px-3 py-1 rounded mb-2">
+                                -{{ $game->detail->discount }}% DISKON
+                            </span>
+                        @endif
+                        <h1 class="text-3xl font-bold text-white drop-shadow">{{ $game->title }}</h1>
+                        <p class="text-gray-300 text-sm mt-1">ID: {{ $game->game_id }}
+                            @if($game->detail && $game->detail->appid)
+                                &nbsp;·&nbsp; AppID: {{ $game->detail->appid }}
+                            @endif
+                        </p>
                     </div>
-                @else
-                    <div class="bg-[#1b2838] p-6 border-b border-[#2a475e]">
-                        <h1 class="text-3xl font-bold text-white">{{ $game->title }}</h1>
-                        <p class="text-gray-400 text-sm mt-1">ID: {{ $game->game_id }}</p>
-                    </div>
-                @endif
+                </div>
+            @else
+                <div class="bg-[#1b2838] p-6 border-b border-[#2a475e]">
+                    <h1 class="text-3xl font-bold text-white">{{ $game->title }}</h1>
+                    <p class="text-gray-400 text-sm mt-1">ID: {{ $game->game_id }}</p>
+                </div>
+            @endif
 
                 {{-- Genres --}}
                 @if($game->genres->count())
@@ -62,15 +72,34 @@
                     </div>
                 @endif
 
+                {{-- Short description --}}
+                @if($game->detail && $game->detail->short_description)
+                    <div class="px-6 pt-4 pb-2">
+                        <p class="text-[#66c0f4] text-sm font-semibold italic leading-relaxed">
+                            {{ $game->detail->short_description }}
+                        </p>
+                    </div>
+                @endif
+
                 {{-- Description --}}
                 <div class="p-6">
-                    <h3 class="text-sm font-semibold text-[#66c0f4] uppercase tracking-wider mb-3">Deskripsi</h3>
+                    <h3 class="text-sm font-semibold text-[#66c0f4] uppercase tracking-wider mb-3">Deskripsi Lengkap</h3>
                     @if($game->description)
                         <p class="text-gray-300 text-sm leading-relaxed whitespace-pre-line">{{ $game->description }}</p>
                     @else
                         <p class="text-gray-500 italic text-sm">Tidak ada deskripsi.</p>
                     @endif
                 </div>
+
+                {{-- Minimum Requirements --}}
+                @if($game->detail && $game->detail->minimum_requirements)
+                    <div class="px-6 pb-6">
+                        <h3 class="text-sm font-semibold text-[#66c0f4] uppercase tracking-wider mb-3">Minimum Requirements</h3>
+                        <div class="bg-[#0f1923] rounded-lg p-4 text-gray-400 text-xs font-mono leading-relaxed whitespace-pre-wrap">
+                            {{ $game->detail->minimum_requirements }}
+                        </div>
+                    </div>
+                @endif
             </div>
 
             {{-- ===================== SCREENSHOTS GALLERY ===================== --}}
@@ -134,13 +163,27 @@
                 </div>
                 <div class="p-5 space-y-4 text-sm">
 
-                    {{-- Harga --}}
+                    {{-- Harga + Diskon --}}
+                    @php
+                        $disc = $game->detail->discount ?? 0;
+                        $orig = $game->price;
+                        $final = $disc > 0 ? $orig * (1 - $disc / 100) : $orig;
+                    @endphp
                     <div class="flex items-start justify-between gap-4">
                         <span class="text-gray-400 whitespace-nowrap">Harga</span>
-                        <span class="font-bold text-right
-                            {{ $game->price == 0 ? 'text-blue-400' : 'text-green-400' }}">
-                            {{ $game->price == 0 ? 'Gratis' : 'Rp ' . number_format($game->price, 0, ',', '.') }}
-                        </span>
+                        <div class="text-right">
+                            @if($disc > 0)
+                                <div class="flex items-center gap-2 justify-end">
+                                    <span class="bg-[#4c6b22] text-[#beee11] text-xs font-black px-2 py-0.5 rounded">-{{ $disc }}%</span>
+                                    <span class="text-gray-500 line-through text-xs">Rp {{ number_format($orig, 0, ',', '.') }}</span>
+                                </div>
+                                <span class="font-bold text-green-400">Rp {{ number_format($final, 0, ',', '.') }}</span>
+                            @else
+                                <span class="font-bold {{ $orig == 0 ? 'text-blue-400' : 'text-green-400' }}">
+                                    {{ $orig == 0 ? 'Gratis' : 'Rp ' . number_format($orig, 0, ',', '.') }}
+                                </span>
+                            @endif
+                        </div>
                     </div>
 
                     <div class="border-t border-[#2a475e]"></div>
@@ -167,6 +210,17 @@
                         </span>
                     </div>
 
+                    {{-- Website --}}
+                    @if($game->detail && $game->detail->website)
+                    <div class="flex items-start justify-between gap-4">
+                        <span class="text-gray-400 whitespace-nowrap">Website</span>
+                        <a href="{{ $game->detail->website }}" target="_blank"
+                           class="text-[#66c0f4] hover:underline text-right truncate max-w-[160px]">
+                            {{ parse_url($game->detail->website, PHP_URL_HOST) }}
+                        </a>
+                    </div>
+                    @endif
+
                     {{-- Ditambahkan --}}
                     <div class="flex items-start justify-between gap-4">
                         <span class="text-gray-400 whitespace-nowrap">Ditambahkan</span>
@@ -181,6 +235,25 @@
 
                 </div>
             </div>
+
+            {{-- Platform Box --}}
+            @if($game->platforms->count())
+            <div class="steam-card rounded-lg overflow-hidden">
+                <div class="bg-[#1b2838] p-4 border-b border-[#2a475e]">
+                    <h2 class="font-bold text-[#66c0f4] text-sm">Platform ({{ $game->platforms->count() }})</h2>
+                </div>
+                <div class="p-4 flex flex-wrap gap-3">
+                    @foreach($game->platforms as $platform)
+                        <div class="flex items-center gap-2 px-3 py-2 bg-[#1b2838] border border-[#2a475e] rounded-lg text-sm text-white">
+                            @if($platform->icon)
+                                <span>{!! $platform->icon !!}</span>
+                            @endif
+                            <span>{{ $platform->name }}</span>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
 
             {{-- Screenshots Table --}}
             @if($game->screenshots->count())

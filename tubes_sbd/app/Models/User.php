@@ -6,6 +6,7 @@ namespace App\Models;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -61,6 +62,11 @@ class User extends Authenticatable
         return $this->hasMany(Cart::class);
     }
 
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
     public function sentFriendships(): HasMany
     {
         return $this->hasMany(Friendship::class, 'requester_id');
@@ -69,5 +75,17 @@ class User extends Authenticatable
     public function receivedFriendships(): HasMany
     {
         return $this->hasMany(Friendship::class, 'addressee_id');
+    }
+
+    public function purchasedGames(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            PaymentItem::class,
+            Payment::class,
+            'user_id',
+            'payment_id',
+            'id',
+            'id'
+        )->whereNotNull('payment_items.game_id');
     }
 }

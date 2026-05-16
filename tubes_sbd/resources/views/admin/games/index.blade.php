@@ -52,7 +52,14 @@
                                     @else
                                         <div class="w-16 h-9 bg-gray-800 rounded border border-gray-700 flex items-center justify-center text-xs text-gray-500">N/A</div>
                                     @endif
-                                    <span class="font-semibold text-white text-sm">{{ $game->title }}</span>
+                                    <div>
+                                        <span class="font-semibold text-white text-sm">{{ $game->title }}</span>
+                                        @if($game->detail && $game->detail->discount > 0)
+                                            <span class="ml-1 bg-[#4c6b22] text-[#beee11] text-xs font-black px-1.5 py-0.5 rounded">
+                                                -{{ $game->detail->discount }}%
+                                            </span>
+                                        @endif
+                                    </div>
                                 </div>
                             </td>
                             <td class="p-4 text-gray-300 text-sm">{{ $game->developer->name ?? '-' }}</td>
@@ -67,11 +74,21 @@
                                     @endif
                                 </div>
                             </td>
-                            <td class="p-4 text-green-400 font-medium text-sm">
-                                @if($game->price == 0)
-                                    <span class="text-blue-400">Gratis</span>
+                            <td class="p-4 text-sm">
+                                @php
+                                    $disc = $game->detail->discount ?? 0;
+                                    $orig = $game->price;
+                                    $final = $disc > 0 ? $orig * (1 - $disc / 100) : $orig;
+                                @endphp
+                                @if($orig == 0)
+                                    <span class="text-blue-400 font-medium">Gratis</span>
+                                @elseif($disc > 0)
+                                    <div>
+                                        <div class="text-gray-500 line-through text-xs">Rp {{ number_format($orig, 0, ',', '.') }}</div>
+                                        <div class="text-green-400 font-medium">Rp {{ number_format($final, 0, ',', '.') }}</div>
+                                    </div>
                                 @else
-                                    Rp {{ number_format($game->price, 0, ',', '.') }}
+                                    <span class="text-green-400 font-medium">Rp {{ number_format($orig, 0, ',', '.') }}</span>
                                 @endif
                             </td>
                             <td class="p-4 text-gray-400 text-sm">{{ $game->release_date ? $game->release_date->format('d M Y') : '-' }}</td>
