@@ -98,4 +98,15 @@ class Game extends Model
             'game_id'
         )->orderBy('order');
     }
+
+    // Relasi ke Cart (One-to-Many)
+    public function carts()
+    {
+        return $this->hasMany(Cart::class, 'game_id');
+    }
+
+    public function getRouteKeyName()
+    {
+        return 'game_id';
+    }
 }

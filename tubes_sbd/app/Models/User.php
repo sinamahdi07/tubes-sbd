@@ -48,4 +48,15 @@ class User extends Authenticatable
             'is_admin'         => 'boolean',
         ];
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELATIONSHIPS
+    |--------------------------------------------------------------------------
+    */
+
+    public function carts()
+    {
+        return $this->hasMany(Cart::class);
+    }
 }

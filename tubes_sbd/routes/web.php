@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\GameImportController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CartController;
 use App\Models\Game;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -42,10 +43,21 @@ Route::get('/game/{id}', [GameController::class, 'show']);
         return response()->json($games);
     });
 
+    // Cart
+    Route::post('/cart/add/{game}', [CartController::class, 'add'])
+    ->middleware('auth')
+    ->name('cart.add');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/cart', [CartController::class, 'index'])
+    ->name('cart.index');
+
+    Route::delete('/cart/{id}', [CartController::class, 'remove'])
+    ->name('cart.remove');
 });
 
 

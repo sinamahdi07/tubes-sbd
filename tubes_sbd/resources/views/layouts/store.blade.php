@@ -65,6 +65,7 @@
                     <a href="#" class="hover:text-white">Community</a>
                     <a href="#" class="hover:text-white">About</a>
                     <a href="#" class="hover:text-white">Support</a>
+                    <a href="{{ route('cart.index') }}">Cart</a>
                 </div>
             </div>
 

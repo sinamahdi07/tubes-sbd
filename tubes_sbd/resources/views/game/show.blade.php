@@ -208,7 +208,12 @@
                     </div>
 
                     <!-- BUTTON -->
-                    <button class="steam-blue
+                    <form action="{{ route('cart.add', $game->game_id) }}"
+      method="POST">
+
+    @csrf
+
+    <button class="steam-blue
                                    w-full
                                    mt-5
                                    py-4
@@ -218,9 +223,11 @@
                                    hover:opacity-90
                                    transition">
 
-                        Add to Cart
+        Add to Cart
 
-                    </button>
+    </button>
+
+</form>
 
                 </div>
 
