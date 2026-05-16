@@ -2,6 +2,41 @@
 
 @section('content')
 
+<!-- SEARCH BAR -->
+    <section class="bg-[#1f2f42] border-y border-[#2a475e] py-5 relative z-50">
+
+    <div class="max-w-7xl mx-auto px-6">
+
+        <div class="relative">
+
+            <form action="{{ route('games.search') }}" method="GET" class="flex gap-4">
+
+                <input
+                    type="text"
+                    id="search-input"
+                    name="search"
+                    autocomplete="off"
+                    placeholder="Search games..."
+                    class="w-full
+                           bg-[#0f1923]
+                           border border-[#316282]
+                           focus:border-[#66c0f4]
+                           outline-none
+                           px-5 py-4
+                           rounded-xl
+                           text-white"
+                >
+
+                <button
+                    type="submit"
+                    class="steam-blue px-8 rounded-xl font-semibold"
+                >
+                    Search
+                </button>
+
+            </form>
+
+
 <div class="max-w-7xl mx-auto px-6 py-10">
 
     <!-- SEARCH HEADER -->
