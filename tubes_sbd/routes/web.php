@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\FriendController;
 use App\Http\Controllers\GameController;
 use App\Http\Controllers\GameImportController;
 use App\Http\Controllers\HomeController;
@@ -9,9 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::redirect('/dashboard', '/')->name('dashboard');
 
 /*
 |--------------------------------------------------------------------------
@@ -43,6 +42,13 @@ Route::get('/game/{id}', [GameController::class, 'show']);
     });
 
 Route::middleware('auth')->group(function () {
+    Route::get('/friends', [FriendController::class, 'index'])->name('friends.index');
+    Route::post('/friends', [FriendController::class, 'store'])->name('friends.store');
+    Route::patch('/friends/{friendship}/accept', [FriendController::class, 'accept'])->name('friends.accept');
+    Route::delete('/friends/{friendship}/reject', [FriendController::class, 'reject'])->name('friends.reject');
+    Route::delete('/friends/{friendship}/cancel', [FriendController::class, 'cancel'])->name('friends.cancel');
+    Route::delete('/friends/{friendship}', [FriendController::class, 'destroy'])->name('friends.destroy');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

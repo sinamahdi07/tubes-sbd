@@ -64,8 +64,12 @@ use Illuminate\Support\Str;
                 </div>
 
                 <div class="hidden md:flex gap-8 text-sm uppercase tracking-wider font-semibold text-gray-300">
-                    <a href="#" class="hover:text-white">Store</a>
-                    <a href="#" class="hover:text-white">Community</a>
+                    <a href="{{ route('home') }}" class="hover:text-white">Store</a>
+                    @auth
+                        <a href="{{ route('friends.index') }}" class="hover:text-white">Teman</a>
+                    @else
+                        <a href="{{ route('login') }}" class="hover:text-white">Teman</a>
+                    @endauth
                     <a href="#" class="hover:text-white">About</a>
                     <a href="#" class="hover:text-white">Support</a>
                 </div>
@@ -85,6 +89,10 @@ use Illuminate\Support\Str;
                             Admin Panel
                         </a>
                     @endif
+
+                    <a href="{{ route('friends.index') }}" class="text-sm text-gray-300 hover:text-white font-semibold">
+                        Teman
+                    </a>
 
                     <span class="text-sm text-gray-300">Halo, <span class="text-[#66c0f4] font-semibold">{{ auth()->user()->name }}</span></span>
 
