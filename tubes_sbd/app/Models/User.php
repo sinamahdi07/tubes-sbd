@@ -50,7 +50,6 @@ class User extends Authenticatable
         ];
     }
 
-<<<<<<< HEAD
     /*
     |--------------------------------------------------------------------------
     | RELATIONSHIPS
@@ -61,8 +60,7 @@ class User extends Authenticatable
     {
         return $this->hasMany(Cart::class);
     }
-}
-=======
+
     public function sentFriendships(): HasMany
     {
         return $this->hasMany(Friendship::class, 'requester_id');
@@ -73,4 +71,3 @@ class User extends Authenticatable
         return $this->hasMany(Friendship::class, 'addressee_id');
     }
 }
->>>>>>> 683c62f7a7e3d9a40a800d77f99c5818ab135a6a

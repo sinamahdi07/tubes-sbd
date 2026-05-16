@@ -157,53 +157,64 @@ use Illuminate\Support\Str;
 
             <!-- FEATURED GAME -->
             <div class="lg:col-span-2">
-                <div class="glass rounded-3xl overflow-hidden shadow-2xl border border-[#2a475e]">
+                @if($featuredGame)
+                    <div class="glass rounded-3xl overflow-hidden shadow-2xl border border-[#2a475e]">
 
-                    <img
-                    src="{{ $featuredGame->thumbnail_url }}"
-                    class="w-full h-[420px] object-cover"
-                    >
+                        <img
+                        src="{{ $featuredGame->thumbnail_url ?? 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?q=80&w=2070&auto=format&fit=crop' }}"
+                        class="w-full h-[420px] object-cover"
+                        >
 
-                    <div class="p-8 bg-gradient-to-b from-[#1b2838] to-[#0f1923]">
-                        <div class="flex flex-col lg:flex-row justify-between gap-6">
+                        <div class="p-8 bg-gradient-to-b from-[#1b2838] to-[#0f1923]">
+                            <div class="flex flex-col lg:flex-row justify-between gap-6">
 
-                            <div>
-                                <h1 class="text-5xl font-bold mb-4 leading-tight">
-                                    {{ $featuredGame->title }}
-                                </h1>
+                                <div>
+                                    <h1 class="text-5xl font-bold mb-4 leading-tight">
+                                        {{ $featuredGame->title }}
+                                    </h1>
 
-                                <p class="text-gray-300 max-w-2xl leading-relaxed text-lg">
-                                    {{ Str::limit($featuredGame->description, 200) }}
-                                </p>
-                            </div>
-
-                            <div class="flex flex-col justify-end items-start lg:items-end gap-4">
-                                <div class="flex items-center gap-3">
-                                    <span class="bg-[#4c6b22] text-[#beee11] px-3 py-2 rounded font-bold text-lg">
-                                        -35%
-                                    </span>
-
-                                    <div>
-                                        <div class="text-gray-400 line-through text-sm">
-                                            Rp 500
-                                        </div>
-                                        <div class="text-3xl font-bold text-white">
-                                            Rp {{ number_format($featuredGame->price, 0, ',', '.') }}
-                                        </div>
-                                    </div>
+                                    <p class="text-gray-300 max-w-2xl leading-relaxed text-lg">
+                                        {{ Str::limit($featuredGame->description, 200) }}
+                                    </p>
                                 </div>
 
-                                <a
-                                    href="{{ url('/game/' . $featuredGame->game_id) }}"
-                                    class="steam-blue px-8 py-4 rounded-xl font-bold text-lg hover:opacity-90 transition inline-block"
-                                >
-                                    View Game
-                                </a>
+                                <div class="flex flex-col justify-end items-start lg:items-end gap-4">
+                                    <div class="flex items-center gap-3">
+                                        <span class="bg-[#4c6b22] text-[#beee11] px-3 py-2 rounded font-bold text-lg">
+                                            -35%
+                                        </span>
 
+                                        <div>
+                                            <div class="text-gray-400 line-through text-sm">
+                                                Rp 500
+                                            </div>
+                                            <div class="text-3xl font-bold text-white">
+                                                Rp {{ number_format($featuredGame->price, 0, ',', '.') }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <a
+                                        href="{{ url('/game/' . $featuredGame->game_id) }}"
+                                        class="steam-blue px-8 py-4 rounded-xl font-bold text-lg hover:opacity-90 transition inline-block"
+                                    >
+                                        View Game
+                                    </a>
+
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                @else
+                    <div class="glass rounded-3xl min-h-[420px] border border-[#2a475e] p-8 flex flex-col justify-center">
+                        <h1 class="text-5xl font-bold mb-4 leading-tight">
+                            Belum ada game
+                        </h1>
+                        <p class="text-gray-300 max-w-2xl leading-relaxed text-lg">
+                            Tambahkan data game lewat admin atau import Excel supaya halaman store bisa menampilkan rekomendasi.
+                        </p>
+                    </div>
+                @endif
             </div>
         </div>
     </section>
