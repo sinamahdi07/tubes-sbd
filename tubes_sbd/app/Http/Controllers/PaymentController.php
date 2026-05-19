@@ -14,12 +14,21 @@ class PaymentController extends Controller
 {
     public function checkout(Request $request)
     {
-        $carts = $this->cartQuery($request)->get();
+        $selectionMode = $request->boolean('selection') || $request->has('cart_ids');
+        $cartIds = $selectionMode ? $this->requestedCartIds($request) : null;
+
+        if ($selectionMode && empty($cartIds)) {
+            return redirect()
+                ->route('cart.index')
+                ->with('error', 'Pilih minimal satu game untuk checkout.');
+        }
+
+        $carts = $this->cartQuery($request, $cartIds)->get();
 
         if ($carts->isEmpty()) {
             return redirect()
                 ->route('cart.index')
-                ->with('error', 'Keranjang masih kosong.');
+                ->with('error', $selectionMode ? 'Game yang dipilih tidak ditemukan di cart.' : 'Keranjang masih kosong.');
         }
 
         return view('payments.checkout', [
@@ -33,10 +42,20 @@ class PaymentController extends Controller
     {
         $validated = $request->validate([
             'method' => ['required', 'in:bank_transfer,qris,e_wallet,card'],
+            'cart_ids' => ['sometimes', 'array'],
+            'cart_ids.*' => ['integer'],
         ]);
 
         $payment = DB::transaction(function () use ($request, $validated) {
-            $carts = $this->cartQuery($request)
+            $cartIds = $this->requestedCartIds($request);
+
+            if ($request->has('cart_ids') && empty($cartIds)) {
+                throw ValidationException::withMessages([
+                    'cart' => 'Pilih minimal satu game untuk checkout.',
+                ]);
+            }
+
+            $carts = $this->cartQuery($request, $cartIds)
                 ->lockForUpdate()
                 ->get();
 
@@ -49,28 +68,30 @@ class PaymentController extends Controller
             $summary = $this->buildSummary($carts);
 
             $payment = Payment::create([
-                'user_id'        => $request->user()->id,
-                'payment_code'   => $this->generatePaymentCode(),
-                'method'         => $validated['method'],
-                'status'         => 'paid',
-                'subtotal'       => $summary['subtotal'],
-                'discount_total' => $summary['discount_total'],
-                'total'          => $summary['total'],
-                'paid_at'        => now(),
+                'user_id'      => $request->user()->id,
+                'payment_code' => $this->generatePaymentCode(),
+                'method'       => $validated['method'],
+                'status'       => Payment::STATUS_PAID,
+                'paid_at'      => now(),
             ]);
 
             foreach ($summary['items'] as $item) {
                 $payment->items()->create([
                     'game_id'          => $item['game']->game_id,
                     'title'            => $item['game']->title,
-                    'price'            => $item['price'],
+                    'unit_price'       => $item['price'],
                     'discount_percent' => $item['discount_percent'],
                     'quantity'         => $item['quantity'],
-                    'line_total'       => $item['line_total'],
                 ]);
             }
 
-            Cart::where('user_id', $request->user()->id)->delete();
+            $deleteQuery = Cart::where('user_id', $request->user()->id);
+
+            if ($cartIds !== null) {
+                $deleteQuery->whereIn('id', $cartIds);
+            }
+
+            $deleteQuery->delete();
 
             return $payment;
         });
@@ -83,6 +104,7 @@ class PaymentController extends Controller
     public function history(Request $request)
     {
         $payments = Payment::withCount('items')
+            ->with('items')
             ->where('user_id', $request->user()->id)
             ->latest()
             ->paginate(10);
@@ -102,17 +124,38 @@ class PaymentController extends Controller
         return view('payments.show', compact('payment'));
     }
 
-    private function cartQuery(Request $request)
+    private function cartQuery(Request $request, ?array $cartIds = null)
     {
-        return Cart::with(['game.publisher'])
+        $query = Cart::with(['game.publisher', 'game.detail'])
             ->where('user_id', $request->user()->id);
+
+        if ($cartIds !== null) {
+            $query->whereIn('id', $cartIds);
+        }
+
+        return $query;
+    }
+
+    private function requestedCartIds(Request $request): ?array
+    {
+        if (! $request->has('cart_ids')) {
+            return null;
+        }
+
+        return collect($request->input('cart_ids', []))
+            ->flatten()
+            ->filter(fn ($id) => is_numeric($id) && (int) $id > 0)
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->values()
+            ->all();
     }
 
     private function buildSummary(Collection $carts): array
     {
         $items = $carts->map(function (Cart $cart) {
             $game = $cart->game;
-            $quantity = max(1, (int) $cart->quantity);
+            $quantity = 1;
             $price = (float) ($game->price ?? 0);
             $discountPercent = min(100, max(0, (int) ($game->discount_percent ?? 0)));
             $lineSubtotal = $price * $quantity;

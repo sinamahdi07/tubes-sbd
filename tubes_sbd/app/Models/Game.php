@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Game extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     /*
     |--------------------------------------------------------------------------
@@ -142,6 +143,22 @@ class Game extends Model
         return $this->hasMany(PaymentItem::class, 'game_id', 'game_id');
     }
 
+    public function scopeWithPaidPurchasesCount($query)
+    {
+        return $query->withCount([
+            'paymentItems as paid_purchases_count' => function ($paymentItems) {
+                $paymentItems->whereHas('payment', function ($payment) {
+                    $payment->where('status', Payment::STATUS_PAID);
+                });
+            },
+        ]);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(GameReview::class, 'game_id', 'game_id');
+    }
+
     public function getRouteKeyName()
     {
         return 'game_id';
@@ -151,5 +168,17 @@ class Game extends Model
     public function detail()
     {
         return $this->hasOne(GameDetail::class, 'game_id', 'game_id');
+    }
+
+    public function getDiscountPercentAttribute(): int
+    {
+        return min(100, max(0, (int) ($this->detail?->discount ?? 0)));
+    }
+
+    public function getFinalPriceAttribute(): float
+    {
+        $price = (float) ($this->price ?? 0);
+
+        return max(0, $price * (1 - ($this->discount_percent / 100)));
     }
 }

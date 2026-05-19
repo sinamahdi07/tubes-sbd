@@ -10,17 +10,15 @@ class PaymentItem extends Model
         'payment_id',
         'game_id',
         'title',
-        'price',
+        'unit_price',
         'discount_percent',
         'quantity',
-        'line_total',
     ];
 
     protected $casts = [
-        'price'            => 'decimal:2',
+        'unit_price'       => 'decimal:2',
         'discount_percent' => 'integer',
         'quantity'         => 'integer',
-        'line_total'       => 'decimal:2',
     ];
 
     public function payment()
@@ -31,5 +29,29 @@ class PaymentItem extends Model
     public function game()
     {
         return $this->belongsTo(Game::class, 'game_id', 'game_id');
+    }
+
+    public function getPriceAttribute($value): float
+    {
+        return (float) ($value ?? $this->attributes['unit_price'] ?? 0);
+    }
+
+    public function getLineSubtotalAttribute(): float
+    {
+        return $this->price * max(1, (int) ($this->quantity ?? 1));
+    }
+
+    public function getLineDiscountAttribute(): float
+    {
+        return $this->line_subtotal * (min(100, max(0, (int) $this->discount_percent)) / 100);
+    }
+
+    public function getLineTotalAttribute($value): float
+    {
+        if ($value !== null) {
+            return (float) $value;
+        }
+
+        return max(0, $this->line_subtotal - $this->line_discount);
     }
 }

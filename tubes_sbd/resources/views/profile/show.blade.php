@@ -26,25 +26,7 @@
     </style>
 </head>
 <body class="min-h-screen">
-    <nav class="bg-[#171a21] border-b border-[#2a475e] sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="{{ route('home') }}" class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full steam-blue flex items-center justify-center font-bold text-xl">
-                    G
-                </div>
-                <h1 class="text-2xl font-bold tracking-wide text-[#66c0f4]">
-                    PlayMart
-                </h1>
-            </a>
-
-            <div class="hidden md:flex gap-8 text-sm uppercase tracking-wider font-semibold text-gray-300">
-                <a href="{{ route('home') }}" class="hover:text-white">Store</a>
-                <a href="{{ route('cart.index') }}" class="hover:text-white">Cart</a>
-            </div>
-
-            <x-store-user-menu />
-        </div>
-    </nav>
+    <x-store-nav />
 
     <main class="max-w-7xl mx-auto px-6 py-12">
         <section class="glass border border-[#2a475e] rounded-3xl overflow-hidden mb-8">
@@ -118,7 +100,7 @@
                                     </p>
                                 </div>
                                 <p class="text-2xl font-bold text-[#66c0f4]">
-                                    Rp {{ number_format($payment->total, 0, ',', '.') }}
+                                    Rp {{ number_format($payment->display_total, 0, ',', '.') }}
                                 </p>
                             </div>
                         </a>
@@ -135,5 +117,6 @@
             @endif
         </section>
     </main>
+    <x-store-footer />
 </body>
 </html>

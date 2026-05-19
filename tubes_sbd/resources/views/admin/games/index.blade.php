@@ -3,8 +3,26 @@
 @section('title', 'Manajemen Game')
 
 @section('content')
-    <div class="flex justify-between items-center mb-6">
-        <form method="GET" action="{{ route('admin.games.index') }}" class="flex gap-3 flex-1 mr-4">
+    @php
+        $isTrash = request()->boolean('trash');
+    @endphp
+
+    <div class="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4 mb-6">
+        <div class="flex items-center gap-2">
+            <a href="{{ route('admin.games.index', request()->except(['trash', 'page'])) }}"
+               class="px-4 py-2 rounded text-sm font-semibold transition {{ $isTrash ? 'bg-[#1b2838] text-gray-300 border border-[#2a475e] hover:text-white' : 'steam-btn-primary' }}">
+                Aktif
+            </a>
+            <a href="{{ route('admin.games.index', array_merge(request()->except('page'), ['trash' => 1])) }}"
+               class="px-4 py-2 rounded text-sm font-semibold transition {{ $isTrash ? 'steam-btn-primary' : 'bg-[#1b2838] text-gray-300 border border-[#2a475e] hover:text-white' }}">
+                Terhapus
+            </a>
+        </div>
+
+        <form method="GET" action="{{ route('admin.games.index') }}" class="flex flex-wrap gap-3 flex-1 xl:mx-4">
+            @if($isTrash)
+                <input type="hidden" name="trash" value="1">
+            @endif
             <input type="text" name="search" value="{{ request('search') }}"
                    placeholder="Cari judul game..."
                    class="flex-1 max-w-sm p-2 steam-input rounded">
@@ -18,13 +36,15 @@
             </select>
             <button type="submit" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition text-sm">Filter</button>
             @if(request()->hasAny(['search', 'genre']))
-                <a href="{{ route('admin.games.index') }}" class="px-3 py-2 text-gray-400 hover:text-white text-sm self-center">Reset</a>
+                <a href="{{ route('admin.games.index', $isTrash ? ['trash' => 1] : []) }}" class="px-3 py-2 text-gray-400 hover:text-white text-sm self-center">Reset</a>
             @endif
         </form>
-        <a href="{{ route('admin.games.create') }}"
-           class="px-4 py-2 steam-btn-primary rounded font-semibold text-sm whitespace-nowrap">
-            + Tambah Game
-        </a>
+        @unless($isTrash)
+            <a href="{{ route('admin.games.create') }}"
+               class="px-4 py-2 steam-btn-primary rounded font-semibold text-sm whitespace-nowrap">
+                + Tambah Game
+            </a>
+        @endunless
     </div>
 
     <div class="steam-card rounded-lg overflow-hidden">
@@ -94,23 +114,34 @@
                             <td class="p-4 text-gray-400 text-sm">{{ $game->release_date ? $game->release_date->format('d M Y') : '-' }}</td>
                             <td class="p-4 text-center">
                                 <div class="flex justify-center gap-2">
-                                    <a href="{{ route('admin.games.show', $game->game_id) }}"
-                                       class="px-3 py-1 text-xs bg-purple-900/50 hover:bg-purple-800 text-purple-300 border border-purple-800 rounded transition">
-                                        Detail
-                                    </a>
-                                    <a href="{{ route('admin.games.edit', $game->game_id) }}"
-                                       class="px-3 py-1 text-xs bg-[#1b2838] hover:bg-[#2a475e] text-[#66c0f4] border border-[#2a475e] rounded transition">
-                                        Edit
-                                    </a>
-                                    <form action="{{ route('admin.games.destroy', $game->game_id) }}" method="POST" class="inline"
-                                          onsubmit="return confirm('Hapus game {{ addslashes($game->title) }}?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit"
-                                                class="px-3 py-1 text-xs bg-red-900/50 hover:bg-red-800 text-red-300 border border-red-800 rounded transition">
-                                            Hapus
-                                        </button>
-                                    </form>
+                                    @if($isTrash)
+                                        <form action="{{ route('admin.games.restore', $game->game_id) }}" method="POST" class="inline"
+                                              onsubmit="return confirm('Restore game {{ addslashes($game->title) }}?');">
+                                            @csrf
+                                            <button type="submit"
+                                                    class="px-3 py-1 text-xs bg-green-900/50 hover:bg-green-800 text-green-300 border border-green-800 rounded transition">
+                                                Restore
+                                            </button>
+                                        </form>
+                                    @else
+                                        <a href="{{ route('admin.games.show', $game->game_id) }}"
+                                           class="px-3 py-1 text-xs bg-purple-900/50 hover:bg-purple-800 text-purple-300 border border-purple-800 rounded transition">
+                                            Detail
+                                        </a>
+                                        <a href="{{ route('admin.games.edit', $game->game_id) }}"
+                                           class="px-3 py-1 text-xs bg-[#1b2838] hover:bg-[#2a475e] text-[#66c0f4] border border-[#2a475e] rounded transition">
+                                            Edit
+                                        </a>
+                                        <form action="{{ route('admin.games.destroy', $game->game_id) }}" method="POST" class="inline"
+                                              onsubmit="return confirm('Hapus game {{ addslashes($game->title) }}?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                    class="px-3 py-1 text-xs bg-red-900/50 hover:bg-red-800 text-red-300 border border-red-800 rounded transition">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -120,7 +151,7 @@
                                 <svg class="w-12 h-12 mx-auto mb-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path>
                                 </svg>
-                                <p>Tidak ada game yang ditemukan.</p>
+                                <p>{{ $isTrash ? 'Tidak ada game terhapus.' : 'Tidak ada game yang ditemukan.' }}</p>
                             </td>
                         </tr>
                     @endforelse
@@ -128,7 +159,7 @@
             </table>
         </div>
         <div class="p-4 border-t border-[#2a475e] bg-[#1b2838] flex items-center justify-between">
-            <p class="text-sm text-gray-400">Total: {{ $games->total() }} game</p>
+            <p class="text-sm text-gray-400">Total: {{ $games->total() }} {{ $isTrash ? 'game terhapus' : 'game' }}</p>
             {{ $games->links() }}
         </div>
     </div>

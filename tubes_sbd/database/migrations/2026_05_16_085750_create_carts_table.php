@@ -26,6 +26,8 @@ return new class extends Migration
         $table->integer('quantity')->default(1);
 
         $table->timestamps();
+
+        $table->unique(['user_id', 'game_id'], 'carts_user_game_unique');
     });
 }
 

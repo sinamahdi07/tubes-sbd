@@ -12,6 +12,10 @@ class AdminPublisherController extends Controller
     {
         $query = Publisher::withCount('games');
 
+        if ($request->boolean('trash')) {
+            $query->onlyTrashed();
+        }
+
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
@@ -47,6 +51,14 @@ class AdminPublisherController extends Controller
 
         $publisher->delete();
 
-        return back()->with('success', 'Publisher berhasil dihapus!');
+        return back()->with('success', 'Publisher berhasil dipindahkan ke trash!');
+    }
+
+    public function restore(int $publisher)
+    {
+        Publisher::onlyTrashed()->findOrFail($publisher)->restore();
+
+        return redirect()->route('admin.publishers.index', ['trash' => 1])
+            ->with('success', 'Publisher berhasil direstore!');
     }
 }

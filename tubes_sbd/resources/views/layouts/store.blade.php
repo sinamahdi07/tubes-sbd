@@ -1,151 +1,70 @@
+@php
+    $cartCount = auth()->check() ? auth()->user()->carts()->count() : 0;
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GameStore — Toko Game Terlengkap</title>
+    <title>@yield('title', 'PlayMart - Store')</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
+        html { scroll-behavior: smooth; }
         body {
-            background: #1b2838;
-            overflow-x: hidden;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        .hero-bg {
             background:
-                linear-gradient(to bottom, rgba(15, 32, 39, 0.5), rgba(27,40,56,1)),
-                url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
+                radial-gradient(circle at 16% -8%, rgba(45, 115, 255, 0.18), transparent 28rem),
+                radial-gradient(circle at 86% 4%, rgba(102, 192, 244, 0.12), transparent 24rem),
+                linear-gradient(180deg, #050a12 0%, #07111d 42%, #091523 100%);
+            color: #fff;
+            font-family: Arial, Helvetica, sans-serif;
+            overflow-x: hidden;
         }
-
-        .game-card:hover {
-            transform: scale(1.03);
-            transition: .25s ease;
-            box-shadow: 0 0 20px rgba(102,192,244,.4);
+        .steam-blue { background: linear-gradient(135deg, #06bfff, #2d73ff); }
+        .top-nav {
+            background: rgba(5, 10, 18, 0.88);
+            border-bottom: 1px solid rgba(42, 71, 94, 0.76);
+            backdrop-filter: blur(18px);
+            box-shadow: 0 12px 34px rgba(0, 0, 0, 0.26);
         }
-
-        .glass {
-            background: rgba(255,255,255,0.04);
-            backdrop-filter: blur(10px);
+        .store-container {
+            width: min(100% - 32px, 1700px);
+            margin-inline: auto;
         }
-
-        .steam-blue {
-            background: linear-gradient(90deg,#06bfff,#2d73ff);
+        .nav-link {
+            position: relative;
+            color: rgba(229, 236, 245, 0.76);
+            transition: color .2s ease;
         }
-
-        .sidebar-item:hover {
-            background: rgba(255,255,255,0.08);
+        .nav-link:hover,
+        .nav-link.is-active { color: #fff; }
+        .nav-link.is-active::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -22px;
+            height: 3px;
+            border-radius: 999px;
+            background: #118dff;
+            box-shadow: 0 0 16px rgba(17, 141, 255, 0.8);
+        }
+        @media (max-width: 768px) {
+            .store-container { width: min(100% - 24px, 1700px); }
+            .nav-link.is-active::after { display: none; }
         }
     </style>
+    @stack('styles')
 </head>
-<body class="text-white min-h-screen">
+<body class="min-h-screen text-white">
+    <x-store-nav />
 
-    <!-- NAVBAR -->
-    <nav class="bg-[#171a21] border-b border-[#2a475e] sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    @yield('content')
 
-            <div class="flex items-center gap-10">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full steam-blue flex items-center justify-center font-bold text-xl">
-                        G
-                    </div>
-                    <h1 class="text-2xl font-bold tracking-wide text-[#66c0f4]">
-                        PlayMart
-                    </h1>
-                </div>
+    <x-store-footer />
 
-                <div class="hidden md:flex gap-8 text-sm uppercase tracking-wider font-semibold text-gray-300">
-                    <a href="{{ route('home') }}" class="hover:text-white">Store</a>
-                    <a href="#" class="hover:text-white">About</a>
-                    <a href="#" class="hover:text-white">Support</a>
-                    <a href="{{ route('cart.index') }}" class="hover:text-white relative">
-                        Cart
-                        @php
-                            $cartCount = auth()->check() ? auth()->user()->carts()->sum('quantity') : 0;
-                        @endphp
-                        @if($cartCount > 0)
-                            <span class="absolute -top-2 -right-3 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full">
-                                {{ $cartCount }}
-                            </span>
-                        @endif
-                    </a>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-4">
-                <x-store-user-menu />
-            </div>
-        </div>
-    </nav>
-
-
-
-            <!-- DROPDOWN -->
-            <div id="search-results"
-                 class="absolute
-                        top-full
-                        left-0
-                        w-full
-                        bg-[#16202d]
-                        border border-[#2a475e]
-                        rounded-xl
-                        mt-2
-                        hidden
-                        overflow-hidden
-                        shadow-2xl
-                        z-[999]">
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-@yield('content')
-
-<!-- FOOTER -->
-<footer class="bg-[#171a21] border-t border-[#2a475e] mt-20">
-        <div class="max-w-7xl mx-auto px-6 py-10 text-gray-400 text-sm">
-
-            <div class="flex flex-col lg:flex-row justify-between gap-8">
-
-                <div>
-                    <h3 class="text-white text-lg font-bold mb-3">GAMESTORE</h3>
-                    <p class="max-w-md leading-relaxed">
-                        Digital distribution platform for games, downloadable content,
-                        multiplayer experiences, and gaming communities.
-                    </p>
-                </div>
-
-                <div class="grid grid-cols-2 gap-10">
-                    <div>
-                        <h4 class="text-white font-semibold mb-3">Links</h4>
-                        <div class="space-y-2">
-                            <a href="#" class="block hover:text-white">Home</a>
-                            <a href="#" class="block hover:text-white">Games</a>
-                            <a href="#" class="block hover:text-white">News</a>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h4 class="text-white font-semibold mb-3">Support</h4>
-                        <div class="space-y-2">
-                            <a href="#" class="block hover:text-white">Help Center</a>
-                            <a href="#" class="block hover:text-white">Contact</a>
-                            <a href="#" class="block hover:text-white">Privacy</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="border-t border-[#2a475e] mt-8 pt-6 text-center text-xs text-gray-500">
-                © 2026 GameStore. All rights reserved.
-            </div>
-        </div>
-    </footer>
+    @stack('scripts')
+</body>
+</html>

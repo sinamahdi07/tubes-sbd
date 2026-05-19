@@ -26,28 +26,7 @@
     </style>
 </head>
 <body>
-    <nav class="bg-[#171a21] border-b border-[#2a475e] sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="{{ route('home') }}" class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full steam-blue flex items-center justify-center font-bold text-xl">
-                    G
-                </div>
-                <h1 class="text-2xl font-bold tracking-wide text-[#66c0f4]">
-                    PlayMart
-                </h1>
-            </a>
-
-            <div class="flex items-center gap-4">
-                <a href="{{ route('payments.history') }}" class="text-sm text-gray-300 hover:text-white font-semibold">
-                    Riwayat Payment
-                </a>
-                <a href="{{ route('home') }}" class="text-sm text-gray-300 hover:text-white font-semibold">
-                    Store
-                </a>
-                <x-store-user-menu />
-            </div>
-        </div>
-    </nav>
+    <x-store-nav />
 
     <main class="max-w-5xl mx-auto px-6 py-12">
         @if(session('success'))
@@ -92,7 +71,7 @@
                     </div>
                     <div class="bg-[#0f1923] border border-[#2a475e] rounded-2xl p-5">
                         <p class="text-gray-400 text-sm mb-2">Total Bayar</p>
-                        <p class="font-bold text-[#66c0f4]">Rp {{ number_format($payment->total, 0, ',', '.') }}</p>
+                        <p class="font-bold text-[#66c0f4]">Rp {{ number_format($payment->display_total, 0, ',', '.') }}</p>
                     </div>
                 </div>
 
@@ -117,15 +96,15 @@
                 <div class="border-t border-[#2a475e] mt-8 pt-6 space-y-3">
                     <div class="flex justify-between text-gray-300">
                         <span>Subtotal</span>
-                        <span>Rp {{ number_format($payment->subtotal, 0, ',', '.') }}</span>
+                        <span>Rp {{ number_format($payment->display_subtotal, 0, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between text-gray-300">
                         <span>Diskon</span>
-                        <span>Rp {{ number_format($payment->discount_total, 0, ',', '.') }}</span>
+                        <span>Rp {{ number_format($payment->display_discount_total, 0, ',', '.') }}</span>
                     </div>
                     <div class="flex justify-between text-2xl font-bold">
                         <span>Total</span>
-                        <span class="text-[#66c0f4]">Rp {{ number_format($payment->total, 0, ',', '.') }}</span>
+                        <span class="text-[#66c0f4]">Rp {{ number_format($payment->display_total, 0, ',', '.') }}</span>
                     </div>
                 </div>
 
@@ -140,5 +119,6 @@
             </div>
         </section>
     </main>
+    <x-store-footer />
 </body>
 </html>

@@ -1,522 +1,580 @@
 @php
-use Illuminate\Support\Str;
+    use Illuminate\Support\Str;
+
+    $fallbackImage = 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=70&w=1400&auto=format&fit=crop';
+    $imageFor = fn ($game) => $game?->thumbnail_url ?: $fallbackImage;
+    $discountFor = fn ($game) => (int) ($game?->detail?->discount ?? 0);
+    $finalPriceFor = fn ($game) => max(0, (float) ($game?->price ?? 0) * (1 - ($discountFor($game) / 100)));
+    $formatPrice = fn ($price) => (float) $price <= 0 ? 'Gratis' : 'Rp ' . number_format($price, 0, ',', '.');
+    $descriptionFor = fn ($game, $limit = 130) => Str::limit($game?->detail?->short_description ?: $game?->description ?: 'Temukan dunia baru, tantangan seru, dan pengalaman bermain pilihan di PlayMart.', $limit);
+    $cartCount = auth()->check() ? auth()->user()->carts()->count() : 0;
+    $leadRecommended = $recommendedGames->first();
+    $sideRecommended = $recommendedGames->skip(1)->take(4);
 @endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GameStore — Toko Game Terlengkap</title>
+    <title>PlayMart - Store</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
+        html { scroll-behavior: smooth; }
         body {
-            background: #1b2838;
-            overflow-x: hidden;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        .hero-bg {
             background:
-                linear-gradient(to bottom, rgba(15, 32, 39, 0.5), rgba(27,40,56,1)),
-                url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop');
-            background-size: cover;
-            background-position: center;
+                radial-gradient(circle at 16% -8%, rgba(45, 115, 255, 0.18), transparent 28rem),
+                radial-gradient(circle at 86% 4%, rgba(102, 192, 244, 0.12), transparent 24rem),
+                linear-gradient(180deg, #050a12 0%, #07111d 42%, #091523 100%);
+            color: #fff;
+            font-family: Arial, Helvetica, sans-serif;
+            overflow-x: hidden;
         }
-
+        .steam-blue { background: linear-gradient(135deg, #06bfff, #2d73ff); }
+        .store-container {
+            width: min(100% - 32px, 1700px);
+            margin-inline: auto;
+        }
+        .top-nav {
+            background: rgba(5, 10, 18, 0.88);
+            border-bottom: 1px solid rgba(42, 71, 94, 0.76);
+            backdrop-filter: blur(18px);
+            box-shadow: 0 12px 34px rgba(0, 0, 0, 0.26);
+        }
+        .nav-link {
+            position: relative;
+            color: rgba(229, 236, 245, 0.76);
+            transition: color .2s ease;
+        }
+        .nav-link:hover,
+        .nav-link.is-active { color: #fff; }
+        .nav-link.is-active::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -22px;
+            height: 3px;
+            border-radius: 999px;
+            background: #118dff;
+            box-shadow: 0 0 16px rgba(17, 141, 255, 0.8);
+        }
+        .store-panel {
+            background:
+                linear-gradient(180deg, rgba(15, 25, 35, 0.88), rgba(7, 17, 29, 0.9)),
+                linear-gradient(135deg, rgba(102, 192, 244, 0.12), rgba(45, 115, 255, 0.05));
+            border: 1px solid rgba(42, 71, 94, 0.9);
+            box-shadow: 0 18px 44px rgba(0, 0, 0, 0.3);
+        }
+        .hero-panel {
+            min-height: clamp(430px, 34vw, 540px);
+            background: #07111d;
+        }
+        .hero-panel::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            border-radius: inherit;
+            box-shadow: inset 0 0 0 1px rgba(102, 192, 244, 0.08);
+        }
+        .hero-copy {
+            max-width: 520px;
+            text-shadow: 0 2px 16px rgba(0, 0, 0, 0.7);
+        }
+        .game-card {
+            background: #0f1923;
+            border: 1px solid rgba(42, 71, 94, 0.95);
+            transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+        }
         .game-card:hover {
-            transform: scale(1.03);
-            transition: .25s ease;
-            box-shadow: 0 0 20px rgba(102,192,244,.4);
+            transform: translateY(-3px);
+            border-color: rgba(102, 192, 244, 0.78);
+            box-shadow: 0 16px 28px rgba(6, 191, 255, 0.1);
         }
-
-        .glass {
-            background: rgba(255,255,255,0.04);
-            backdrop-filter: blur(10px);
+        .icon-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(42, 71, 94, 0.95);
+            background: rgba(15, 25, 35, 0.82);
+            color: #d7e3f2;
+            transition: border-color .2s ease, color .2s ease, background .2s ease;
         }
-
-        .steam-blue {
-            background: linear-gradient(90deg,#06bfff,#2d73ff);
+        .icon-button:hover {
+            border-color: rgba(102, 192, 244, 0.78);
+            color: #fff;
+            background: rgba(22, 32, 45, 0.96);
         }
-
-        .sidebar-item:hover {
-            background: rgba(255,255,255,0.08);
+        .price-discount {
+            background: #4c6b22;
+            color: #beee11;
+        }
+        .hero-dot.is-active {
+            width: 28px;
+            background: #118dff;
+        }
+        [data-hero-carousel] {
+            touch-action: pan-y;
+        }
+        [data-hero-carousel] [data-hero-slide] {
+            cursor: grab;
+            user-select: none;
+        }
+        [data-hero-carousel] img {
+            -webkit-user-drag: none;
+            user-select: none;
+        }
+        [data-hero-carousel].is-dragging [data-hero-slide] {
+            cursor: grabbing;
+        }
+        .store-scrollbar {
+            scrollbar-color: #2a475e #07111d;
+        }
+        @media (max-width: 768px) {
+            .store-container { width: min(100% - 24px, 1700px); }
+            .hero-panel { min-height: 560px; }
+            .nav-link.is-active::after { display: none; }
         }
     </style>
 </head>
-<body class="text-white min-h-screen">
+<body class="min-h-screen">
+    <x-store-nav active="store" />
 
-    <!-- NAVBAR -->
-    <nav class="bg-[#171a21] border-b border-[#2a475e] sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <main class="pb-12">
+        @if($featuredGames->isNotEmpty())
+                <section class="store-container relative pt-5" data-hero-carousel>
+                @foreach($featuredGames as $slideIndex => $heroGame)
+                    @php
+                        $featuredDiscount = $discountFor($heroGame);
+                        $featuredFinal = $finalPriceFor($heroGame);
+                    @endphp
 
-            <div class="flex items-center gap-10">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full steam-blue flex items-center justify-center font-bold text-xl">
-                        G
-                    </div>
-                    <h1 class="text-2xl font-bold tracking-wide text-[#66c0f4]">
-                        PlayMart
-                    </h1>
-                </div>
-
-                <div class="hidden md:flex gap-8 text-sm uppercase tracking-wider font-semibold text-gray-300">
-                    <a href="{{ route('home') }}" class="hover:text-white">Store</a>
-                    <a href="#" class="hover:text-white">About</a>
-                    <a href="#" class="hover:text-white">Support</a>
-                    <a href="{{ route('cart.index') }}" class="hover:text-white">Cart</a>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-4">
-                <x-store-user-menu />
-            </div>
-        </div>
-    </nav>
-
-    <!-- HERO -->
-    <section class="hero-bg min-h-[650px] relative flex items-center">
-
-        <div class="absolute inset-0 bg-black/40"></div>
-
-        <div class="relative z-10 max-w-7xl mx-auto px-6 w-full grid lg:grid-cols-3 gap-8 items-center">
-
-            <!-- CATEGORY DROPDOWN -->
-            <div class="glass rounded-2xl p-5">
-                @php
-                    $selectedGenre = $genres->firstWhere('genre_id', (int) request('genre'));
-                @endphp
-
-                <div class="mb-4">
-                    <p class="text-xs font-bold uppercase tracking-[0.25em] text-gray-400">
-                        Filter
-                    </p>
-                    <h2 class="text-2xl font-bold text-[#66c0f4]">
-                        Browse Categories
-                    </h2>
-                    <p class="mt-1 text-sm text-gray-400">
-                        {{ $selectedGenre ? 'Aktif: ' . $selectedGenre->name : 'Pilih genre favoritmu' }}
-                    </p>
-                </div>
-
-                <form action="{{ route('home') }}" method="GET">
-                    @if(request('search'))
-                        <input type="hidden" name="search" value="{{ request('search') }}">
-                    @endif
-
-                    <div class="rounded-2xl bg-gradient-to-r from-[#06bfff] via-[#2d73ff] to-[#5c7e10] p-[1px] shadow-lg shadow-[#06bfff]/10">
-                        <div class="relative">
-                            <select
-                                name="genre"
-                                onchange="this.form.submit()"
-                                class="w-full appearance-none rounded-2xl border-0 bg-[#0f1923] px-5 py-4 pr-12 text-white outline-none transition focus:bg-[#16202d]"
-                            >
-                                <option value="" {{ !request('genre') ? 'selected' : '' }}>
-                                    All Games
-                                </option>
-
-                                @foreach($genres as $genre)
-                                    <option value="{{ $genre->genre_id }}" {{ request('genre') == $genre->genre_id ? 'selected' : '' }}>
-                                        {{ $genre->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-
-                            <div class="pointer-events-none absolute inset-y-0 right-4 flex items-center text-[#66c0f4]">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
-                                </svg>
-                            </div>
-                        </div>
-                    </div>
-
-                    @if(request('genre'))
-                        <a href="{{ route('home', request('search') ? ['search' => request('search')] : []) }}"
-                           class="mt-3 inline-block text-sm font-semibold text-[#66c0f4] hover:text-white">
-                            Reset kategori
-                        </a>
-                    @endif
-                </form>
-            </div>
-
-            <!-- FEATURED GAME -->
-            <div class="lg:col-span-2">
-                @if($featuredGame)
-                    <div class="glass rounded-3xl overflow-hidden shadow-2xl border border-[#2a475e]">
-
+                    <article class="hero-panel store-panel relative overflow-hidden rounded-lg {{ $slideIndex === 0 ? '' : 'hidden' }}" data-hero-slide>
                         <img
-                        src="{{ $featuredGame->thumbnail_url ?? 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?q=80&w=2070&auto=format&fit=crop' }}"
-                        class="w-full h-[420px] object-cover"
+                            src="{{ $imageFor($heroGame) }}"
+                            alt="{{ $heroGame->title }}"
+                            class="absolute inset-0 h-full w-full object-cover"
+                            @if($slideIndex === 0)
+                                fetchpriority="high"
+                                loading="eager"
+                            @else
+                                loading="lazy"
+                            @endif
+                            decoding="async"
                         >
+                        <div class="absolute inset-0 bg-gradient-to-r from-[#050a12] via-[#07111d]/82 to-[#07111d]/10"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#050a12]/70 via-transparent to-transparent"></div>
 
-                        <div class="p-8 bg-gradient-to-b from-[#1b2838] to-[#0f1923]">
-                            <div class="flex flex-col lg:flex-row justify-between gap-6">
+                        <div class="relative z-10 flex min-h-[430px] items-center px-8 py-12 md:min-h-[500px] md:px-20">
+                            <div class="hero-copy">
+                                <span class="mb-5 inline-flex rounded-md bg-[#063b80]/90 px-4 py-2 text-xs font-black uppercase tracking-wider text-[#66c0f4] shadow-lg shadow-blue-950/30">
+                                    Featured
+                                </span>
 
-                                <div>
-                                    <h2 class="text-5xl font-bold mb-4 leading-tight">
-                                        {{ $featuredGame->title }}
-                                    </h2>
-                                    <p class="text-gray-300 max-w-2xl leading-relaxed text-lg">
-                                        {{ Str::limit($featuredGame->detail->short_description ?? $featuredGame->description, 200) }}
-                                    </p>
-                                </div>
+                                <h1 class="text-5xl font-black uppercase leading-none text-white md:text-7xl">
+                                    {{ $heroGame->title }}
+                                </h1>
 
-                                <div class="flex flex-col justify-end items-start lg:items-end gap-4">
-                                    @php
-                                        $fDiscount = $featuredGame->detail->discount ?? 0;
-                                        $fOriginal = $featuredGame->price;
-                                        $fFinal = $fDiscount > 0 ? $fOriginal * (1 - $fDiscount / 100) : $fOriginal;
-                                    @endphp
-                                    <div class="flex items-center gap-3">
-                                        @if($fDiscount > 0)
-                                        <span class="bg-[#4c6b22] text-[#beee11] px-3 py-2 rounded font-bold text-lg">
-                                            -{{ $fDiscount }}%
-                                        </span>
-                                        <div>
-                                            <div class="text-gray-400 line-through text-sm">
-                                                Rp {{ number_format($fOriginal, 0, ',', '.') }}
-                                            </div>
-                                            <div class="text-3xl font-bold text-white">
-                                                Rp {{ number_format($fFinal, 0, ',', '.') }}
-                                            </div>
-                                        </div>
-                                        @else
-                                        <div class="text-3xl font-bold text-white">
-                                            {{ $fOriginal == 0 ? 'Gratis' : 'Rp ' . number_format($fOriginal, 0, ',', '.') }}
-                                        </div>
-                                        @endif
-                                    </div>
+                                <p class="mt-4 text-base font-black uppercase tracking-[0.34em] text-[#118dff]">
+                                    Survive. Explore. Conquer.
+                                </p>
 
-                                    <a href="{{ url('/game/' . $featuredGame->game_id) }}"
-                                       class="steam-blue px-8 py-4 rounded-xl font-bold text-lg hover:opacity-90 transition inline-block">
+                                <p class="mt-5 max-w-lg text-base leading-relaxed text-gray-200 md:text-lg">
+                                    {{ $descriptionFor($heroGame, 150) }}
+                                </p>
+
+                                <div class="mt-6 flex flex-wrap items-center gap-3">
+                                    @if($featuredDiscount > 0)
+                                        <span class="price-discount rounded-md px-4 py-3 text-xl font-black">-{{ $featuredDiscount }}%</span>
+                                        <span class="text-sm font-semibold text-gray-500 line-through">{{ $formatPrice($heroGame->price) }}</span>
+                                    @endif
+                                    <span class="text-2xl font-black text-white">{{ $formatPrice($featuredFinal) }}</span>
+                                    <a href="{{ url('/game/' . $heroGame->game_id) }}" class="steam-blue ml-0 rounded-lg px-7 py-3 text-base font-bold text-white shadow-lg shadow-blue-950/40 transition hover:brightness-110 sm:ml-4">
                                         View Game
+                                    </a>
+                                    <a href="{{ url('/game/' . $heroGame->game_id) }}" class="icon-button h-12 w-12 rounded-lg" aria-label="Open {{ $heroGame->title }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0-7 7m7-7H3"/>
+                                        </svg>
                                     </a>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @else
-                    <div class="glass rounded-3xl min-h-[420px] border border-[#2a475e] p-8 flex flex-col justify-center">
-                        <h1 class="text-5xl font-bold mb-4 leading-tight">
-                            Belum ada game
-                        </h1>
-                        <p class="text-gray-300 max-w-2xl leading-relaxed text-lg">
-                            Tambahkan data game lewat admin atau import Excel supaya halaman store bisa menampilkan rekomendasi.
-                        </p>
+                    </article>
+                @endforeach
+
+                @if($featuredGames->count() > 1)
+                    <button type="button" class="icon-button absolute left-4 top-1/2 z-30 h-14 w-14 -translate-y-1/2 rounded-lg bg-[#0f1923]/90 shadow-2xl shadow-black/40 backdrop-blur md:left-6" data-hero-prev aria-label="Previous featured game">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19 8 12l7-7"/>
+                        </svg>
+                    </button>
+                    <button type="button" class="icon-button absolute right-4 top-1/2 z-30 h-14 w-14 -translate-y-1/2 rounded-lg bg-[#0f1923]/90 shadow-2xl shadow-black/40 backdrop-blur md:right-6" data-hero-next aria-label="Next featured game">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+                        </svg>
+                    </button>
+
+                    <div class="absolute bottom-4 left-1/2 z-20 flex -translate-x-1/2 gap-2">
+                        @foreach($featuredGames as $slideIndex => $heroGame)
+                            <button type="button" class="hero-dot h-2 w-5 rounded-full bg-white/35 transition-all {{ $slideIndex === 0 ? 'is-active' : '' }}" data-hero-dot data-slide-index="{{ $slideIndex }}" aria-label="Show featured game {{ $slideIndex + 1 }}"></button>
+                        @endforeach
                     </div>
                 @endif
-            </div>
-        </div>
-    </section>
-
-    <!-- SEARCH BAR -->
-    <section class="bg-[#1f2f42] border-y border-[#2a475e] py-5 relative z-50">
-
-    <div class="max-w-7xl mx-auto px-6">
-
-        <div class="relative">
-
-            <form action="{{ route('games.search') }}" method="GET" class="flex gap-4">
-
-                <input
-                    type="text"
-                    id="search-input"
-                    name="search"
-                    autocomplete="off"
-                    placeholder="Search games..."
-                    class="w-full
-                           bg-[#0f1923]
-                           border border-[#316282]
-                           focus:border-[#66c0f4]
-                           outline-none
-                           px-5 py-4
-                           rounded-xl
-                           text-white"
-                >
-
-                <button
-                    type="submit"
-                    class="steam-blue px-8 rounded-xl font-semibold"
-                >
-                    Search
-                </button>
-
-            </form>
-
-            <!-- DROPDOWN -->
-            <div id="search-results"
-                 class="absolute
-                        top-full
-                        left-0
-                        w-full
-                        bg-[#16202d]
-                        border border-[#2a475e]
-                        rounded-xl
-                        mt-2
-                        hidden
-                        overflow-hidden
-                        shadow-2xl
-                        z-[999]">
-            </div>
-
-        </div>
-
-    </div>
-
-</section>
-
-    <!-- FEATURED SECTION -->
-    <section class="max-w-7xl mx-auto px-6 py-14">
-
-        <div class="flex items-center justify-between mb-8">
-            <h2 class="text-3xl font-bold">
-                Featured & Recommended
-            </h2>
-
-            <a href="#" class="text-[#66c0f4] hover:underline">
-                View More
-            </a>
-        </div>
-
-        
-
-            <!-- CARD 1 -->
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-
-    @forelse($games as $game)
-
-        <a href="{{ url('/game/' . $game->game_id) }}" class="block h-full">
-
-            <div class="game-card
-                        h-full
-                        flex
-                        flex-col
-                        bg-[#16202d]
-                        rounded-2xl
-                        overflow-hidden
-                        border border-[#2a475e]
-                        transition duration-300
-                        cursor-pointer">
-
-                <img
-                    src="{{ $game->thumbnail_url ?? 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?q=80&w=2070&auto=format&fit=crop' }}"
-                    class="h-52 w-full object-cover"
-                >
-
-                <div class="p-5 flex flex-col flex-1">
-
-                    <!-- GAME TITLE -->
-                    <h3 class="text-xl font-bold mb-2">
-                        {{ $game->title }}
-                    </h3>
-
-                    <!-- DESCRIPTION -->
-                    <p class="text-gray-400 text-sm mb-4 line-clamp-2">
-                        {{ Str::limit($game->detail->short_description ?? $game->description, 80) }}
-                    </p>
-
-                    <!-- PUBLISHER -->
-                    <div class="text-xs text-[#66c0f4] mb-3">
-                        {{ $game->publisher->name ?? 'Unknown' }}
+            </section>
+        @else
+            <section class="store-container pt-5">
+                <div class="hero-panel store-panel flex items-center rounded-lg p-8 md:p-20">
+                    <div>
+                        <span class="mb-5 inline-flex rounded-md bg-[#063b80]/90 px-4 py-2 text-xs font-black uppercase tracking-wider text-[#66c0f4]">Featured</span>
+                        <h1 class="text-5xl font-black uppercase">PlayMart</h1>
+                        <p class="mt-4 max-w-xl text-gray-300">Tambahkan data game lewat admin supaya halaman store bisa menampilkan hero dan rekomendasi.</p>
                     </div>
+                </div>
+            </section>
+        @endif
 
-                    <!-- PRICE -->
-                    @php
-                        $disc = $game->detail->discount ?? 0;
-                        $orig = $game->price;
-                        $final = $disc > 0 ? $orig * (1 - $disc / 100) : $orig;
-                    @endphp
-                    <div class="flex justify-between items-center mt-auto">
+        <section id="discover" class="store-container mt-4">
+            <x-game-search
+                :value="$search"
+                :categories="$categories"
+                :genres="$genres"
+                :selected-category="$selectedCategory"
+                :selected-genre="$selectedGenre"
+                :contained="false"
+            />
+        </section>
 
-                        @if($disc > 0)
-                        <div class="flex items-center gap-2">
-                            <span class="bg-[#4c6b22] text-[#beee11] text-xs font-black px-2 py-0.5 rounded">
-                                -{{ $disc }}%
+        <section id="recommended" class="store-container mt-5 grid gap-5 xl:grid-cols-[1fr_380px]">
+            <div class="min-w-0 space-y-5">
+                <section>
+                    <div class="mb-3 flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <span class="flex h-7 w-7 items-center justify-center text-[#118dff]">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="m12 2 2.95 6.35 6.95.85-5.12 4.77 1.33 6.88L12 17.45l-6.11 3.4 1.33-6.88L2.1 9.2l6.95-.85L12 2Z"/>
+                                </svg>
                             </span>
-                            <div>
-                                <div class="text-gray-500 line-through text-xs">
-                                    Rp {{ number_format($orig, 0, ',', '.') }}
-                                </div>
-                                <div class="text-[#66c0f4] font-bold text-base">
-                                    Rp {{ number_format($final, 0, ',', '.') }}
-                                </div>
-                            </div>
+                            <h2 class="text-2xl font-black text-white md:text-3xl">Featured & Recommended</h2>
                         </div>
-                        @else
-                        <span class="text-[#66c0f4] font-bold text-lg">
-                            {{ $orig == 0 ? 'Gratis' : 'Rp ' . number_format($orig, 0, ',', '.') }}
-                        </span>
-                        @endif
-
-                        <button class="bg-[#2a475e] hover:bg-[#3b6a8b] px-4 py-2 rounded-lg text-sm transition">
-                            View
-                        </button>
-
+                        <a href="{{ route('games.search', request()->only('search', 'genre', 'category')) }}" class="hidden items-center gap-2 text-sm font-bold text-[#118dff] transition hover:text-white sm:inline-flex">
+                            View All
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+                            </svg>
+                        </a>
                     </div>
 
-                </div>
+                    @if($leadRecommended)
+                        <div class="grid gap-3 lg:grid-cols-[1.08fr_1fr]">
+                            @php
+                                $discount = $discountFor($leadRecommended);
+                                $finalPrice = $finalPriceFor($leadRecommended);
+                            @endphp
+                            <a href="{{ url('/game/' . $leadRecommended->game_id) }}" class="block">
+                                <article class="game-card relative min-h-[310px] overflow-hidden rounded-lg md:min-h-[360px]">
+                                    <img src="{{ $imageFor($leadRecommended) }}" alt="{{ $leadRecommended->title }}" class="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-[#050a12] via-[#050a12]/48 to-transparent"></div>
+                                    <div class="absolute inset-x-0 bottom-0 p-6">
+                                        <h3 class="text-4xl font-black uppercase leading-none text-white md:text-5xl">{{ $leadRecommended->title }}</h3>
+                                        <p class="mt-4 max-w-md text-base leading-relaxed text-gray-200">{{ $descriptionFor($leadRecommended, 115) }}</p>
+                                        <div class="mt-6 flex flex-wrap items-center gap-3">
+                                            @if($discount > 0)
+                                                <span class="price-discount rounded-md px-3 py-2 text-base font-black">-{{ $discount }}%</span>
+                                                <span class="text-sm font-semibold text-gray-500 line-through">{{ $formatPrice($leadRecommended->price) }}</span>
+                                            @endif
+                                            <span class="text-xl font-black text-white">{{ $formatPrice($finalPrice) }}</span>
+                                        </div>
+                                    </div>
+                                </article>
+                            </a>
+
+                            <div class="grid gap-3 sm:grid-cols-2">
+                                @foreach($sideRecommended as $game)
+                                    @php
+                                        $discount = $discountFor($game);
+                                        $finalPrice = $finalPriceFor($game);
+                                    @endphp
+                                    <a href="{{ url('/game/' . $game->game_id) }}" class="block">
+                                        <article class="game-card relative min-h-[174px] overflow-hidden rounded-lg">
+                                            <img src="{{ $imageFor($game) }}" alt="{{ $game->title }}" class="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async">
+                                            <div class="absolute inset-0 bg-gradient-to-t from-[#050a12] via-[#050a12]/56 to-transparent"></div>
+                                            <span class="icon-button absolute right-3 top-3 h-8 w-8 rounded-md" aria-hidden="true">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 8.25c0-2.49-2.02-4.5-4.5-4.5-1.72 0-3.22.96-3.98 2.38A4.49 4.49 0 0 0 8.5 3.75C6.02 3.75 4 5.76 4 8.25c0 7.22 8 11.5 8 11.5s9-4.28 9-11.5Z"/>
+                                                </svg>
+                                            </span>
+                                            <div class="absolute inset-x-0 bottom-0 p-4">
+                                                <h3 class="truncate text-2xl font-black uppercase text-white">{{ $game->title }}</h3>
+                                                <p class="mt-1 line-clamp-2 text-sm text-gray-300">{{ $descriptionFor($game, 74) }}</p>
+                                                <div class="mt-3 flex flex-wrap items-center gap-2">
+                                                    @if($discount > 0)
+                                                        <span class="price-discount rounded px-2 py-1 text-xs font-black">-{{ $discount }}%</span>
+                                                        <span class="text-xs text-gray-500 line-through">{{ $formatPrice($game->price) }}</span>
+                                                    @endif
+                                                    <span class="text-sm font-black text-white">{{ $formatPrice($finalPrice) }}</span>
+                                                </div>
+                                            </div>
+                                        </article>
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @else
+                        <div class="store-panel rounded-lg p-8 text-center text-gray-300">Game not found</div>
+                    @endif
+                </section>
+
+                <section id="events">
+                    <div class="mb-3 flex items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <span class="flex h-7 w-7 items-center justify-center text-[#118dff]">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12 2c2.8 2.2 4.2 4.64 4.2 7.32 0 1.1-.25 2.03-.74 2.8.73-.27 1.48-.82 2.24-1.66.9 1.08 1.35 2.32 1.35 3.73A6.92 6.92 0 0 1 12 21a6.92 6.92 0 0 1-7.05-6.81c0-2.7 1.43-5.13 4.3-7.29-.2 1.56.1 2.8.92 3.72.86.96 1.97 1.32 3.35 1.08.72-2.22.21-5.46-1.52-9.7Z"/>
+                                </svg>
+                            </span>
+                            <h2 class="text-2xl font-black text-white md:text-3xl">New Releases</h2>
+                        </div>
+                        <a href="{{ route('games.search', request()->only('search', 'genre', 'category')) }}" class="hidden items-center gap-2 text-sm font-bold text-[#118dff] transition hover:text-white sm:inline-flex">
+                            View All
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
+                            </svg>
+                        </a>
+                    </div>
+
+                    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
+                        @forelse($newReleases as $game)
+                            @php
+                                $discount = $discountFor($game);
+                                $finalPrice = $finalPriceFor($game);
+                            @endphp
+                            <a href="{{ url('/game/' . $game->game_id) }}" class="block">
+                                <article class="game-card relative min-h-[132px] overflow-hidden rounded-lg">
+                                    <img src="{{ $imageFor($game) }}" alt="{{ $game->title }}" class="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-[#050a12] via-[#050a12]/52 to-transparent"></div>
+                                    <span class="icon-button absolute right-2 top-2 h-8 w-8 rounded-md" aria-hidden="true">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 8.25c0-2.49-2.02-4.5-4.5-4.5-1.72 0-3.22.96-3.98 2.38A4.49 4.49 0 0 0 8.5 3.75C6.02 3.75 4 5.76 4 8.25c0 7.22 8 11.5 8 11.5s9-4.28 9-11.5Z"/>
+                                        </svg>
+                                    </span>
+                                    <div class="absolute inset-x-0 bottom-0 p-3">
+                                        <h3 class="line-clamp-2 text-xl font-black uppercase leading-tight text-white">{{ $game->title }}</h3>
+                                        <div class="mt-2 flex flex-wrap items-center gap-2">
+                                            @if($discount > 0)
+                                                <span class="price-discount rounded px-2 py-0.5 text-xs font-black">-{{ $discount }}%</span>
+                                            @endif
+                                            <span class="text-xs font-black text-white">{{ $formatPrice($finalPrice) }}</span>
+                                        </div>
+                                    </div>
+                                </article>
+                            </a>
+                        @empty
+                            <div class="store-panel rounded-lg p-8 text-gray-300 sm:col-span-2 lg:col-span-3 2xl:col-span-6">Belum ada rilisan baru.</div>
+                        @endforelse
+                    </div>
+                </section>
             </div>
 
-        </a>
-
-    @empty
-
-        <div class="col-span-4 text-center py-20">
-
-            <h2 class="text-3xl font-bold text-gray-300">
-
-                Game not found
-
-            </h2>
-
-            <p class="text-gray-500 mt-3">
-
-                Try another keyword.
-
-            </p>
-
-        </div>
-
-    @endforelse
-
-    </div>
-
-<div class="flex justify-center mt-12">
-    <div class="bg-[#16202d] border border-[#2a475e] rounded-xl px-4 py-2">
-        {{ $games->links() }}
-    </div>
-</div>
-
-    <!-- FOOTER -->
-    <footer class="bg-[#171a21] border-t border-[#2a475e] mt-20">
-        <div class="max-w-7xl mx-auto px-6 py-10 text-gray-400 text-sm">
-
-            <div class="flex flex-col lg:flex-row justify-between gap-8">
-
-                <div>
-                    <h3 class="text-white text-lg font-bold mb-3">GAMESTORE</h3>
-                    <p class="max-w-md leading-relaxed">
-                        Digital distribution platform for games, downloadable content,
-                        multiplayer experiences, and gaming communities.
-                    </p>
-                </div>
-
-                <div class="grid grid-cols-2 gap-10">
+            <aside class="store-panel h-fit rounded-lg p-5 xl:sticky xl:top-24">
+                <div class="mb-5 flex items-center gap-3">
+                    <span class="flex h-8 w-8 items-center justify-center text-[#ff7b22]">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2c2.8 2.2 4.2 4.64 4.2 7.32 0 1.1-.25 2.03-.74 2.8.73-.27 1.48-.82 2.24-1.66.9 1.08 1.35 2.32 1.35 3.73A6.92 6.92 0 0 1 12 21a6.92 6.92 0 0 1-7.05-6.81c0-2.7 1.43-5.13 4.3-7.29-.2 1.56.1 2.8.92 3.72.86.96 1.97 1.32 3.35 1.08.72-2.22.21-5.46-1.52-9.7Z"/>
+                        </svg>
+                    </span>
                     <div>
-                        <h4 class="text-white font-semibold mb-3">Links</h4>
-                        <div class="space-y-2">
-                            <a href="#" class="block hover:text-white">Home</a>
-                            <a href="#" class="block hover:text-white">Games</a>
-                            <a href="#" class="block hover:text-white">News</a>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h4 class="text-white font-semibold mb-3">Support</h4>
-                        <div class="space-y-2">
-                            <a href="#" class="block hover:text-white">Help Center</a>
-                            <a href="#" class="block hover:text-white">Contact</a>
-                            <a href="#" class="block hover:text-white">Privacy</a>
-                        </div>
+                        <h2 class="text-xl font-black text-white">Popular Right Now</h2>
+                        <p class="mt-0.5 text-xs font-bold text-gray-400">Diurutkan dari pembelian berhasil.</p>
                     </div>
                 </div>
-            </div>
 
-            <div class="border-t border-[#2a475e] mt-8 pt-6 text-center text-xs text-gray-500">
-                © 2026 GameStore. All rights reserved.
-            </div>
-        </div>
-    </footer>
-<script>
+                <div class="space-y-3">
+                    @forelse($popularGames as $rank => $game)
+                        @php
+                            $discount = $discountFor($game);
+                            $finalPrice = $finalPriceFor($game);
+                            $purchaseCount = (int) ($game->paid_purchases_count ?? 0);
+                        @endphp
+                        <a href="{{ url('/game/' . $game->game_id) }}" class="grid grid-cols-[28px_108px_1fr] items-center gap-3 rounded-lg border border-transparent p-2 transition hover:border-[#2a475e] hover:bg-[#0f1923]/78">
+                            <span class="text-center text-lg font-black text-gray-500">{{ $rank + 1 }}</span>
+                            <img src="{{ $imageFor($game) }}" alt="{{ $game->title }}" class="h-16 w-[108px] rounded-md object-cover" loading="lazy" decoding="async">
+                            <span class="min-w-0">
+                                <span class="block truncate text-sm font-black uppercase text-white">{{ $game->title }}</span>
+                                <span class="mt-1 inline-flex items-center gap-1 rounded bg-[#0b2a44]/90 px-2 py-0.5 text-[11px] font-black uppercase text-[#66c0f4]">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19V5m0 14h16M8 17v-5m4 5V8m4 9v-8"/>
+                                    </svg>
+                                    {{ number_format($purchaseCount, 0, ',', '.') }} dibeli
+                                </span>
+                                <span class="mt-2 flex flex-wrap items-center gap-2 text-xs">
+                                    @if($discount > 0)
+                                        <span class="price-discount rounded px-2 py-0.5 font-black">-{{ $discount }}%</span>
+                                    @endif
+                                    <span class="font-black text-white">{{ $formatPrice($finalPrice) }}</span>
+                                </span>
+                            </span>
+                        </a>
+                    @empty
+                        <div class="rounded-lg border border-[#2a475e] bg-[#07111d]/80 p-5 text-sm text-gray-300">Belum ada game populer.</div>
+                    @endforelse
+                </div>
 
-const searchInput = document.getElementById('search-input');
-const searchResults = document.getElementById('search-results');
+                <a href="{{ route('games.search', array_merge(request()->only('search', 'genre', 'category'), ['sort' => 'popular'])) }}" class="mt-6 flex items-center justify-center gap-2 rounded-lg border border-[#2a475e] px-4 py-3 text-center text-sm font-black text-[#118dff] transition hover:border-[#66c0f4] hover:bg-[#0f1923] hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19V5m0 14h16M8 17v-5m4 5V8m4 9v-8"/>
+                    </svg>
+                    View Top Sellers
+                </a>
+            </aside>
+        </section>
+    </main>
 
-searchInput.addEventListener('input', async function () {
+    <x-store-footer />
 
-    const query = this.value.trim();
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('[data-hero-carousel]').forEach((carousel) => {
+                const slides = Array.from(carousel.querySelectorAll('[data-hero-slide]'));
+                const dots = Array.from(carousel.querySelectorAll('[data-hero-dot]'));
+                const previous = carousel.querySelector('[data-hero-prev]');
+                const next = carousel.querySelector('[data-hero-next]');
+                const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                const interactiveSelector = 'a, button, input, select, textarea, summary, details';
+                const autoplayDelay = 5200;
+                const dragThreshold = 55;
+                let activeIndex = 0;
+                let autoplayTimer = null;
+                let pointerStartX = 0;
+                let pointerCurrentX = 0;
+                let isDragging = false;
+                let didDrag = false;
+                let suppressClick = false;
 
-    if(query.length === 0){
+                const showSlide = (index) => {
+                    if (slides.length === 0) {
+                        return;
+                    }
 
-        searchResults.classList.add('hidden');
-        return;
+                    activeIndex = (index + slides.length) % slides.length;
 
-    }
+                    slides.forEach((slide, slideIndex) => {
+                        slide.classList.toggle('hidden', slideIndex !== activeIndex);
+                    });
 
-    try {
+                    dots.forEach((dot, dotIndex) => {
+                        dot.classList.toggle('is-active', dotIndex === activeIndex);
+                    });
+                };
 
-        const response = await fetch(`/search-games?search=${query}`);
+                const stopAutoplay = () => {
+                    window.clearInterval(autoplayTimer);
+                    autoplayTimer = null;
+                };
 
-        const games = await response.json();
+                const startAutoplay = () => {
+                    if (slides.length <= 1 || reduceMotion || autoplayTimer) {
+                        return;
+                    }
 
-        let html = '';
+                    autoplayTimer = window.setInterval(() => {
+                        showSlide(activeIndex + 1);
+                    }, autoplayDelay);
+                };
 
-        if(games.length > 0){
+                const restartAutoplay = () => {
+                    stopAutoplay();
+                    startAutoplay();
+                };
 
-            games.forEach(game => {
+                const finishDrag = () => {
+                    if (!isDragging) {
+                        return;
+                    }
 
-                html += `
-                    <a href="/game/${game.game_id}"
-                       class="flex items-center gap-4 p-3 hover:bg-[#1f2f42] transition">
+                    const deltaX = pointerCurrentX - pointerStartX;
+                    carousel.classList.remove('is-dragging');
+                    isDragging = false;
 
-                        <img
-                            src="${game.thumbnail_url}"
-                            class="w-24 h-14 object-cover rounded"
-                        >
+                    if (Math.abs(deltaX) >= dragThreshold) {
+                        showSlide(activeIndex + (deltaX < 0 ? 1 : -1));
+                        suppressClick = true;
+                        window.setTimeout(() => {
+                            suppressClick = false;
+                            didDrag = false;
+                        }, 120);
+                    }
 
-                        <div>
+                    restartAutoplay();
+                };
 
-                            <div class="text-white font-semibold">
-                                ${game.title}
-                            </div>
+                previous?.addEventListener('click', () => {
+                    showSlide(activeIndex - 1);
+                    restartAutoplay();
+                });
 
-                            <div class="text-[#66c0f4] text-sm">
-                                Rp ${Number(game.price).toLocaleString('id-ID')}
-                            </div>
+                next?.addEventListener('click', () => {
+                    showSlide(activeIndex + 1);
+                    restartAutoplay();
+                });
 
-                        </div>
+                dots.forEach((dot) => {
+                    dot.addEventListener('click', () => {
+                        showSlide(Number(dot.dataset.slideIndex));
+                        restartAutoplay();
+                    });
+                });
 
-                    </a>
-                `;
+                carousel.addEventListener('pointerdown', (event) => {
+                    if (slides.length <= 1 || event.button !== 0 || event.target.closest(interactiveSelector)) {
+                        return;
+                    }
 
+                    stopAutoplay();
+                    isDragging = true;
+                    didDrag = false;
+                    pointerStartX = event.clientX;
+                    pointerCurrentX = event.clientX;
+                    carousel.classList.add('is-dragging');
+                    carousel.setPointerCapture?.(event.pointerId);
+                });
+
+                carousel.addEventListener('pointermove', (event) => {
+                    if (!isDragging) {
+                        return;
+                    }
+
+                    pointerCurrentX = event.clientX;
+
+                    if (Math.abs(pointerCurrentX - pointerStartX) > 8) {
+                        didDrag = true;
+                    }
+                });
+
+                carousel.addEventListener('pointerup', finishDrag);
+                carousel.addEventListener('pointercancel', finishDrag);
+                carousel.addEventListener('pointerleave', finishDrag);
+
+                carousel.addEventListener('click', (event) => {
+                    if (!suppressClick || !didDrag) {
+                        return;
+                    }
+
+                    event.preventDefault();
+                    event.stopPropagation();
+                    suppressClick = false;
+                    didDrag = false;
+                }, true);
+
+                carousel.addEventListener('focusin', stopAutoplay);
+                carousel.addEventListener('focusout', startAutoplay);
+
+                startAutoplay();
             });
-
-        } else {
-
-            html = `
-                <div class="p-4 text-gray-400">
-                    Game not found
-                </div>
-            `;
-
-        }
-
-        searchResults.innerHTML = html;
-        searchResults.classList.remove('hidden');
-
-    } catch(error){
-
-        console.log(error);
-
-    }
-
-});
-
-// klik luar
-document.addEventListener('click', function(e){
-
-    if(!searchInput.contains(e.target) &&
-       !searchResults.contains(e.target)){
-
-        searchResults.classList.add('hidden');
-
-    }
-
-});
-
-</script>
+        });
+    </script>
 </body>
 </html>

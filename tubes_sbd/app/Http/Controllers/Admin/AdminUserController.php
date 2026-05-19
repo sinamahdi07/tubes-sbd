@@ -12,6 +12,10 @@ class AdminUserController extends Controller
     {
         $query = User::query();
 
+        if ($request->boolean('trash')) {
+            $query->onlyTrashed();
+        }
+
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', '%' . $request->search . '%')
@@ -50,6 +54,14 @@ class AdminUserController extends Controller
 
         $user->delete();
 
-        return back()->with('success', 'User berhasil dihapus.');
+        return back()->with('success', 'User berhasil dipindahkan ke trash.');
+    }
+
+    public function restore(int $user)
+    {
+        User::onlyTrashed()->findOrFail($user)->restore();
+
+        return redirect()->route('admin.users.index', ['trash' => 1])
+            ->with('success', 'User berhasil direstore.');
     }
 }

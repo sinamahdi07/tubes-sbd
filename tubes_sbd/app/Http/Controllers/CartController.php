@@ -16,21 +16,23 @@ class CartController extends Controller
         $alreadyPurchased = Payment::join('payment_items', 'payments.id', '=', 'payment_items.payment_id')
             ->where('payments.user_id', $user->id)
             ->where('payment_items.game_id', $game->game_id)
-            ->where('payments.status', 'completed')
+            ->where('payments.status', Payment::STATUS_PAID)
             ->exists();
 
         if($alreadyPurchased){
             return back()->with('error', 'You have already purchased this game!');
         }
 
-        // cek apakah game sudah ada di cart
         $existingCart = Cart::where('user_id', $user->id)
             ->where('game_id', $game->game_id)
             ->first();
 
         if($existingCart){
+            if ((int) $existingCart->quantity !== 1) {
+                $existingCart->update(['quantity' => 1]);
+            }
 
-            $existingCart->increment('quantity');
+            return back()->with('error', 'Game ini sudah ada di cart.');
 
         } else {
 
@@ -46,13 +48,13 @@ class CartController extends Controller
 
     public function index()
     {
-        $carts = Cart::with(['game.publisher'])
+        $carts = Cart::with(['game.publisher', 'game.detail'])
             ->where('user_id', auth()->id())
             ->get();
 
-        $totalItems = $carts->sum('quantity');
+        $totalItems = $carts->count();
         $totalPrice = $carts->sum(function (Cart $cart) {
-            return (float) ($cart->game->price ?? 0) * max(1, (int) $cart->quantity);
+            return (float) ($cart->game->final_price ?? $cart->game->price ?? 0);
         });
 
         return view('cart.index', compact('carts', 'totalItems', 'totalPrice'));

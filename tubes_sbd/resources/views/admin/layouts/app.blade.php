@@ -135,6 +135,14 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ route('admin.reviews.index') }}" class="nav-link flex items-center px-6 py-3 {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h6m-6 4h3m-6 4 3.5-3.5H19a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8.5a2 2 0 0 0 2 2h1v3.5z"></path>
+                        </svg>
+                        Reviews
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('admin.developers.index') }}" class="nav-link flex items-center px-6 py-3 {{ request()->routeIs('admin.developers.*') ? 'active' : '' }}">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
                         Developers
@@ -150,6 +158,14 @@
                     <a href="{{ route('admin.genres.index') }}" class="nav-link flex items-center px-6 py-3 {{ request()->routeIs('admin.genres.*') ? 'active' : '' }}">
                         <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
                         Genres
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.categories.index') }}" class="nav-link flex items-center px-6 py-3 {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h10"></path>
+                        </svg>
+                        Categories
                     </a>
                 </li>
             </ul>

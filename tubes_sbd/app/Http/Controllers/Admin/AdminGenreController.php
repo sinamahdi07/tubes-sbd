@@ -12,6 +12,10 @@ class AdminGenreController extends Controller
     {
         $query = Genre::withCount('games');
 
+        if ($request->boolean('trash')) {
+            $query->onlyTrashed();
+        }
+
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
@@ -41,9 +45,16 @@ class AdminGenreController extends Controller
 
     public function destroy(Genre $genre)
     {
-        $genre->games()->detach();
         $genre->delete();
 
-        return back()->with('success', 'Genre berhasil dihapus!');
+        return back()->with('success', 'Genre berhasil dipindahkan ke trash!');
+    }
+
+    public function restore(int $genre)
+    {
+        Genre::onlyTrashed()->findOrFail($genre)->restore();
+
+        return redirect()->route('admin.genres.index', ['trash' => 1])
+            ->with('success', 'Genre berhasil direstore!');
     }
 }

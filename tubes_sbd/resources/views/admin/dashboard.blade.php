@@ -3,7 +3,7 @@
 @section('title', 'Dashboard')
 
 @section('content')
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-6 mb-8">
         <div class="steam-card rounded-lg p-6 flex flex-col justify-center items-center">
             <span class="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-1">Total Games</span>
             <span class="text-3xl font-bold text-white">{{ $stats['total_games'] }}</span>
@@ -24,6 +24,14 @@
             <span class="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-1">Genres</span>
             <span class="text-3xl font-bold text-white">{{ $stats['total_genres'] }}</span>
         </div>
+        <a href="{{ route('admin.categories.index') }}" class="steam-card rounded-lg p-6 flex flex-col justify-center items-center hover:border-[#66c0f4] transition">
+            <span class="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-1">Categories</span>
+            <span class="text-3xl font-bold text-white">{{ $stats['total_categories'] }}</span>
+        </a>
+        <a href="{{ route('admin.reviews.index') }}" class="steam-card rounded-lg p-6 flex flex-col justify-center items-center hover:border-[#66c0f4] transition">
+            <span class="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-1">Reviews</span>
+            <span class="text-3xl font-bold text-white">{{ $stats['total_reviews'] }}</span>
+        </a>
         <a href="{{ route('admin.payments.index') }}" class="steam-card rounded-lg p-6 flex flex-col justify-center items-center hover:border-[#66c0f4] transition">
             <span class="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-1">Payments</span>
             <span class="text-3xl font-bold text-white">{{ $stats['total_payments'] }}</span>
@@ -159,7 +167,7 @@
                                     </span>
                                 </td>
                                 <td class="p-3 text-right text-green-400 font-semibold">
-                                    Rp {{ number_format($payment->total, 0, ',', '.') }}
+                                    Rp {{ number_format($payment->display_total, 0, ',', '.') }}
                                 </td>
                             </tr>
                         @empty

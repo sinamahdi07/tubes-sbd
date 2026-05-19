@@ -104,7 +104,7 @@
                                 {{ $payment->paid_at?->format('d M Y H:i') ?? $payment->created_at->format('d M Y H:i') }}
                             </td>
                             <td class="p-4 text-right text-green-400 font-semibold">
-                                Rp {{ number_format($payment->total, 0, ',', '.') }}
+                                Rp {{ number_format($payment->display_total, 0, ',', '.') }}
                             </td>
                             <td class="p-4 text-center">
                                 <a href="{{ route('admin.payments.show', $payment) }}"

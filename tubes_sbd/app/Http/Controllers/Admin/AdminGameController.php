@@ -18,6 +18,10 @@ class AdminGameController extends Controller
     {
         $query = Game::with(['developer', 'publisher', 'genres', 'detail']);
 
+        if ($request->boolean('trash')) {
+            $query->onlyTrashed();
+        }
+
         if ($request->filled('search')) {
             $query->where('title', 'like', '%' . $request->search . '%');
         }
@@ -26,7 +30,12 @@ class AdminGameController extends Controller
             $query->whereHas('genres', fn($q) => $q->where('genres.genre_id', $request->genre));
         }
 
-        $games  = $query->latest()->paginate(15)->withQueryString();
+        $games  = $query
+            ->orderByRaw('CASE WHEN release_date IS NULL THEN 1 ELSE 0 END')
+            ->orderByDesc('release_date')
+            ->latest('created_at')
+            ->paginate(15)
+            ->withQueryString();
         $genres = Genre::orderBy('name')->get();
 
         return view('admin.games.index', compact('games', 'genres'));
@@ -259,6 +268,14 @@ class AdminGameController extends Controller
         $game->delete();
 
         return redirect()->route('admin.games.index')
-            ->with('success', 'Game berhasil dihapus!');
+            ->with('success', 'Game berhasil dipindahkan ke trash!');
+    }
+
+    public function restore(int $game)
+    {
+        Game::onlyTrashed()->findOrFail($game)->restore();
+
+        return redirect()->route('admin.games.index', ['trash' => 1])
+            ->with('success', 'Game berhasil direstore!');
     }
 }

@@ -12,6 +12,10 @@ class AdminDeveloperController extends Controller
     {
         $query = Developer::withCount('games');
 
+        if ($request->boolean('trash')) {
+            $query->onlyTrashed();
+        }
+
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
@@ -47,6 +51,14 @@ class AdminDeveloperController extends Controller
 
         $developer->delete();
 
-        return back()->with('success', 'Developer berhasil dihapus!');
+        return back()->with('success', 'Developer berhasil dipindahkan ke trash!');
+    }
+
+    public function restore(int $developer)
+    {
+        Developer::onlyTrashed()->findOrFail($developer)->restore();
+
+        return redirect()->route('admin.developers.index', ['trash' => 1])
+            ->with('success', 'Developer berhasil direstore!');
     }
 }

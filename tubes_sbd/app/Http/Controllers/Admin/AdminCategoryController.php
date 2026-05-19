@@ -12,6 +12,10 @@ class AdminCategoryController extends Controller
     {
         $query = Category::query();
 
+        if ($request->boolean('trash')) {
+            $query->onlyTrashed();
+        }
+
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
@@ -60,6 +64,14 @@ class AdminCategoryController extends Controller
         $category->delete();
 
         return redirect()->route('admin.categories.index')
-            ->with('success', 'Category berhasil dihapus!');
+            ->with('success', 'Category berhasil dipindahkan ke trash!');
+    }
+
+    public function restore(int $category)
+    {
+        Category::onlyTrashed()->findOrFail($category)->restore();
+
+        return redirect()->route('admin.categories.index', ['trash' => 1])
+            ->with('success', 'Category berhasil direstore!');
     }
 }

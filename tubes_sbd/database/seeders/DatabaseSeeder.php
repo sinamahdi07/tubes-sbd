@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,13 +14,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Seed default user
-        User::factory()->create([
-            'name'  => 'Admin',
-            'email' => 'admin@example.com',
+        $this->call([
+            AdminSeeder::class,
+            DemoStoreSeeder::class,
         ]);
 
-        // Seed games dari Excel
-        $this->call(GamesSeeder::class);
+        if (file_exists(database_path('seeders/data/games.xlsx'))) {
+            $this->call(GamesSeeder::class);
+        }
     }
 }

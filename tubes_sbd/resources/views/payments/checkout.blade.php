@@ -30,28 +30,7 @@ use Illuminate\Support\Str;
     </style>
 </head>
 <body>
-    <nav class="bg-[#171a21] border-b border-[#2a475e] sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="{{ route('home') }}" class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full steam-blue flex items-center justify-center font-bold text-xl">
-                    G
-                </div>
-                <h1 class="text-2xl font-bold tracking-wide text-[#66c0f4]">
-                    PlayMart
-                </h1>
-            </a>
-
-            <div class="flex items-center gap-4">
-                <a href="{{ route('cart.index') }}" class="text-sm text-gray-300 hover:text-white font-semibold">
-                    Cart
-                </a>
-                <a href="{{ route('payments.history') }}" class="text-sm text-gray-300 hover:text-white font-semibold">
-                    Riwayat Payment
-                </a>
-                <x-store-user-menu />
-            </div>
-        </div>
-    </nav>
+    <x-store-nav active="cart" />
 
     <main class="max-w-7xl mx-auto px-6 py-12">
         <div class="mb-10">
@@ -74,6 +53,9 @@ use Illuminate\Support\Str;
 
         <form action="{{ route('payments.store') }}" method="POST" class="grid lg:grid-cols-3 gap-8">
             @csrf
+            @foreach($summary['items'] as $item)
+                <input type="hidden" name="cart_ids[]" value="{{ $item['cart']->id }}">
+            @endforeach
 
             <section class="lg:col-span-2 space-y-5">
                 @foreach($summary['items'] as $item)
@@ -100,6 +82,12 @@ use Illuminate\Support\Str;
                                         <div class="text-sm text-gray-400">
                                             Qty: {{ $item['quantity'] }}
                                         </div>
+                                        @if($item['discount_percent'] > 0)
+                                            <div class="mt-1 flex justify-end gap-2 text-sm">
+                                                <span class="rounded bg-[#4c6b22] px-2 py-0.5 font-black text-[#beee11]">-{{ $item['discount_percent'] }}%</span>
+                                                <span class="text-gray-500 line-through">Rp {{ number_format($item['line_subtotal'], 0, ',', '.') }}</span>
+                                            </div>
+                                        @endif
                                         <div class="text-2xl font-bold text-[#66c0f4]">
                                             Rp {{ number_format($item['line_total'], 0, ',', '.') }}
                                         </div>
@@ -174,5 +162,6 @@ use Illuminate\Support\Str;
             </aside>
         </form>
     </main>
+    <x-store-footer />
 </body>
 </html>

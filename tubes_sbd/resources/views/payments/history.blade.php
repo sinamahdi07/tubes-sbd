@@ -26,28 +26,7 @@
     </style>
 </head>
 <body>
-    <nav class="bg-[#171a21] border-b border-[#2a475e] sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="{{ route('home') }}" class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full steam-blue flex items-center justify-center font-bold text-xl">
-                    G
-                </div>
-                <h1 class="text-2xl font-bold tracking-wide text-[#66c0f4]">
-                    PlayMart
-                </h1>
-            </a>
-
-            <div class="flex items-center gap-4">
-                <a href="{{ route('cart.index') }}" class="text-sm text-gray-300 hover:text-white font-semibold">
-                    Cart
-                </a>
-                <a href="{{ route('home') }}" class="text-sm text-gray-300 hover:text-white font-semibold">
-                    Store
-                </a>
-                <x-store-user-menu />
-            </div>
-        </div>
-    </nav>
+    <x-store-nav />
 
     <main class="max-w-6xl mx-auto px-6 py-12">
         <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-10">
@@ -94,7 +73,7 @@
                                 {{ ucwords(str_replace('_', ' ', $payment->method)) }}
                             </p>
                             <p class="text-3xl font-bold text-[#66c0f4]">
-                                Rp {{ number_format($payment->total, 0, ',', '.') }}
+                                Rp {{ number_format($payment->display_total, 0, ',', '.') }}
                             </p>
                         </div>
                     </a>
@@ -118,5 +97,6 @@
             </div>
         @endif
     </main>
+    <x-store-footer />
 </body>
 </html>

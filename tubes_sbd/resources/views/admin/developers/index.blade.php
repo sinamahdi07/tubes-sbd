@@ -3,10 +3,14 @@
 @section('title', 'Manajemen Developer')
 
 @section('content')
+    @php
+        $isTrash = request()->boolean('trash');
+    @endphp
+
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
         {{-- Add Developer Form --}}
-        <div class="steam-card rounded-lg overflow-hidden">
+        <div class="steam-card rounded-lg overflow-hidden {{ $isTrash ? 'opacity-60' : '' }}">
             <div class="bg-[#1b2838] p-4 border-b border-[#2a475e]">
                 <h2 class="font-bold text-[#66c0f4]">Tambah Developer</h2>
             </div>
@@ -20,14 +24,26 @@
                 <button type="submit" class="w-full px-4 py-2 steam-btn-primary rounded font-semibold text-sm">
                     + Tambah Developer
                 </button>
+                @if($isTrash)
+                    <p class="text-xs text-gray-400">Mode terhapus aktif. Kembali ke data aktif untuk menambah data.</p>
+                @endif
             </form>
         </div>
 
         {{-- Developers List --}}
         <div class="md:col-span-2 steam-card rounded-lg overflow-hidden">
-            <div class="bg-[#1b2838] p-4 border-b border-[#2a475e] flex items-center justify-between">
+            <div class="bg-[#1b2838] p-4 border-b border-[#2a475e] flex flex-col lg:flex-row gap-3 lg:items-center lg:justify-between">
                 <h2 class="font-bold text-[#66c0f4]">Daftar Developer ({{ $developers->total() }})</h2>
+                <div class="flex flex-wrap gap-2">
+                    <a href="{{ route('admin.developers.index', request()->except(['trash', 'page'])) }}"
+                       class="px-3 py-1.5 rounded text-sm font-semibold transition {{ $isTrash ? 'bg-[#0f1923] text-gray-300 border border-[#2a475e] hover:text-white' : 'steam-btn-primary' }}">Aktif</a>
+                    <a href="{{ route('admin.developers.index', array_merge(request()->except('page'), ['trash' => 1])) }}"
+                       class="px-3 py-1.5 rounded text-sm font-semibold transition {{ $isTrash ? 'steam-btn-primary' : 'bg-[#0f1923] text-gray-300 border border-[#2a475e] hover:text-white' }}">Terhapus</a>
+                </div>
                 <form method="GET" action="{{ route('admin.developers.index') }}" class="flex gap-2">
+                    @if($isTrash)
+                        <input type="hidden" name="trash" value="1">
+                    @endif
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari..."
                            class="p-1.5 text-sm steam-input rounded text-white w-40">
                     <button type="submit" class="px-3 py-1.5 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded">Go</button>
@@ -53,24 +69,27 @@
                                 </td>
                                 <td class="p-4 text-center">
                                     <div class="flex justify-center gap-2">
-                                        {{-- Edit Modal Trigger --}}
-                                        <button onclick="openEditModal('developer', {{ $developer->developer_id }}, '{{ addslashes($developer->name) }}')"
-                                                class="px-3 py-1 text-xs bg-[#1b2838] hover:bg-[#2a475e] text-[#66c0f4] border border-[#2a475e] rounded transition">
-                                            Edit
-                                        </button>
-                                        <form action="{{ route('admin.developers.destroy', $developer->developer_id) }}" method="POST"
-                                              onsubmit="return confirm('Hapus developer {{ addslashes($developer->name) }}?');">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="px-3 py-1 text-xs bg-red-900/50 hover:bg-red-800 text-red-300 border border-red-800 rounded transition">
-                                                Hapus
-                                            </button>
-                                        </form>
+                                        @if($isTrash)
+                                            <form action="{{ route('admin.developers.restore', $developer->developer_id) }}" method="POST"
+                                                  onsubmit="return confirm('Restore developer {{ addslashes($developer->name) }}?');">
+                                                @csrf
+                                                <button type="submit" class="px-3 py-1 text-xs bg-green-900/50 hover:bg-green-800 text-green-300 border border-green-800 rounded transition">Restore</button>
+                                            </form>
+                                        @else
+                                            <button onclick="openEditModal('developer', {{ $developer->developer_id }}, '{{ addslashes($developer->name) }}')"
+                                                    class="px-3 py-1 text-xs bg-[#1b2838] hover:bg-[#2a475e] text-[#66c0f4] border border-[#2a475e] rounded transition">Edit</button>
+                                            <form action="{{ route('admin.developers.destroy', $developer->developer_id) }}" method="POST"
+                                                  onsubmit="return confirm('Hapus developer {{ addslashes($developer->name) }}?');">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="px-3 py-1 text-xs bg-red-900/50 hover:bg-red-800 text-red-300 border border-red-800 rounded transition">Hapus</button>
+                                            </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="3" class="p-8 text-center text-gray-500">Belum ada developer.</td>
+                                <td colspan="3" class="p-8 text-center text-gray-500">{{ $isTrash ? 'Tidak ada developer terhapus.' : 'Belum ada developer.' }}</td>
                             </tr>
                         @endforelse
                     </tbody>

@@ -32,25 +32,7 @@ use Illuminate\Support\Str;
 </head>
 <body>
 
-<!-- NAVBAR -->
-<nav class="bg-[#171a21] border-b border-[#2a475e] sticky top-0 z-50">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-
-        <a href="/" class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full steam-blue flex items-center justify-center font-bold text-xl">
-                G
-            </div>
-
-            <h1 class="text-2xl font-bold tracking-wide text-[#66c0f4]">
-                PlayMart
-            </h1>
-        </a>
-
-        <div class="flex items-center gap-4">
-            <x-store-user-menu />
-        </div>
-    </div>
-</nav>
+<x-store-nav active="cart" />
 
 
 <!-- PAGE -->
@@ -97,14 +79,35 @@ use Illuminate\Support\Str;
 
     @if($carts->count() > 0)
 
+        <form id="checkout-selection-form" action="{{ route('payments.checkout') }}" method="GET">
+            <input type="hidden" name="selection" value="1">
+        </form>
+
         <div class="grid lg:grid-cols-3 gap-8">
 
             <!-- LEFT -->
             <div class="lg:col-span-2 space-y-5">
 
                 @foreach($carts as $cart)
+                    @php
+                        $discount = $cart->game->discount_percent;
+                        $finalPrice = $cart->game->final_price;
+                    @endphp
 
-                    <div class="glass border border-[#2a475e] rounded-2xl overflow-hidden">
+                    <div class="glass border border-[#2a475e] rounded-2xl overflow-hidden relative">
+                        <label class="absolute left-4 top-4 z-10 flex items-center gap-2 rounded-xl border border-[#66c0f4]/50 bg-[#07111d]/90 px-3 py-2 text-sm font-bold text-white shadow-lg shadow-black/30">
+                            <input
+                                type="checkbox"
+                                name="cart_ids[]"
+                                value="{{ $cart->id }}"
+                                form="checkout-selection-form"
+                                checked
+                                data-cart-select
+                                data-cart-price="{{ $finalPrice }}"
+                                class="rounded border-[#316282] bg-[#0f1923] text-[#06bfff] focus:ring-[#66c0f4]"
+                            >
+                            Checkout
+                        </label>
 
                         <div class="flex flex-col md:flex-row">
 
@@ -136,12 +139,20 @@ use Illuminate\Support\Str;
 
                                 <div class="flex items-center justify-between mt-8">
 
-                                    <div class="text-3xl font-bold text-[#66c0f4]">
-                                        Rp {{ number_format($cart->game->price, 0, ',', '.') }}
+                                    <div>
+                                        @if($discount > 0)
+                                            <div class="mb-1 flex items-center gap-2">
+                                                <span class="rounded bg-[#4c6b22] px-2 py-1 text-xs font-black text-[#beee11]">-{{ $discount }}%</span>
+                                                <span class="text-sm text-gray-500 line-through">Rp {{ number_format($cart->game->price, 0, ',', '.') }}</span>
+                                            </div>
+                                        @endif
+                                        <div class="text-3xl font-bold text-[#66c0f4]">
+                                            Rp {{ number_format($finalPrice, 0, ',', '.') }}
+                                        </div>
                                     </div>
 
                                     <div class="text-sm text-gray-400">
-                                        Qty: {{ $cart->quantity }}
+                                        Qty: 1
                                     </div>
 
                                     <!-- REMOVE -->
@@ -184,8 +195,8 @@ use Illuminate\Support\Str;
                     <div class="space-y-4 mb-6">
 
                         <div class="flex justify-between text-gray-300">
-                            <span>Total Item</span>
-                            <span>{{ $totalItems }}</span>
+                            <span>Item Dipilih</span>
+                            <span data-selected-count>{{ $totalItems }}</span>
                         </div>
 
                         <div class="flex justify-between text-gray-300">
@@ -204,18 +215,20 @@ use Illuminate\Support\Str;
                             </span>
 
                             <span class="text-3xl font-bold text-[#66c0f4]">
-                                Rp {{ number_format($totalPrice, 0, ',', '.') }}
+                                Rp <span data-selected-total>{{ number_format($totalPrice, 0, ',', '.') }}</span>
                             </span>
 
                         </div>
 
                     </div>
 
-                    <a
-                        href="{{ route('payments.checkout') }}"
-                        class="block text-center w-full steam-blue py-4 rounded-xl font-bold text-lg hover:opacity-90 transition">
+                    <button
+                        type="submit"
+                        form="checkout-selection-form"
+                        data-checkout-button
+                        class="block text-center w-full steam-blue py-4 rounded-xl font-bold text-lg hover:opacity-90 transition disabled:cursor-not-allowed disabled:opacity-50">
                         Checkout
-                    </a>
+                    </button>
 
                 </div>
 
@@ -245,6 +258,39 @@ use Illuminate\Support\Str;
     @endif
 
 </section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const checkboxes = Array.from(document.querySelectorAll('[data-cart-select]'));
+        const countTarget = document.querySelector('[data-selected-count]');
+        const totalTarget = document.querySelector('[data-selected-total]');
+        const checkoutButton = document.querySelector('[data-checkout-button]');
+
+        const formatRupiah = (value) => Number(value || 0).toLocaleString('id-ID');
+
+        const syncSelection = () => {
+            const selected = checkboxes.filter((checkbox) => checkbox.checked);
+            const total = selected.reduce((sum, checkbox) => sum + Number(checkbox.dataset.cartPrice || 0), 0);
+
+            if (countTarget) {
+                countTarget.textContent = selected.length;
+            }
+
+            if (totalTarget) {
+                totalTarget.textContent = formatRupiah(total);
+            }
+
+            if (checkoutButton) {
+                checkoutButton.disabled = selected.length === 0;
+            }
+        };
+
+        checkboxes.forEach((checkbox) => checkbox.addEventListener('change', syncSelection));
+        syncSelection();
+    });
+</script>
+
+<x-store-footer />
 
 </body>
 </html>

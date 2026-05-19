@@ -13,6 +13,10 @@ class AdminPlatformController extends Controller
     {
         $query = Platform::query();
 
+        if ($request->boolean('trash')) {
+            $query->onlyTrashed();
+        }
+
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');
         }
@@ -63,6 +67,14 @@ class AdminPlatformController extends Controller
         $platform->delete();
 
         return redirect()->route('admin.platforms.index')
-            ->with('success', 'Platform berhasil dihapus!');
+            ->with('success', 'Platform berhasil dipindahkan ke trash!');
+    }
+
+    public function restore(int $platform)
+    {
+        Platform::onlyTrashed()->findOrFail($platform)->restore();
+
+        return redirect()->route('admin.platforms.index', ['trash' => 1])
+            ->with('success', 'Platform berhasil direstore!');
     }
 }

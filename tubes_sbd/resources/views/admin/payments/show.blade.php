@@ -32,15 +32,15 @@
                 <div class="p-6 grid md:grid-cols-3 gap-5">
                     <div class="bg-[#1b2838] border border-[#2a475e] rounded p-4">
                         <p class="text-gray-400 text-sm mb-1">Subtotal</p>
-                        <p class="text-xl font-bold text-white">Rp {{ number_format($payment->subtotal, 0, ',', '.') }}</p>
+                        <p class="text-xl font-bold text-white">Rp {{ number_format($payment->display_subtotal, 0, ',', '.') }}</p>
                     </div>
                     <div class="bg-[#1b2838] border border-[#2a475e] rounded p-4">
                         <p class="text-gray-400 text-sm mb-1">Diskon</p>
-                        <p class="text-xl font-bold text-yellow-400">Rp {{ number_format($payment->discount_total, 0, ',', '.') }}</p>
+                        <p class="text-xl font-bold text-yellow-400">Rp {{ number_format($payment->display_discount_total, 0, ',', '.') }}</p>
                     </div>
                     <div class="bg-[#1b2838] border border-[#2a475e] rounded p-4">
                         <p class="text-gray-400 text-sm mb-1">Total</p>
-                        <p class="text-xl font-bold text-green-400">Rp {{ number_format($payment->total, 0, ',', '.') }}</p>
+                        <p class="text-xl font-bold text-green-400">Rp {{ number_format($payment->display_total, 0, ',', '.') }}</p>
                     </div>
                 </div>
             </div>

@@ -140,7 +140,9 @@
 
                     <div class="mt-5 grid gap-3 md:grid-cols-2">
                         @forelse($friendships as $friendship)
-                            @php($friend = $friendship->otherUser($user))
+                            @php
+                                $friend = $friendship->otherUser($user);
+                            @endphp
 
                             @if($friend)
                                 <div class="flex flex-col gap-4 rounded-lg border border-gray-200 p-4 sm:flex-row sm:items-center sm:justify-between">

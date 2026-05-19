@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class PlatformSeeder extends Seeder
 {
@@ -28,12 +29,18 @@ class PlatformSeeder extends Seeder
         ];
 
         foreach ($platforms as $platform) {
+            $values = array_merge($platform, [
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+
+            if (Schema::hasColumn('platforms', 'deleted_at')) {
+                $values['deleted_at'] = null;
+            }
+
             DB::table('platforms')->updateOrInsert(
                 ['slug' => $platform['slug']],
-                array_merge($platform, [
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ])
+                $values
             );
         }
     }

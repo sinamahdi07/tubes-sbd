@@ -5,50 +5,72 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Game;
 use App\Models\Genre;
+use App\Models\Category;
 
 class GameController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | Home / Search Game
-    |--------------------------------------------------------------------------
-    */
-
     public function index(Request $request)
     {
-        $search = $request->search;
+        $search = trim((string) $request->query('search', ''));
+        $selectedGenre = $request->query('genre');
+        $selectedCategory = $request->query('category');
 
-        $genres = Genre::all();
+        $genres = Genre::orderBy('name')->get();
+        $categories = Category::orderBy('name')->get();
 
-        $games = Game::with(['publisher', 'developer', 'genres', 'detail'])
-            ->when($search, function ($query) use ($search) {
-                $query->where('title', 'like', '%' . $search . '%');
+        $baseQuery = Game::with(['publisher', 'developer', 'genres', 'categories', 'detail'])
+            ->when($search !== '', function ($query) use ($search) {
+                $query->where('title', 'like', $search . '%');
             })
-            ->when($request->genre, function ($query) use ($request) {
-                $query->whereHas('genres', function ($q) use ($request) {
-                    $q->where('genres.genre_id', $request->genre);
+            ->when($selectedGenre, function ($query) use ($selectedGenre) {
+                $query->whereHas('genres', function ($q) use ($selectedGenre) {
+                    $q->where('genres.genre_id', $selectedGenre);
                 });
             })
+            ->when($selectedCategory, function ($query) use ($selectedCategory) {
+                $query->whereHas('categories', function ($q) use ($selectedCategory) {
+                    $q->where('categories.category_id', $selectedCategory);
+                });
+            });
+
+        $featuredGames = (clone $baseQuery)
+            ->inRandomOrder()
+            ->take(4)
+            ->get();
+
+        $featuredGame = $featuredGames->first();
+
+        $recommendedGames = (clone $baseQuery)
+            ->inRandomOrder()
+            ->take(5)
+            ->get();
+
+        $popularGames = (clone $baseQuery)
+            ->withPaidPurchasesCount()
+            ->orderByDesc('paid_purchases_count')
+            ->latest('release_date')
+            ->take(5)
+            ->get();
+
+        $newReleases = (clone $baseQuery)
+            ->orderByDesc('release_date')
             ->latest()
-            ->paginate(12)
-            ->withQueryString();
+            ->take(6)
+            ->get();
 
-        $featuredGame = Game::with(['publisher', 'genres', 'detail'])
-            ->when($request->genre, function ($query) use ($request) {
-                $query->whereHas('genres', function ($q) use ($request) {
-                    $q->where('genres.genre_id', $request->genre);
-                });
-            })
-            ->latest()->first();
-
-        return view('welcome', compact('games', 'search', 'featuredGame', 'genres'));
+        return view('welcome', compact(
+            'featuredGame',
+            'featuredGames',
+            'categories',
+            'genres',
+            'newReleases',
+            'popularGames',
+            'recommendedGames',
+            'selectedCategory',
+            'selectedGenre',
+            'search'
+        ));
     }
-
-    /*
-    |--------------------------------------------------------------------------
-    | Detail Game
-    |--------------------------------------------------------------------------
-    */
 
     public function show($id)
     {
@@ -57,6 +79,7 @@ class GameController extends Controller
             'developer',
             'screenshots',
             'genres',
+            'categories',
             'platforms',
             'detail',
         ])->findOrFail($id);
