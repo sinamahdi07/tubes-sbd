@@ -14,6 +14,8 @@ class GameController extends Controller
         $search = trim((string) $request->query('search', ''));
         $selectedGenre = $request->query('genre');
         $selectedCategory = $request->query('category');
+        $selectedDeveloper = $request->query('developer');
+        $selectedPublisher = $request->query('publisher');
 
         $genres = Genre::orderBy('name')->get();
         $categories = Category::orderBy('name')->get();
@@ -31,6 +33,12 @@ class GameController extends Controller
                 $query->whereHas('categories', function ($q) use ($selectedCategory) {
                     $q->where('categories.category_id', $selectedCategory);
                 });
+            })
+            ->when($selectedDeveloper, function ($query) use ($selectedDeveloper) {
+                $query->where('developer_id', $selectedDeveloper);
+            })
+            ->when($selectedPublisher, function ($query) use ($selectedPublisher) {
+                $query->where('publisher_id', $selectedPublisher);
             });
 
         $featuredGames = (clone $baseQuery)
@@ -67,6 +75,8 @@ class GameController extends Controller
             'popularGames',
             'recommendedGames',
             'selectedCategory',
+            'selectedDeveloper',
+            'selectedPublisher',
             'selectedGenre',
             'search'
         ));

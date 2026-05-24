@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    <link rel="icon" type="image/png" href="{{ asset('../GAMESTORE.png') }}">
     <title>{{ $game->title }}</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -56,8 +57,20 @@
                 @endif
 
                 <div class="flex flex-wrap gap-4 text-sm text-[#66c0f4]">
-                    <span>Developer: {{ $game->developer->name ?? '-' }}</span>
-                    <span>Publisher: {{ $game->publisher->name ?? '-' }}</span>
+                    <span>Developer: 
+                        @if($game->developer)
+                            <a href="{{ route('games.search', ['developer' => $game->developer->developer_id]) }}" class="hover:underline">{{ $game->developer->name }}</a>
+                        @else
+                            -
+                        @endif
+                    </span>
+                    <span>Publisher: 
+                        @if($game->publisher)
+                            <a href="{{ route('games.search', ['publisher' => $game->publisher->publisher_id]) }}" class="hover:underline">{{ $game->publisher->name }}</a>
+                        @else
+                            -
+                        @endif
+                    </span>
                 </div>
 
             </div>
@@ -72,7 +85,7 @@
         <div class="grid lg:grid-cols-3 gap-10">
 
             <!-- LEFT -->
-            <div class="lg:col-span-2">
+            <div class="lg:col-span-2 space-y-8">
 
                 @if($game->screenshots->count() > 0)
                     <!-- MAIN SCREENSHOT VIEWER -->
@@ -84,7 +97,7 @@
                     </div>
 
                     <!-- SCREENSHOT THUMBNAILS -->
-                    <div class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-3 mb-10">
+                    <div class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-3">
                         @foreach($game->screenshots as $i => $shot)
                             <button onclick="changeScreenshot('{{ $shot->url }}', this)"
                                     class="screenshot-thumb rounded-xl overflow-hidden border-2 {{ $i === 0 ? 'border-[#66c0f4]' : 'border-transparent' }} hover:border-[#66c0f4] transition focus:outline-none"
@@ -106,25 +119,36 @@
                 <!-- DESCRIPTION -->
                 <div class="bg-[#16202d] p-8 rounded-2xl border border-[#2a475e]">
 
-                    <h2 class="text-3xl font-bold mb-6">About This Game</h2>
+                    <h2 class="text-2xl font-black uppercase tracking-wider mb-6 text-white border-b border-[#2a475e] pb-4">About This Game</h2>
 
                     @if($game->detail && $game->detail->short_description)
-                        <p class="text-[#66c0f4] font-semibold text-base mb-4 leading-relaxed">
+                        <p class="text-[#66c0f4] font-bold text-lg mb-6 leading-relaxed">
                             {{ $game->detail->short_description }}
                         </p>
                     @endif
 
-                    <p class="text-gray-300 leading-relaxed text-lg">
+                    <p class="text-gray-300 leading-relaxed text-base">
                         {{ $game->description }}
                     </p>
 
                     @if($game->detail && $game->detail->minimum_requirements)
-                    <div class="mt-8">
-                        <h3 class="text-lg font-bold text-white mb-3">System Requirements</h3>
-                        <div class="bg-[#0f1923] rounded-xl p-5 text-gray-400 text-sm leading-relaxed">
-                            {{ $game->detail->minimum_requirements }}
+                        <div class="mt-12 pt-8 border-t border-[#2a475e]">
+                            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#66c0f4]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                </svg>
+                                System Requirements
+                            </h3>
+                            
+                            <div class="grid md:grid-cols-1 gap-6">
+                                <div>
+                                    <p class="text-[#66c0f4] text-xs font-black uppercase tracking-widest mb-3">Minimum Requirements:</p>
+                                    <div class="text-gray-400 text-sm leading-relaxed whitespace-pre-line bg-[#0f1923] p-6 rounded-xl border border-[#2a475e]/50">
+                                        {{ $game->detail->minimum_requirements }}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
                     @endif
 
                 </div>
@@ -176,9 +200,45 @@
 
                         <div>
 
-                            {{ $game->release_date }}
+                            {{ $game->release_date ? \Carbon\Carbon::parse($game->release_date)->translatedFormat('d F Y') : '-' }}
 
                         </div>
+
+                    </div>
+
+                    <!-- DEVELOPER -->
+                    <div class="mb-5">
+
+                        <div class="text-gray-400 text-sm mb-1">
+                            Developer
+                        </div>
+
+                        @if($game->developer)
+                            <a href="{{ route('games.search', ['developer' => $game->developer->developer_id]) }}" 
+                               class="text-[#66c0f4] font-medium hover:underline block">
+                                {{ $game->developer->name }}
+                            </a>
+                        @else
+                            <div class="text-white">-</div>
+                        @endif
+
+                    </div>
+
+                    <!-- PUBLISHER -->
+                    <div class="mb-5">
+
+                        <div class="text-gray-400 text-sm mb-1">
+                            Publisher
+                        </div>
+
+                        @if($game->publisher)
+                            <a href="{{ route('games.search', ['publisher' => $game->publisher->publisher_id]) }}" 
+                               class="text-[#66c0f4] font-medium hover:underline block">
+                                {{ $game->publisher->name }}
+                            </a>
+                        @else
+                            <div class="text-white">-</div>
+                        @endif
 
                     </div>
 

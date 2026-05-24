@@ -37,54 +37,69 @@
             </div>
         </div>
 
-        <div class="space-y-5">
+        <div class="space-y-2">
             @forelse($games as $game)
                 <a href="{{ url('/game/' . $game->game_id) }}" class="block">
-                    <article class="overflow-hidden rounded-2xl border border-[#2a475e] bg-[#16202d] transition hover:border-[#66c0f4] hover:bg-[#1f2f42]">
-                        <div class="grid gap-0 md:grid-cols-[320px_1fr]">
+                    <article class="group overflow-hidden rounded-lg border border-transparent bg-[#16202d]/60 p-2 transition hover:border-[#66c0f4] hover:bg-[#1f2f42]">
+                        <div class="flex items-center gap-4">
+                            {{-- Thumbnail --}}
                             <img
                                 src="{{ $game->thumbnail_url ?: $fallbackImage }}"
                                 alt="{{ $game->title }}"
-                                class="h-52 w-full object-cover md:h-full"
+                                class="h-16 w-40 rounded object-cover shadow-lg"
                                 loading="lazy"
-                                decoding="async"
                             >
 
-                            <div class="flex flex-col justify-between p-6">
-                                <div>
-                                    <h2 class="text-3xl font-black text-white">{{ $game->title }}</h2>
-                                    <p class="mt-3 line-clamp-3 text-gray-400">
-                                        {{ $game->detail->short_description ?? $game->description }}
-                                    </p>
+                            {{-- Game Info --}}
+                            <div class="flex flex-1 flex-col justify-center">
+                                <h2 class="text-lg font-bold text-white group-hover:text-[#66c0f4]">{{ $game->title }}</h2>
+                                
+                                <div class="flex items-center gap-3 mt-1">
+                                    {{-- Platforms --}}
+                                    <div class="flex items-center gap-1.5 text-gray-500">
+                                        @foreach($game->platforms as $platform)
+                                            <div title="{{ $platform->name }}" class="w-4 h-4 opacity-60">
+                                                {!! $platform->icon !!}
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    
+                                    <span class="text-xs text-gray-500">•</span>
+                                    
+                                    {{-- Release Date --}}
+                                    <span class="text-xs text-gray-500">
+                                        {{ $game->release_date ? \Carbon\Carbon::parse($game->release_date)->format('d M Y') : 'TBA' }}
+                                    </span>
+                                </div>
+                            </div>
 
-                                    @if($game->categories->isNotEmpty())
-                                        <div class="mt-4 flex flex-wrap gap-2">
-                                            @foreach($game->categories->take(4) as $category)
-                                                <span class="rounded bg-[#2a475e] px-3 py-1 text-xs font-bold text-gray-200">
-                                                    {{ $category->name }}
-                                                </span>
-                                            @endforeach
+                            {{-- Pricing & Review --}}
+                            <div class="flex items-center gap-6 pr-4">
+                                {{-- Review Summary (Simple) --}}
+                                <div class="hidden text-right md:block">
+                                    @if($game->paid_purchases_count > 0)
+                                        <div class="text-xs font-bold text-[#66c0f4] uppercase tracking-tighter">
+                                            Popular
                                         </div>
                                     @endif
                                 </div>
 
-                                <div class="mt-6 flex flex-wrap items-center justify-between gap-4">
-                                    <div>
-                                        <div class="text-[#66c0f4]">
-                                            {{ $game->publisher->name ?? 'Unknown Publisher' }}
+                                {{-- Price --}}
+                                <div class="flex flex-col items-end min-w-[100px]">
+                                    @php
+                                        $discount = $game->detail->discount ?? 0;
+                                        $price = (float) $game->price;
+                                    @endphp
+                                    
+                                    @if($discount > 0)
+                                        <div class="flex items-center gap-2">
+                                            <span class="bg-[#4c6b22] text-[#beee11] text-xs font-bold px-1.5 py-0.5 rounded">-{{ $discount }}%</span>
+                                            <span class="text-xs text-gray-500 line-through">Rp {{ number_format($price, 0, ',', '.') }}</span>
                                         </div>
-                                        @if($sort === 'popular')
-                                            <div class="mt-2 inline-flex items-center gap-2 rounded bg-[#0b2a44]/90 px-3 py-1 text-xs font-black uppercase text-[#66c0f4]">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19V5m0 14h16M8 17v-5m4 5V8m4 9v-8"/>
-                                                </svg>
-                                                {{ number_format((int) ($game->paid_purchases_count ?? 0), 0, ',', '.') }} dibeli
-                                            </div>
-                                        @endif
-                                    </div>
-
-                                    <div class="text-2xl font-black text-white">
-                                        {{ $formatPrice($game->price) }}
+                                    @endif
+                                    
+                                    <div class="text-sm font-medium text-white">
+                                        {{ $discount > 0 ? 'Rp ' . number_format($price * (1 - $discount/100), 0, ',', '.') : $formatPrice($price) }}
                                     </div>
                                 </div>
                             </div>

@@ -16,8 +16,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PlayMart - Store</title>
-
+    <link rel="icon" type="image/png" href="{{ asset('GAMESTORE.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('GAMESTORE.png') }}">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#000000">
+    <title>PlayMart - Store @yield('title', 'Store')</title>
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.tailwindcss.com"></script>
 
@@ -69,7 +73,7 @@
             box-shadow: 0 18px 44px rgba(0, 0, 0, 0.3);
         }
         .hero-panel {
-            min-height: clamp(430px, 34vw, 540px);
+            min-height: clamp(380px, 30vw, 480px);
             background: #07111d;
         }
         .hero-panel::after {
@@ -92,7 +96,7 @@
         .game-card:hover {
             transform: translateY(-3px);
             border-color: rgba(102, 192, 244, 0.78);
-            box-shadow: 0 16px 28px rgba(6, 191, 255, 0.1);
+            box-shadow: 0 0 20px rgba(17, 141, 255, 0.2);
         }
         .icon-button {
             display: inline-flex;
@@ -168,7 +172,7 @@
                         <div class="absolute inset-0 bg-gradient-to-r from-[#050a12] via-[#07111d]/82 to-[#07111d]/10"></div>
                         <div class="absolute inset-0 bg-gradient-to-t from-[#050a12]/70 via-transparent to-transparent"></div>
 
-                        <div class="relative z-10 flex min-h-[430px] items-center px-8 py-12 md:min-h-[500px] md:px-20">
+                        <div class="relative z-10 flex min-h-[380px] items-center px-8 py-10 md:min-h-[450px] md:px-20">
                             <div class="hero-copy">
                                 <span class="mb-5 inline-flex rounded-md bg-[#063b80]/90 px-4 py-2 text-xs font-black uppercase tracking-wider text-[#66c0f4] shadow-lg shadow-blue-950/30">
                                     Featured
@@ -182,14 +186,14 @@
                                     Survive. Explore. Conquer.
                                 </p>
 
-                                <p class="mt-5 max-w-lg text-base leading-relaxed text-gray-200 md:text-lg">
+                                <p class="mt-4 max-w-lg text-sm leading-relaxed text-gray-300 md:text-base">
                                     {{ $descriptionFor($heroGame, 150) }}
                                 </p>
 
                                 <div class="mt-6 flex flex-wrap items-center gap-3">
                                     @if($featuredDiscount > 0)
-                                        <span class="price-discount rounded-md px-4 py-3 text-xl font-black">-{{ $featuredDiscount }}%</span>
-                                        <span class="text-sm font-semibold text-gray-500 line-through">{{ $formatPrice($heroGame->price) }}</span>
+                                        <span class="price-discount rounded px-3 py-1.5 text-lg font-black">-{{ $featuredDiscount }}%</span>
+                                        <span class="text-xs font-semibold text-gray-500 line-through">{{ $formatPrice($heroGame->price) }}</span>
                                     @endif
                                     <span class="text-2xl font-black text-white">{{ $formatPrice($featuredFinal) }}</span>
                                     <a href="{{ url('/game/' . $heroGame->game_id) }}" class="steam-blue ml-0 rounded-lg px-7 py-3 text-base font-bold text-white shadow-lg shadow-blue-950/40 transition hover:brightness-110 sm:ml-4">
@@ -248,7 +252,7 @@
             />
         </section>
 
-        <section id="recommended" class="store-container mt-5 grid gap-5 xl:grid-cols-[1fr_380px]">
+        <section id="recommended" class="store-container mt-4 grid gap-5 xl:grid-cols-[1fr_360px]">
             <div class="min-w-0 space-y-5">
                 <section>
                     <div class="mb-3 flex items-center justify-between gap-4">
@@ -258,7 +262,7 @@
                                     <path d="m12 2 2.95 6.35 6.95.85-5.12 4.77 1.33 6.88L12 17.45l-6.11 3.4 1.33-6.88L2.1 9.2l6.95-.85L12 2Z"/>
                                 </svg>
                             </span>
-                            <h2 class="text-2xl font-black text-white md:text-3xl">Featured & Recommended</h2>
+                            <h2 class="text-xl font-black text-white md:text-2xl uppercase tracking-tight">Featured & Recommended</h2>
                         </div>
                         <a href="{{ route('games.search', request()->only('search', 'genre', 'category')) }}" class="hidden items-center gap-2 text-sm font-bold text-[#118dff] transition hover:text-white sm:inline-flex">
                             View All
@@ -269,22 +273,22 @@
                     </div>
 
                     @if($leadRecommended)
-                        <div class="grid gap-3 lg:grid-cols-[1.08fr_1fr]">
+                        <div class="grid gap-4 lg:grid-cols-[1.15fr_1fr]">
                             @php
                                 $discount = $discountFor($leadRecommended);
                                 $finalPrice = $finalPriceFor($leadRecommended);
                             @endphp
                             <a href="{{ url('/game/' . $leadRecommended->game_id) }}" class="block">
-                                <article class="game-card relative min-h-[310px] overflow-hidden rounded-lg md:min-h-[360px]">
+                                <article class="game-card relative min-h-[280px] overflow-hidden rounded-lg md:min-h-[320px]">
                                     <img src="{{ $imageFor($leadRecommended) }}" alt="{{ $leadRecommended->title }}" class="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async">
                                     <div class="absolute inset-0 bg-gradient-to-t from-[#050a12] via-[#050a12]/48 to-transparent"></div>
                                     <div class="absolute inset-x-0 bottom-0 p-6">
-                                        <h3 class="text-4xl font-black uppercase leading-none text-white md:text-5xl">{{ $leadRecommended->title }}</h3>
-                                        <p class="mt-4 max-w-md text-base leading-relaxed text-gray-200">{{ $descriptionFor($leadRecommended, 115) }}</p>
-                                        <div class="mt-6 flex flex-wrap items-center gap-3">
+                                        <h3 class="text-3xl font-black uppercase leading-none text-white md:text-4xl group-hover:text-[#66c0f4]">{{ $leadRecommended->title }}</h3>
+                                        <p class="mt-3 max-w-md text-sm leading-relaxed text-gray-300 line-clamp-2">{{ $descriptionFor($leadRecommended, 115) }}</p>
+                                        <div class="mt-4 flex flex-wrap items-center gap-3">
                                             @if($discount > 0)
                                                 <span class="price-discount rounded-md px-3 py-2 text-base font-black">-{{ $discount }}%</span>
-                                                <span class="text-sm font-semibold text-gray-500 line-through">{{ $formatPrice($leadRecommended->price) }}</span>
+                                                <span class="text-xs font-semibold text-gray-500 line-through">{{ $formatPrice($leadRecommended->price) }}</span>
                                             @endif
                                             <span class="text-xl font-black text-white">{{ $formatPrice($finalPrice) }}</span>
                                         </div>
@@ -292,14 +296,14 @@
                                 </article>
                             </a>
 
-                            <div class="grid gap-3 sm:grid-cols-2">
+                            <div class="grid gap-2 sm:grid-cols-2">
                                 @foreach($sideRecommended as $game)
                                     @php
                                         $discount = $discountFor($game);
                                         $finalPrice = $finalPriceFor($game);
                                     @endphp
                                     <a href="{{ url('/game/' . $game->game_id) }}" class="block">
-                                        <article class="game-card relative min-h-[174px] overflow-hidden rounded-lg">
+                                        <article class="game-card relative min-h-[150px] overflow-hidden rounded-lg">
                                             <img src="{{ $imageFor($game) }}" alt="{{ $game->title }}" class="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async">
                                             <div class="absolute inset-0 bg-gradient-to-t from-[#050a12] via-[#050a12]/56 to-transparent"></div>
                                             <span class="icon-button absolute right-3 top-3 h-8 w-8 rounded-md" aria-hidden="true">
@@ -308,8 +312,8 @@
                                                 </svg>
                                             </span>
                                             <div class="absolute inset-x-0 bottom-0 p-4">
-                                                <h3 class="truncate text-2xl font-black uppercase text-white">{{ $game->title }}</h3>
-                                                <p class="mt-1 line-clamp-2 text-sm text-gray-300">{{ $descriptionFor($game, 74) }}</p>
+                                                <h3 class="truncate text-lg font-black uppercase text-white">{{ $game->title }}</h3>
+                                                <p class="mt-1 line-clamp-1 text-xs text-gray-400">{{ $descriptionFor($game, 60) }}</p>
                                                 <div class="mt-3 flex flex-wrap items-center gap-2">
                                                     @if($discount > 0)
                                                         <span class="price-discount rounded px-2 py-1 text-xs font-black">-{{ $discount }}%</span>
@@ -336,7 +340,7 @@
                                     <path d="M12 2c2.8 2.2 4.2 4.64 4.2 7.32 0 1.1-.25 2.03-.74 2.8.73-.27 1.48-.82 2.24-1.66.9 1.08 1.35 2.32 1.35 3.73A6.92 6.92 0 0 1 12 21a6.92 6.92 0 0 1-7.05-6.81c0-2.7 1.43-5.13 4.3-7.29-.2 1.56.1 2.8.92 3.72.86.96 1.97 1.32 3.35 1.08.72-2.22.21-5.46-1.52-9.7Z"/>
                                 </svg>
                             </span>
-                            <h2 class="text-2xl font-black text-white md:text-3xl">New Releases</h2>
+                            <h2 class="text-xl font-black text-white md:text-2xl uppercase tracking-tight">New Releases</h2>
                         </div>
                         <a href="{{ route('games.search', request()->only('search', 'genre', 'category')) }}" class="hidden items-center gap-2 text-sm font-bold text-[#118dff] transition hover:text-white sm:inline-flex">
                             View All
@@ -346,14 +350,14 @@
                         </a>
                     </div>
 
-                    <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
+                    <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-6">
                         @forelse($newReleases as $game)
                             @php
                                 $discount = $discountFor($game);
                                 $finalPrice = $finalPriceFor($game);
                             @endphp
                             <a href="{{ url('/game/' . $game->game_id) }}" class="block">
-                                <article class="game-card relative min-h-[132px] overflow-hidden rounded-lg">
+                                <article class="game-card relative min-h-[120px] overflow-hidden rounded-lg">
                                     <img src="{{ $imageFor($game) }}" alt="{{ $game->title }}" class="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async">
                                     <div class="absolute inset-0 bg-gradient-to-t from-[#050a12] via-[#050a12]/52 to-transparent"></div>
                                     <span class="icon-button absolute right-2 top-2 h-8 w-8 rounded-md" aria-hidden="true">
@@ -362,7 +366,7 @@
                                         </svg>
                                     </span>
                                     <div class="absolute inset-x-0 bottom-0 p-3">
-                                        <h3 class="line-clamp-2 text-xl font-black uppercase leading-tight text-white">{{ $game->title }}</h3>
+                                        <h3 class="line-clamp-1 text-base font-black uppercase leading-tight text-white">{{ $game->title }}</h3>
                                         <div class="mt-2 flex flex-wrap items-center gap-2">
                                             @if($discount > 0)
                                                 <span class="price-discount rounded px-2 py-0.5 text-xs font-black">-{{ $discount }}%</span>
@@ -399,16 +403,16 @@
                             $finalPrice = $finalPriceFor($game);
                             $purchaseCount = (int) ($game->paid_purchases_count ?? 0);
                         @endphp
-                        <a href="{{ url('/game/' . $game->game_id) }}" class="grid grid-cols-[28px_108px_1fr] items-center gap-3 rounded-lg border border-transparent p-2 transition hover:border-[#2a475e] hover:bg-[#0f1923]/78">
-                            <span class="text-center text-lg font-black text-gray-500">{{ $rank + 1 }}</span>
-                            <img src="{{ $imageFor($game) }}" alt="{{ $game->title }}" class="h-16 w-[108px] rounded-md object-cover" loading="lazy" decoding="async">
+                        <a href="{{ url('/game/' . $game->game_id) }}" class="grid grid-cols-[24px_100px_1fr] items-center gap-3 rounded-lg border border-transparent p-2 transition hover:border-[#2a475e] hover:bg-[#0f1923]/78">
+                            <span class="text-center text-base font-black text-gray-500">{{ $rank + 1 }}</span>
+                            <img src="{{ $imageFor($game) }}" alt="{{ $game->title }}" class="h-14 w-[100px] rounded-md object-cover" loading="lazy" decoding="async">
                             <span class="min-w-0">
                                 <span class="block truncate text-sm font-black uppercase text-white">{{ $game->title }}</span>
-                                <span class="mt-1 inline-flex items-center gap-1 rounded bg-[#0b2a44]/90 px-2 py-0.5 text-[11px] font-black uppercase text-[#66c0f4]">
+                                <span class="mt-0.5 inline-flex items-center gap-1 rounded bg-[#0b2a44]/90 px-2 py-0.5 text-[10px] font-black uppercase text-[#66c0f4]">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19V5m0 14h16M8 17v-5m4 5V8m4 9v-8"/>
                                     </svg>
-                                    {{ number_format($purchaseCount, 0, ',', '.') }} dibeli
+                                    {{ number_format($purchaseCount, 0, ',', '.') }}
                                 </span>
                                 <span class="mt-2 flex flex-wrap items-center gap-2 text-xs">
                                     @if($discount > 0)

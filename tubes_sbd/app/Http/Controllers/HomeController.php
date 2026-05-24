@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Game;
 use App\Models\Category;
 use App\Models\Genre;
+use App\Models\Developer;
+use App\Models\Publisher;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -14,12 +16,14 @@ class HomeController extends Controller
         $search = trim((string) $request->query('search', ''));
         $selectedGenre = $request->query('genre');
         $selectedCategory = $request->query('category');
+        $selectedDeveloper = $request->query('developer');
+        $selectedPublisher = $request->query('publisher');
         $sort = $request->query('sort') === 'popular' ? 'popular' : 'latest';
 
         $categories = Category::orderBy('name')->get();
         $genres = Genre::orderBy('name')->get();
 
-        $gamesQuery = Game::with(['publisher', 'genres', 'categories', 'detail'])
+        $gamesQuery = Game::with(['publisher', 'genres', 'categories', 'detail', 'platforms'])
             ->withPaidPurchasesCount()
             ->when($search !== '', function ($query) use ($search) {
                 $query->where('title', 'like', $search . '%');
@@ -33,6 +37,12 @@ class HomeController extends Controller
                 $query->whereHas('categories', function ($q) use ($selectedCategory) {
                     $q->where('categories.category_id', $selectedCategory);
                 });
+            })
+            ->when($selectedDeveloper, function ($query) use ($selectedDeveloper) {
+                $query->where('developer_id', $selectedDeveloper);
+            })
+            ->when($selectedPublisher, function ($query) use ($selectedPublisher) {
+                $query->where('publisher_id', $selectedPublisher);
             });
 
         if ($sort === 'popular') {
@@ -47,6 +57,18 @@ class HomeController extends Controller
             ->paginate(12)
             ->withQueryString();
 
+        // Logika untuk menentukan judul halaman (misal: "Games developed by Valve")
+        $pageTitle = 'Semua Game';
+        if ($selectedDeveloper) {
+            $dev = Developer::find($selectedDeveloper);
+            if ($dev) $pageTitle = "Games developed by " . $dev->name;
+        } elseif ($selectedPublisher) {
+            $pub = Publisher::find($selectedPublisher);
+            if ($pub) $pageTitle = "Games published by " . $pub->name;
+        } elseif ($search) {
+            $pageTitle = "Search Results for: " . $search;
+        }
+
         return view('search', compact(
             'categories',
             'games',
@@ -54,7 +76,8 @@ class HomeController extends Controller
             'search',
             'sort',
             'selectedCategory',
-            'selectedGenre'
+            'selectedGenre',
+            'pageTitle'
         ));
     }
 

@@ -15,9 +15,7 @@
     <div class="mx-auto flex h-[72px] w-full max-w-[1700px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
         <div class="flex min-w-0 items-center gap-8">
             <a href="{{ route('home') }}" class="flex shrink-0 items-center gap-3">
-                <span class="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-[#06bfff] to-[#2d73ff] text-2xl font-black text-white shadow-lg shadow-blue-950/40">
-                    P
-                </span>
+                <img src="{{ asset('GAMESTORE.png') }}" alt="Logo" class="h-11 w-11 object-contain rounded-lg shadow-lg shadow-blue-950/20">
                 <span class="hidden text-2xl font-black tracking-wide text-white sm:inline">
                     Play<span class="text-[#118dff]">Mart</span>
                 </span>
