@@ -11,8 +11,14 @@
             border: 1px solid rgba(42, 71, 94, 0.9);
             box-shadow: 0 18px 44px rgba(0, 0, 0, 0.3);
         }
-        details > summary { list-style: none; }
-        details > summary::-webkit-details-marker { display: none; }
+        details summary { list-style: none; }
+        details summary::-webkit-details-marker { display: none; }
+        details[open] summary {
+            color: #66c0f4;
+            border-bottom: 1px solid rgba(102, 192, 244, 0.2);
+            padding-bottom: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
     </style>
 @endpush
 
@@ -25,7 +31,7 @@
             <div class="flex min-h-[340px] max-w-3xl flex-col justify-center px-6 py-12 md:min-h-[430px] md:px-12">
                 <p class="text-sm font-black uppercase tracking-[0.24em] text-[#66c0f4]">Support Center</p>
                 <h1 class="mt-4 text-4xl font-black leading-tight text-white md:text-6xl">Bantuan untuk akun, cart, checkout, dan game.</h1>
-                <p class="mt-5 max-w-2xl text-base leading-relaxed text-gray-300 md:text-lg">
+                <p class="mt-5 max-w-2xl text-base leading-relaxed text-gray-300 md:text-lg border-l-4 border-[#118dff] pl-6">
                     Cek panduan cepat untuk masalah umum di PlayMart, dari game tidak masuk cart sampai status payment.
                 </p>
             </div>
@@ -78,35 +84,35 @@
                 <p class="text-sm font-black uppercase tracking-[0.22em] text-[#66c0f4]">FAQ</p>
                 <h2 class="mt-3 text-3xl font-black text-white">Pertanyaan umum</h2>
 
-                <div class="mt-6 space-y-3">
-                    <details class="rounded-lg border border-[#2a475e] bg-[#0f1923]/82 p-4" open>
-                        <summary class="flex cursor-pointer items-center justify-between gap-4 font-black text-white">
+                <div class="mt-8 space-y-4">
+                    <details class="group rounded-xl border border-[#2a475e] bg-[#0f1923]/82 p-5 transition-all duration-300 open:bg-[#16202d]" open>
+                        <summary class="flex cursor-pointer items-center justify-between gap-4 text-lg font-bold text-white">
                             Game tidak bisa ditambah ke cart
-                            <span class="text-[#66c0f4]">+</span>
+                            <span class="text-[#66c0f4] transition-transform group-open:rotate-45">+</span>
                         </summary>
                         <p class="mt-3 text-sm leading-relaxed text-gray-400">Satu user hanya bisa menambahkan satu game yang sama ke cart. Kalau sudah ada, angka cart tetap satu untuk game itu.</p>
                     </details>
 
-                    <details class="rounded-lg border border-[#2a475e] bg-[#0f1923]/82 p-4">
-                        <summary class="flex cursor-pointer items-center justify-between gap-4 font-black text-white">
+                    <details class="group rounded-xl border border-[#2a475e] bg-[#0f1923]/82 p-5 transition-all duration-300 open:bg-[#16202d]">
+                        <summary class="flex cursor-pointer items-center justify-between gap-4 text-lg font-bold text-white">
                             Diskon tidak muncul di checkout
-                            <span class="text-[#66c0f4]">+</span>
+                            <span class="text-[#66c0f4] transition-transform group-open:rotate-45">+</span>
                         </summary>
                         <p class="mt-3 text-sm leading-relaxed text-gray-400">Diskon diambil dari detail game. Jika admin mengubah diskon, harga checkout akan memakai nilai diskon terbaru.</p>
                     </details>
 
-                    <details class="rounded-lg border border-[#2a475e] bg-[#0f1923]/82 p-4">
-                        <summary class="flex cursor-pointer items-center justify-between gap-4 font-black text-white">
+                    <details class="group rounded-xl border border-[#2a475e] bg-[#0f1923]/82 p-5 transition-all duration-300 open:bg-[#16202d]">
+                        <summary class="flex cursor-pointer items-center justify-between gap-4 text-lg font-bold text-white">
                             Kenapa tidak bisa review
-                            <span class="text-[#66c0f4]">+</span>
+                            <span class="text-[#66c0f4] transition-transform group-open:rotate-45">+</span>
                         </summary>
                         <p class="mt-3 text-sm leading-relaxed text-gray-400">Review hanya bisa dibuat setelah user punya payment berstatus paid untuk game tersebut.</p>
                     </details>
 
-                    <details class="rounded-lg border border-[#2a475e] bg-[#0f1923]/82 p-4">
-                        <summary class="flex cursor-pointer items-center justify-between gap-4 font-black text-white">
+                    <details class="group rounded-xl border border-[#2a475e] bg-[#0f1923]/82 p-5 transition-all duration-300 open:bg-[#16202d]">
+                        <summary class="flex cursor-pointer items-center justify-between gap-4 text-lg font-bold text-white">
                             Popular Right Now dihitung dari apa
-                            <span class="text-[#66c0f4]">+</span>
+                            <span class="text-[#66c0f4] transition-transform group-open:rotate-45">+</span>
                         </summary>
                         <p class="mt-3 text-sm leading-relaxed text-gray-400">Rankingnya dihitung dari jumlah item payment pada transaksi yang statusnya paid.</p>
                     </details>

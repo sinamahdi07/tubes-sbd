@@ -10,6 +10,12 @@
                 linear-gradient(135deg, rgba(102, 192, 244, 0.12), rgba(45, 115, 255, 0.05));
             border: 1px solid rgba(42, 71, 94, 0.9);
             box-shadow: 0 18px 44px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        .page-panel:hover {
+            border-color: rgba(102, 192, 244, 0.5);
+            transform: translateY(-4px);
+            background: linear-gradient(180deg, rgba(21, 34, 48, 0.9), rgba(10, 22, 36, 0.95));
         }
     </style>
 @endpush
@@ -24,23 +30,26 @@
                 <p class="text-sm font-black uppercase tracking-[0.24em] text-[#66c0f4]">About PlayMart</p>
                 <h1 class="mt-4 text-4xl font-black leading-tight text-white md:text-6xl">PlayMart adalah website toko game digital.</h1>
                 <p class="mt-5 max-w-2xl text-base leading-relaxed text-gray-300 md:text-lg">
-                    Website ini dibuat untuk tugas kuliah sebagai simulasi toko game online, mulai dari pencarian game, cart, checkout, sampai review setelah pembelian.
+                    Simulasi ekosistem gaming modern yang dirancang untuk memberikan pengalaman eksplorasi, pembelian, dan interaksi komunitas dalam satu platform terintegrasi.
                 </p>
             </div>
         </section>
 
         <section class="mt-8 grid gap-4 md:grid-cols-3">
             <div class="page-panel rounded-lg p-6">
-                <p class="text-3xl font-black text-white">Store</p>
-                <p class="mt-2 text-sm leading-relaxed text-gray-400">User bisa melihat daftar game, diskon, category, genre, dan informasi detail sebelum membeli.</p>
+                <p class="text-4xl font-black text-[#118dff]">01</p>
+                <h3 class="text-xl font-bold text-white mt-2">Discovery Store</h3>
+                <p class="mt-2 text-sm leading-relaxed text-gray-400">Eksplorasi ribuan judul dengan sistem filter genre dan kategori yang cerdas.</p>
             </div>
             <div class="page-panel rounded-lg p-6">
-                <p class="text-3xl font-black text-white">Checkout</p>
-                <p class="mt-2 text-sm leading-relaxed text-gray-400">Game yang dipilih masuk ke cart, lalu user bisa memilih item mana saja yang ingin dibeli.</p>
+                <p class="text-4xl font-black text-[#118dff]">02</p>
+                <h3 class="text-xl font-bold text-white mt-2">Fast Checkout</h3>
+                <p class="mt-2 text-sm leading-relaxed text-gray-400">Proses transaksi yang aman dan cepat dengan sistem keranjang belanja yang intuitif.</p>
             </div>
             <div class="page-panel rounded-lg p-6">
-                <p class="text-3xl font-black text-white">Admin</p>
-                <p class="mt-2 text-sm leading-relaxed text-gray-400">Admin dapat mengelola game, category, review, user, payment, developer, publisher, dan platform.</p>
+                <p class="text-4xl font-black text-[#118dff]">03</p>
+                <h3 class="text-xl font-bold text-white mt-2">Centralized Admin</h3>
+                <p class="mt-2 text-sm leading-relaxed text-gray-400">Manajemen konten yang kuat untuk menjaga ekosistem game tetap ter-update.</p>
             </div>
         </section>
 
