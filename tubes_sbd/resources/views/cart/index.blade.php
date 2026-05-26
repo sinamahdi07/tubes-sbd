@@ -8,6 +8,9 @@ use Illuminate\Support\Str;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Cart - PlayMart</title>
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
+    <link rel="stylesheet" href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <link rel="icon" type="image/png" href="{{ asset('GAMESTORE.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <title>{{ $game->title }}</title>
 
     <script src="https://cdn.tailwindcss.com"></script>

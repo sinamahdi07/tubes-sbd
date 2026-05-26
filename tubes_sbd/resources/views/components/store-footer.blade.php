@@ -30,7 +30,7 @@
             <h3 class="text-xs font-black uppercase tracking-[0.25em] text-[#66c0f4]">Support</h3>
             <div class="mt-4 space-y-3 text-sm font-semibold text-gray-400">
                 <a href="{{ route('support') }}" class="block transition-colors hover:text-[#118dff]">Help Center</a>
-                <a href="{{ route('support') }}#faq" class="block transition-colors hover:text-[#118dff]">F.A.Q</a>
+                <a href="{{ route('about') }}" class="block transition-colors hover:text-[#118dff]">F.A.Q</a>
                 <a href="mailto:support@playmart.test" class="block transition-colors hover:text-[#118dff]">Contact Email</a>
             </div>
         </div>

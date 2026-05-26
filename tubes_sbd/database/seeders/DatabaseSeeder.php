@@ -17,6 +17,9 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AdminSeeder::class,
             DemoStoreSeeder::class,
+            UserSeeder::class,
+            TransactionSeeder::class,
+            FriendshipSeeder::class,
         ]);
 
         if (file_exists(database_path('seeders/data/games.xlsx'))) {
