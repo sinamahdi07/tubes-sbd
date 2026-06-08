@@ -17,6 +17,21 @@
         .steam-blue {
             background: linear-gradient(90deg,#06bfff,#2d73ff);
         }
+
+        .wishlist-button.is-active {
+            border-color: #66c0f4;
+            background: rgba(102, 192, 244, .12);
+            color: #66c0f4;
+        }
+
+        .related-game-card img {
+            transition: transform .28s ease, filter .28s ease;
+        }
+
+        .related-game-card:hover img {
+            transform: scale(1.05);
+            filter: saturate(1.12);
+        }
     </style>
 </head>
 
@@ -132,6 +147,30 @@
                     </p>
 
                     @if($game->detail && $game->detail->minimum_requirements)
+                        @php
+                            $requirementsText = trim(html_entity_decode(strip_tags($game->detail->minimum_requirements)));
+                            $requirementsText = preg_replace("/\r\n?/", "\n", $requirementsText);
+                            $requirementsText = preg_replace('/\s+(OS|Processor|Memory|Graphics|DirectX|Storage|Network|Sound Card|Additional Notes|Requires a 64-bit processor and operating system):/i', "\n$1:", $requirementsText);
+                            $requirementsText = preg_replace('/(OS|Processor|Memory|Graphics|DirectX|Storage|Network|Sound Card|Additional Notes|Requires a 64-bit processor and operating system):/i', "\n$1:", $requirementsText);
+                            $requirementRows = collect(preg_split("/\n+/", $requirementsText))
+                                ->map(fn ($line) => trim($line, " \t\n\r\0\x0B-•"))
+                                ->filter()
+                                ->map(function ($line) {
+                                    if (preg_match('/^([^:]{2,64}):\s*(.+)$/', $line, $matches)) {
+                                        return [
+                                            'label' => trim($matches[1]),
+                                            'value' => trim($matches[2]),
+                                        ];
+                                    }
+
+                                    return [
+                                        'label' => null,
+                                        'value' => $line,
+                                    ];
+                                })
+                                ->values();
+                        @endphp
+
                         <div class="mt-12 pt-8 border-t border-[#2a475e]">
                             <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#66c0f4]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -139,14 +178,33 @@
                                 </svg>
                                 System Requirements
                             </h3>
-                            
-                            <div class="grid md:grid-cols-1 gap-6">
-                                <div>
-                                    <p class="text-[#66c0f4] text-xs font-black uppercase tracking-widest mb-3">Minimum Requirements:</p>
-                                    <div class="text-gray-400 text-sm leading-relaxed whitespace-pre-line bg-[#0f1923] p-6 rounded-xl border border-[#2a475e]/50">
-                                        {{ $game->detail->minimum_requirements }}
-                                    </div>
+
+                            <div class="rounded-2xl border border-[#2a475e]/70 bg-[#0f1923] p-5">
+                                <div class="mb-5 flex items-center justify-between gap-3 border-b border-[#2a475e]/70 pb-4">
+                                    <p class="text-[#66c0f4] text-xs font-black uppercase tracking-widest">Minimum Requirements</p>
+                                    <span class="rounded-lg bg-[#16202d] px-3 py-1 text-xs font-bold text-gray-400">PC Specs</span>
                                 </div>
+
+                                <div class="grid gap-3 md:grid-cols-2">
+                                    @foreach($requirementRows as $requirement)
+                                        <div class="rounded-xl border border-[#2a475e]/60 bg-[#07111d] p-4 {{ empty($requirement['label']) ? 'md:col-span-2' : '' }}">
+                                            @if($requirement['label'])
+                                                <p class="mb-1 text-[11px] font-black uppercase tracking-widest text-[#66c0f4]">
+                                                    {{ $requirement['label'] }}
+                                                </p>
+                                            @endif
+                                            <p class="text-sm font-semibold leading-relaxed text-gray-300">
+                                                {{ $requirement['value'] }}
+                                            </p>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                @if($requirementRows->isEmpty())
+                                    <div class="rounded-xl border border-[#2a475e]/60 bg-[#07111d] p-4 text-sm font-semibold text-gray-400">
+                                        Minimum requirements belum tersedia.
+                                    </div>
+                                @endif
                             </div>
                         </div>
                     @endif
@@ -376,6 +434,7 @@
                     @php
                         $isPurchased = false;
                         $isInCart = false;
+                        $isWishlisted = $isWishlisted ?? false;
                         if(auth()->check()) {
                             $isPurchased = \App\Models\Payment::join('payment_items', 'payments.id', '=', 'payment_items.payment_id')
                                 ->where('payments.user_id', auth()->id())
@@ -405,6 +464,25 @@
                             </button>
                         </form>
                     @endif
+
+                    @auth
+                        <form action="{{ route('wishlist.toggle', $game) }}" method="POST">
+                            @csrf
+                            <button class="wishlist-button {{ $isWishlisted ? 'is-active' : '' }} w-full mt-3 py-4 rounded-xl text-lg font-bold border border-[#2a475e] bg-[#0f1923] text-gray-200 hover:border-[#66c0f4] hover:text-[#66c0f4] transition flex items-center justify-center gap-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 {{ $isWishlisted ? 'fill-[#66c0f4]' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 8.25c0 6.75-9 11.25-9 11.25S3 15 3 8.25A4.75 4.75 0 0 1 11.1 5L12 6l.9-1A4.75 4.75 0 0 1 21 8.25Z"/>
+                                </svg>
+                                {{ $isWishlisted ? 'In Wishlist' : 'Add to Wishlist' }}
+                            </button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}" class="w-full mt-3 py-4 rounded-xl text-lg font-bold border border-[#2a475e] bg-[#0f1923] text-gray-200 hover:border-[#66c0f4] hover:text-[#66c0f4] transition flex items-center justify-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 8.25c0 6.75-9 11.25-9 11.25S3 15 3 8.25A4.75 4.75 0 0 1 11.1 5L12 6l.9-1A4.75 4.75 0 0 1 21 8.25Z"/>
+                            </svg>
+                            Add to Wishlist
+                        </a>
+                    @endauth
 
                 </div>
 
@@ -491,6 +569,72 @@
                 </div>
             </div>
         </section>
+
+        @if(($relatedGames ?? collect())->isNotEmpty())
+            <section class="mt-10 bg-[#16202d] p-8 rounded-2xl border border-[#2a475e]">
+                <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                    <div>
+                        <h2 class="text-3xl font-bold">Game Lainnya</h2>
+                        <p class="mt-2 text-gray-400">
+                            Rekomendasi game lain yang mungkin kamu suka.
+                        </p>
+                    </div>
+
+                    <a href="{{ route('games.search') }}" class="text-sm font-black uppercase tracking-widest text-[#66c0f4] transition hover:text-white">
+                        Lihat Semua
+                    </a>
+                </div>
+
+                <div class="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
+                    @foreach($relatedGames as $relatedGame)
+                        @php
+                            $relatedDiscount = $relatedGame->discount_percent;
+                            $relatedFinalPrice = $relatedGame->final_price;
+                        @endphp
+
+                        <a
+                            href="{{ url('/game/' . $relatedGame->game_id) }}"
+                            class="related-game-card group overflow-hidden rounded-2xl border border-[#2a475e] bg-[#0f1923] transition hover:-translate-y-1 hover:border-[#66c0f4] hover:bg-[#1f2f42]"
+                        >
+                            <div class="aspect-video overflow-hidden bg-black">
+                                <img
+                                    src="{{ $relatedGame->thumbnail_url ?: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=70&w=800&auto=format&fit=crop' }}"
+                                    alt="{{ $relatedGame->title }}"
+                                    class="h-full w-full object-cover"
+                                    loading="lazy"
+                                >
+                            </div>
+
+                            <div class="p-5">
+                                <h3 class="line-clamp-2 min-h-[3.5rem] text-lg font-black leading-tight text-white group-hover:text-[#66c0f4]">
+                                    {{ $relatedGame->title }}
+                                </h3>
+
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    @foreach($relatedGame->genres->take(2) as $genre)
+                                        <span class="rounded bg-[#2a475e] px-2 py-1 text-xs font-bold text-gray-300">
+                                            {{ $genre->name }}
+                                        </span>
+                                    @endforeach
+                                </div>
+
+                                <div class="mt-5 flex items-center justify-between gap-3">
+                                    @if($relatedDiscount > 0)
+                                        <span class="rounded bg-[#4c6b22] px-2 py-1 text-xs font-black text-[#beee11]">
+                                            -{{ $relatedDiscount }}%
+                                        </span>
+                                    @endif
+
+                                    <span class="ml-auto text-lg font-black text-[#66c0f4]">
+                                        {{ $relatedFinalPrice <= 0 ? 'Gratis' : 'Rp ' . number_format($relatedFinalPrice, 0, ',', '.') }}
+                                    </span>
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </section>
+        @endif
 
     </section>
 

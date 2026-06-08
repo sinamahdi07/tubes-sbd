@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Imports\GamesImport;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
+use Maatwebsite\Excel\Validators\ValidationException;
 
 class GameImportController extends Controller
 {
@@ -31,12 +32,12 @@ class GameImportController extends Controller
             ],
         ], [
             'file.required' => 'File Excel wajib dipilih.',
-            'file.mimes'    => 'Format file harus .xlsx, .xls, atau .csv.',
-            'file.max'      => 'Ukuran file maksimal 10MB.',
+            'file.mimes' => 'Format file harus .xlsx, .xls, atau .csv.',
+            'file.max' => 'Ukuran file maksimal 10MB.',
         ]);
 
         try {
-            $import = new GamesImport();
+            $import = new GamesImport;
             Excel::import($import, $request->file('file'));
 
             $message = "Berhasil mengimport {$import->imported} game.";
@@ -46,13 +47,13 @@ class GameImportController extends Controller
                 ->with('success', $message)
                 ->with('failures', $failures);
 
-        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+        } catch (ValidationException $e) {
             return redirect()->route('import.index')
-                ->with('error', 'File Excel tidak valid: ' . $e->getMessage());
+                ->with('error', 'File Excel tidak valid: '.$e->getMessage());
 
         } catch (\Throwable $e) {
             return redirect()->route('import.index')
-                ->with('error', 'Gagal mengimport: ' . $e->getMessage());
+                ->with('error', 'Gagal mengimport: '.$e->getMessage());
         }
     }
 }

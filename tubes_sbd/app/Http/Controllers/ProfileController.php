@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Friendship;
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Friendship;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;

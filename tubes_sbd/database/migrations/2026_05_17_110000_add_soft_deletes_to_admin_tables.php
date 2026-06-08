@@ -22,7 +22,7 @@ return new class extends Migration
     public function up(): void
     {
         foreach ($this->tables as $tableName) {
-            if (!Schema::hasTable($tableName) || Schema::hasColumn($tableName, 'deleted_at')) {
+            if (! Schema::hasTable($tableName) || Schema::hasColumn($tableName, 'deleted_at')) {
                 continue;
             }
 
@@ -35,7 +35,7 @@ return new class extends Migration
     public function down(): void
     {
         foreach ($this->tables as $tableName) {
-            if (!Schema::hasTable($tableName) || !Schema::hasColumn($tableName, 'deleted_at')) {
+            if (! Schema::hasTable($tableName) || ! Schema::hasColumn($tableName, 'deleted_at')) {
                 continue;
             }
 

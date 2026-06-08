@@ -17,7 +17,7 @@ class AdminDeveloperController extends Controller
         }
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%'.$request->search.'%');
         }
 
         $developers = $query->orderBy('name')->paginate(15)->withQueryString();
@@ -36,7 +36,7 @@ class AdminDeveloperController extends Controller
 
     public function update(Request $request, Developer $developer)
     {
-        $request->validate(['name' => 'required|string|max:200|unique:developers,name,' . $developer->developer_id . ',developer_id']);
+        $request->validate(['name' => 'required|string|max:200|unique:developers,name,'.$developer->developer_id.',developer_id']);
 
         $developer->update(['name' => $request->name]);
 

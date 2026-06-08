@@ -32,8 +32,8 @@ class PaymentController extends Controller
         }
 
         return view('payments.checkout', [
-            'carts'          => $carts,
-            'summary'        => $this->buildSummary($carts),
+            'carts' => $carts,
+            'summary' => $this->buildSummary($carts),
             'paymentMethods' => $this->paymentMethods(),
         ]);
     }
@@ -68,20 +68,20 @@ class PaymentController extends Controller
             $summary = $this->buildSummary($carts);
 
             $payment = Payment::create([
-                'user_id'      => $request->user()->id,
+                'user_id' => $request->user()->id,
                 'payment_code' => $this->generatePaymentCode(),
-                'method'       => $validated['method'],
-                'status'       => Payment::STATUS_PAID,
-                'paid_at'      => now(),
+                'method' => $validated['method'],
+                'status' => Payment::STATUS_PAID,
+                'paid_at' => now(),
             ]);
 
             foreach ($summary['items'] as $item) {
                 $payment->items()->create([
-                    'game_id'          => $item['game']->game_id,
-                    'title'            => $item['game']->title,
-                    'unit_price'       => $item['price'],
+                    'game_id' => $item['game']->game_id,
+                    'title' => $item['game']->title,
+                    'unit_price' => $item['price'],
                     'discount_percent' => $item['discount_percent'],
-                    'quantity'         => $item['quantity'],
+                    'quantity' => $item['quantity'],
                 ]);
             }
 
@@ -163,30 +163,30 @@ class PaymentController extends Controller
             $lineTotal = max(0, $lineSubtotal - $lineDiscount);
 
             return [
-                'cart'             => $cart,
-                'game'             => $game,
-                'quantity'         => $quantity,
-                'price'            => $price,
+                'cart' => $cart,
+                'game' => $game,
+                'quantity' => $quantity,
+                'price' => $price,
                 'discount_percent' => $discountPercent,
-                'line_subtotal'    => $lineSubtotal,
-                'line_discount'    => $lineDiscount,
-                'line_total'       => $lineTotal,
+                'line_subtotal' => $lineSubtotal,
+                'line_discount' => $lineDiscount,
+                'line_total' => $lineTotal,
             ];
         });
 
         return [
-            'items'          => $items,
-            'subtotal'       => $items->sum('line_subtotal'),
+            'items' => $items,
+            'subtotal' => $items->sum('line_subtotal'),
             'discount_total' => $items->sum('line_discount'),
-            'total'          => $items->sum('line_total'),
-            'quantity'       => $items->sum('quantity'),
+            'total' => $items->sum('line_total'),
+            'quantity' => $items->sum('quantity'),
         ];
     }
 
     private function generatePaymentCode(): string
     {
         do {
-            $code = 'PAY-' . now()->format('Ymd') . '-' . Str::upper(Str::random(6));
+            $code = 'PAY-'.now()->format('Ymd').'-'.Str::upper(Str::random(6));
         } while (Payment::where('payment_code', $code)->exists());
 
         return $code;
@@ -196,9 +196,9 @@ class PaymentController extends Controller
     {
         return [
             'bank_transfer' => 'Bank Transfer',
-            'qris'          => 'QRIS',
-            'e_wallet'      => 'E-Wallet',
-            'card'          => 'Kartu Debit/Kredit',
+            'qris' => 'QRIS',
+            'e_wallet' => 'E-Wallet',
+            'card' => 'Kartu Debit/Kredit',
         ];
     }
 }

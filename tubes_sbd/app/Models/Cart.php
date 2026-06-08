@@ -9,7 +9,7 @@ class Cart extends Model
     protected $fillable = [
         'user_id',
         'game_id',
-        'quantity'
+        'quantity',
     ];
 
     public function game()

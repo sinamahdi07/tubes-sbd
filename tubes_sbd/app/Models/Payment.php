@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Payment extends Model
 {
     public const STATUS_PAID = 'paid';
+
     public const STATUS_PENDING = 'pending';
 
     protected $fillable = [

@@ -1,13 +1,25 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\AdminCategoryController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminDeveloperController;
+use App\Http\Controllers\Admin\AdminGameController;
+use App\Http\Controllers\Admin\AdminGenreController;
+use App\Http\Controllers\Admin\AdminPaymentController;
+use App\Http\Controllers\Admin\AdminPlatformController;
+use App\Http\Controllers\Admin\AdminPublisherController;
+use App\Http\Controllers\Admin\AdminReviewController;
+use App\Http\Controllers\Admin\AdminUserController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\GameController;
-use App\Http\Controllers\GameReviewController;
 use App\Http\Controllers\GameImportController;
+use App\Http\Controllers\GameReviewController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\CartController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -42,12 +54,16 @@ Route::get('/search', [HomeController::class, 'search'])
 Route::get('/search-games', [HomeController::class, 'autocomplete'])
     ->name('games.autocomplete');
 
-    // Cart
-    Route::post('/cart/add/{game}', [CartController::class, 'add'])
+// Cart
+Route::post('/cart/add/{game}', [CartController::class, 'add'])
     ->middleware('auth')
     ->name('cart.add');
 
 Route::middleware('auth')->group(function () {
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/{friend}', [ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{friend}', [ChatController::class, 'store'])->name('chat.store');
+
     Route::get('/friends', [FriendController::class, 'index'])->name('friends.index');
     Route::post('/friends', [FriendController::class, 'store'])->name('friends.store');
     Route::patch('/friends/{friendship}/accept', [FriendController::class, 'accept'])->name('friends.accept');
@@ -61,6 +77,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/game/{game}/reviews/{review}', [GameReviewController::class, 'destroy'])
         ->name('games.reviews.destroy');
 
+    Route::get('/wishlist', [WishlistController::class, 'index'])
+        ->name('wishlist.index');
+
+    Route::post('/wishlist/{game}', [WishlistController::class, 'toggle'])
+        ->name('wishlist.toggle');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('/profile/detail', [ProfileController::class, 'show'])->name('profile.show');
     Route::get('/profile/games', [ProfileController::class, 'games'])->name('profile.games');
@@ -68,10 +90,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/cart', [CartController::class, 'index'])
-    ->name('cart.index');
+        ->name('cart.index');
 
     Route::delete('/cart/{id}', [CartController::class, 'remove'])
-    ->name('cart.remove');
+        ->name('cart.remove');
 
     Route::get('/checkout', [PaymentController::class, 'checkout'])
         ->name('payments.checkout');
@@ -86,14 +108,13 @@ Route::middleware('auth')->group(function () {
         ->name('payments.show');
 });
 
-
 /*
 |--------------------------------------------------------------------------
 | Import Excel
 |--------------------------------------------------------------------------
 */
 
-Route::get('/import',  [GameImportController::class, 'index'])->name('import.index');
+Route::get('/import', [GameImportController::class, 'index'])->name('import.index');
 Route::post('/import', [GameImportController::class, 'store'])->name('import.store');
 
 require __DIR__.'/auth.php';
@@ -105,43 +126,43 @@ require __DIR__.'/auth.php';
 */
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', [\App\Http\Controllers\Admin\AdminDashboardController::class, 'index'])->name('dashboard');
-    
+    Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+
     // Users
-    Route::get('/users', [\App\Http\Controllers\Admin\AdminUserController::class, 'index'])->name('users.index');
-    Route::post('/users/{user}/toggle-admin', [\App\Http\Controllers\Admin\AdminUserController::class, 'toggleAdmin'])->name('users.toggle-admin');
-    Route::post('/users/{user}/restore', [\App\Http\Controllers\Admin\AdminUserController::class, 'restore'])->name('users.restore');
-    Route::delete('/users/{user}', [\App\Http\Controllers\Admin\AdminUserController::class, 'destroy'])->name('users.destroy');
+    Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
+    Route::post('/users/{user}/toggle-admin', [AdminUserController::class, 'toggleAdmin'])->name('users.toggle-admin');
+    Route::post('/users/{user}/restore', [AdminUserController::class, 'restore'])->name('users.restore');
+    Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
 
     // Payments
-    Route::get('/payments', [\App\Http\Controllers\Admin\AdminPaymentController::class, 'index'])->name('payments.index');
-    Route::get('/payments/{payment}', [\App\Http\Controllers\Admin\AdminPaymentController::class, 'show'])->name('payments.show');
+    Route::get('/payments', [AdminPaymentController::class, 'index'])->name('payments.index');
+    Route::get('/payments/{payment}', [AdminPaymentController::class, 'show'])->name('payments.show');
 
     // Reviews
-    Route::get('/reviews', [\App\Http\Controllers\Admin\AdminReviewController::class, 'index'])->name('reviews.index');
-    Route::delete('/reviews/{review}', [\App\Http\Controllers\Admin\AdminReviewController::class, 'destroy'])->name('reviews.destroy');
-    
+    Route::get('/reviews', [AdminReviewController::class, 'index'])->name('reviews.index');
+    Route::delete('/reviews/{review}', [AdminReviewController::class, 'destroy'])->name('reviews.destroy');
+
     // Games
-    Route::post('/games/{game}/restore', [\App\Http\Controllers\Admin\AdminGameController::class, 'restore'])->name('games.restore');
-    Route::resource('games', \App\Http\Controllers\Admin\AdminGameController::class);
-    
+    Route::post('/games/{game}/restore', [AdminGameController::class, 'restore'])->name('games.restore');
+    Route::resource('games', AdminGameController::class);
+
     // Developers
-    Route::post('/developers/{developer}/restore', [\App\Http\Controllers\Admin\AdminDeveloperController::class, 'restore'])->name('developers.restore');
-    Route::resource('developers', \App\Http\Controllers\Admin\AdminDeveloperController::class)->except(['create', 'show', 'edit']);
-    
+    Route::post('/developers/{developer}/restore', [AdminDeveloperController::class, 'restore'])->name('developers.restore');
+    Route::resource('developers', AdminDeveloperController::class)->except(['create', 'show', 'edit']);
+
     // Publishers
-    Route::post('/publishers/{publisher}/restore', [\App\Http\Controllers\Admin\AdminPublisherController::class, 'restore'])->name('publishers.restore');
-    Route::resource('publishers', \App\Http\Controllers\Admin\AdminPublisherController::class)->except(['create', 'show', 'edit']);
-    
+    Route::post('/publishers/{publisher}/restore', [AdminPublisherController::class, 'restore'])->name('publishers.restore');
+    Route::resource('publishers', AdminPublisherController::class)->except(['create', 'show', 'edit']);
+
     // Genres
-    Route::post('/genres/{genre}/restore', [\App\Http\Controllers\Admin\AdminGenreController::class, 'restore'])->name('genres.restore');
-    Route::resource('genres', \App\Http\Controllers\Admin\AdminGenreController::class)->except(['create', 'show', 'edit']);
+    Route::post('/genres/{genre}/restore', [AdminGenreController::class, 'restore'])->name('genres.restore');
+    Route::resource('genres', AdminGenreController::class)->except(['create', 'show', 'edit']);
 
     // Categories
-    Route::post('/categories/{category}/restore', [\App\Http\Controllers\Admin\AdminCategoryController::class, 'restore'])->name('categories.restore');
-    Route::resource('categories', \App\Http\Controllers\Admin\AdminCategoryController::class);
+    Route::post('/categories/{category}/restore', [AdminCategoryController::class, 'restore'])->name('categories.restore');
+    Route::resource('categories', AdminCategoryController::class);
 
     // Platforms
-    Route::post('/platforms/{platform}/restore', [\App\Http\Controllers\Admin\AdminPlatformController::class, 'restore'])->name('platforms.restore');
-    Route::resource('platforms', \App\Http\Controllers\Admin\AdminPlatformController::class);
+    Route::post('/platforms/{platform}/restore', [AdminPlatformController::class, 'restore'])->name('platforms.restore');
+    Route::resource('platforms', AdminPlatformController::class);
 });

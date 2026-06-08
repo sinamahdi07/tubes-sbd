@@ -10,6 +10,7 @@ class Category extends Model
     use SoftDeletes;
 
     protected $primaryKey = 'category_id';
+
     protected $fillable = ['name'];
 
     public function games()

@@ -18,11 +18,11 @@ class AdminReviewController extends Controller
 
         if ($search !== '') {
             $query->where(function ($q) use ($search) {
-                $q->where('body', 'like', '%' . $search . '%')
-                    ->orWhereHas('game', fn ($game) => $game->where('title', 'like', '%' . $search . '%'))
+                $q->where('body', 'like', '%'.$search.'%')
+                    ->orWhereHas('game', fn ($game) => $game->where('title', 'like', '%'.$search.'%'))
                     ->orWhereHas('user', function ($user) use ($search) {
-                        $user->where('name', 'like', '%' . $search . '%')
-                            ->orWhere('email', 'like', '%' . $search . '%');
+                        $user->where('name', 'like', '%'.$search.'%')
+                            ->orWhere('email', 'like', '%'.$search.'%');
                     });
             });
         }

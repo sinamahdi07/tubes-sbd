@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Platform;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 class AdminPlatformController extends Controller
 {
@@ -18,7 +17,7 @@ class AdminPlatformController extends Controller
         }
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%'.$request->search.'%');
         }
 
         $platforms = $query->latest()->paginate(15)->withQueryString();
@@ -53,7 +52,7 @@ class AdminPlatformController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:100',
-            'slug' => 'required|string|max:100|unique:platforms,slug,' . $platform->platform_id . ',platform_id',
+            'slug' => 'required|string|max:100|unique:platforms,slug,'.$platform->platform_id.',platform_id',
         ]);
 
         $platform->update($validated);

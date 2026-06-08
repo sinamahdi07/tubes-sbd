@@ -151,13 +151,19 @@
                                         <p class="truncate text-sm text-gray-400">{{ $friend->email }}</p>
                                     </div>
 
-                                    <form action="{{ route('friends.destroy', $friendship) }}" method="POST" onsubmit="return confirm('Hapus teman ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="rounded-md border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50">
-                                            Hapus
-                                        </button>
-                                    </form>
+                                    <div class="flex shrink-0 gap-2">
+                                        <a href="{{ route('chat.show', $friend) }}" class="rounded-md border border-[#66c0f4] px-3 py-2 text-sm font-semibold text-[#66c0f4] hover:bg-[#0f2638]">
+                                            Chat
+                                        </a>
+
+                                        <form action="{{ route('friends.destroy', $friendship) }}" method="POST" onsubmit="return confirm('Hapus teman ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="rounded-md border border-red-200 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-50">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
                             @endif
                         @empty

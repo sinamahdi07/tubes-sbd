@@ -66,14 +66,14 @@ return new class extends Migration
             */
 
             $table->foreign('developer_id')
-                  ->references('developer_id')
-                  ->on('developers')
-                  ->onDelete('cascade');
+                ->references('developer_id')
+                ->on('developers')
+                ->onDelete('cascade');
 
             $table->foreign('publisher_id')
-                  ->references('publisher_id')
-                  ->on('publishers')
-                  ->onDelete('cascade');
+                ->references('publisher_id')
+                ->on('publishers')
+                ->onDelete('cascade');
         });
     }
 

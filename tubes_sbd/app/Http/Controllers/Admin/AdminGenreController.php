@@ -17,7 +17,7 @@ class AdminGenreController extends Controller
         }
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%'.$request->search.'%');
         }
 
         $genres = $query->orderBy('name')->paginate(20)->withQueryString();
@@ -36,7 +36,7 @@ class AdminGenreController extends Controller
 
     public function update(Request $request, Genre $genre)
     {
-        $request->validate(['name' => 'required|string|max:100|unique:genres,name,' . $genre->genre_id . ',genre_id']);
+        $request->validate(['name' => 'required|string|max:100|unique:genres,name,'.$genre->genre_id.',genre_id']);
 
         $genre->update(['name' => $request->name]);
 

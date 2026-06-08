@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasTable('game_trailers')) {
+        if (! Schema::hasTable('game_trailers')) {
             Schema::create('game_trailers', function (Blueprint $table) {
                 $table->id('trailer_id');
                 $table->unsignedBigInteger('game_id');
@@ -29,7 +29,7 @@ return new class extends Migration
             return;
         }
 
-        if (!Schema::hasColumn('game_trailers', 'deleted_at')) {
+        if (! Schema::hasColumn('game_trailers', 'deleted_at')) {
             Schema::table('game_trailers', function (Blueprint $table) {
                 $table->softDeletes();
             });

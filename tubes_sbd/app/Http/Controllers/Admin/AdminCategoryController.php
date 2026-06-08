@@ -17,7 +17,7 @@ class AdminCategoryController extends Controller
         }
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%'.$request->search.'%');
         }
 
         $categories = $query->latest()->paginate(15)->withQueryString();
@@ -50,7 +50,7 @@ class AdminCategoryController extends Controller
     public function update(Request $request, Category $category)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:100|unique:categories,name,' . $category->category_id . ',category_id',
+            'name' => 'required|string|max:100|unique:categories,name,'.$category->category_id.',category_id',
         ]);
 
         $category->update($validated);

@@ -37,9 +37,9 @@ return new class extends Migration
             */
 
             $table->foreign('game_id')
-                  ->references('game_id')
-                  ->on('games')
-                  ->onDelete('cascade');
+                ->references('game_id')
+                ->on('games')
+                ->onDelete('cascade');
         });
     }
 

@@ -43,8 +43,14 @@
                 <a href="{{ route('profile.games') }}" class="block rounded-md px-4 py-3 transition hover:bg-[#16202d] hover:text-white">
                     Game Dibeli
                 </a>
+                <a href="{{ route('wishlist.index') }}" class="block rounded-md px-4 py-3 transition hover:bg-[#16202d] hover:text-white">
+                    Wishlist
+                </a>
                 <a href="{{ route('friends.index') }}" class="block rounded-md px-4 py-3 transition hover:bg-[#16202d] hover:text-white">
                     Teman
+                </a>
+                <a href="{{ route('chat.index') }}" class="block rounded-md px-4 py-3 transition hover:bg-[#16202d] hover:text-white">
+                    Chat
                 </a>
                 <a href="{{ route('payments.history') }}" class="block rounded-md px-4 py-3 transition hover:bg-[#16202d] hover:text-white">
                     Riwayat Payment

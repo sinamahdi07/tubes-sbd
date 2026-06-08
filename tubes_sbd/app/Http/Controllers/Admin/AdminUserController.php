@@ -18,8 +18,8 @@ class AdminUserController extends Controller
 
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%')
-                  ->orWhere('email', 'like', '%' . $request->search . '%');
+                $q->where('name', 'like', '%'.$request->search.'%')
+                    ->orWhere('email', 'like', '%'.$request->search.'%');
             });
         }
 
@@ -39,7 +39,7 @@ class AdminUserController extends Controller
             return back()->with('error', 'Kamu tidak bisa mengubah status admin dirimu sendiri!');
         }
 
-        $user->update(['is_admin' => !$user->is_admin]);
+        $user->update(['is_admin' => ! $user->is_admin]);
 
         $status = $user->is_admin ? 'dijadikan Admin' : 'dicabut status Admin-nya';
 

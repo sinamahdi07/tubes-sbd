@@ -32,14 +32,14 @@ return new class extends Migration
             */
 
             $table->foreign('game_id')
-                  ->references('game_id')
-                  ->on('games')
-                  ->onDelete('cascade');
+                ->references('game_id')
+                ->on('games')
+                ->onDelete('cascade');
 
             $table->foreign('genre_id')
-                  ->references('genre_id')
-                  ->on('genres')
-                  ->onDelete('cascade');
+                ->references('genre_id')
+                ->on('genres')
+                ->onDelete('cascade');
 
             // Prevent duplicate genre per game
             $table->unique(['game_id', 'genre_id']);

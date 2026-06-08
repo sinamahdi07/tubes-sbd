@@ -25,20 +25,21 @@ class GamesSeeder extends Seeder
     {
         $filePath = database_path('seeders/data/games.xlsx');
 
-        if (!file_exists($filePath)) {
-            $this->command->warn('⚠️  File tidak ditemukan: ' . $filePath);
+        if (! file_exists($filePath)) {
+            $this->command->warn('⚠️  File tidak ditemukan: '.$filePath);
             $this->command->warn('   Letakkan file Excel kamu di: database/seeders/data/games.xlsx');
+
             return;
         }
 
         $this->command->info('📥  Mengimport data games dari Excel...');
 
-        $import = new GamesImport();
+        $import = new GamesImport;
         Excel::import($import, $filePath);
 
         $this->command->info("✅  Berhasil import: {$import->imported} game.");
 
-        if (!empty($import->failures)) {
+        if (! empty($import->failures)) {
             $this->command->warn('⚠️  Baris yang gagal diimport:');
             foreach ($import->failures as $failure) {
                 $this->command->warn("   Baris {$failure['row']} [{$failure['title']}]: {$failure['error']}");

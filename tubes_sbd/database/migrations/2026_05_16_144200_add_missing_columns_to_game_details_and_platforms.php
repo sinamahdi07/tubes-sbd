@@ -15,17 +15,17 @@ return new class extends Migration
     {
         // Tambah kolom di game_details
         Schema::table('game_details', function (Blueprint $table) {
-            if (!Schema::hasColumn('game_details', 'short_description')) {
+            if (! Schema::hasColumn('game_details', 'short_description')) {
                 $table->text('short_description')->nullable()->after('discount');
             }
-            if (!Schema::hasColumn('game_details', 'header_image')) {
+            if (! Schema::hasColumn('game_details', 'header_image')) {
                 $table->string('header_image', 1000)->nullable()->after('short_description');
             }
         });
 
         // Tambah kolom icon di platforms
         Schema::table('platforms', function (Blueprint $table) {
-            if (!Schema::hasColumn('platforms', 'icon')) {
+            if (! Schema::hasColumn('platforms', 'icon')) {
                 $table->text('icon')->nullable()->after('slug');
             }
         });

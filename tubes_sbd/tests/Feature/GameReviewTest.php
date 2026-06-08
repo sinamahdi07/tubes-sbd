@@ -99,7 +99,7 @@ class GameReviewTest extends TestCase
     {
         $payment = Payment::create([
             'user_id' => $user->id,
-            'payment_code' => 'PAY-REVIEW-' . $user->id,
+            'payment_code' => 'PAY-REVIEW-'.$user->id,
             'method' => 'qris',
             'status' => Payment::STATUS_PAID,
             'paid_at' => now(),

@@ -10,6 +10,7 @@ class Platform extends Model
     use SoftDeletes;
 
     protected $primaryKey = 'platform_id';
+
     protected $fillable = ['name', 'slug', 'icon'];
 
     public function games()

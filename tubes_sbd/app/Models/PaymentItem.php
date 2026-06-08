@@ -16,9 +16,9 @@ class PaymentItem extends Model
     ];
 
     protected $casts = [
-        'unit_price'       => 'decimal:2',
+        'unit_price' => 'decimal:2',
         'discount_percent' => 'integer',
-        'quantity'         => 'integer',
+        'quantity' => 'integer',
     ];
 
     public function payment()

@@ -22,8 +22,8 @@ class PaymentTest extends TestCase
         $game = $this->createGame();
 
         Cart::create([
-            'user_id'  => $user->id,
-            'game_id'  => $game->game_id,
+            'user_id' => $user->id,
+            'game_id' => $game->game_id,
             'quantity' => 2,
         ]);
 
@@ -115,19 +115,19 @@ class PaymentTest extends TestCase
     private function createGame(string $title = 'Game Test', int $price = 50000, int $discount = 0): Game
     {
         $developer = Developer::create([
-            'name' => 'Developer ' . $title,
+            'name' => 'Developer '.$title,
         ]);
 
         $publisher = Publisher::create([
-            'name' => 'Publisher ' . $title,
+            'name' => 'Publisher '.$title,
         ]);
 
         $game = Game::create([
-            'title'        => $title,
-            'description'  => 'Game untuk test payment.',
-            'price'        => $price,
+            'title' => $title,
+            'description' => 'Game untuk test payment.',
+            'price' => $price,
             'release_date' => '2026-05-16',
-            'thumbnail_url'=> 'https://example.com/game.jpg',
+            'thumbnail_url' => 'https://example.com/game.jpg',
             'developer_id' => $developer->developer_id,
             'publisher_id' => $publisher->publisher_id,
         ]);

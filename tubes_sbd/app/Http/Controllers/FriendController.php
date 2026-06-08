@@ -46,8 +46,8 @@ class FriendController extends Controller
             $users = User::query()
                 ->whereNotIn('id', $relatedUserIds)
                 ->where(function ($query) use ($search) {
-                    $query->where('name', 'like', '%' . $search . '%')
-                        ->orWhere('email', 'like', '%' . $search . '%');
+                    $query->where('name', 'like', '%'.$search.'%')
+                        ->orWhere('email', 'like', '%'.$search.'%');
                 })
                 ->orderBy('name')
                 ->limit(12)

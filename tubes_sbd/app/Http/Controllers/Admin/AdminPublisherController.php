@@ -17,7 +17,7 @@ class AdminPublisherController extends Controller
         }
 
         if ($request->filled('search')) {
-            $query->where('name', 'like', '%' . $request->search . '%');
+            $query->where('name', 'like', '%'.$request->search.'%');
         }
 
         $publishers = $query->orderBy('name')->paginate(15)->withQueryString();
@@ -36,7 +36,7 @@ class AdminPublisherController extends Controller
 
     public function update(Request $request, Publisher $publisher)
     {
-        $request->validate(['name' => 'required|string|max:200|unique:publishers,name,' . $publisher->publisher_id . ',publisher_id']);
+        $request->validate(['name' => 'required|string|max:200|unique:publishers,name,'.$publisher->publisher_id.',publisher_id']);
 
         $publisher->update(['name' => $request->name]);
 

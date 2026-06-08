@@ -7,11 +7,29 @@
     'contained' => true,
 ])
 
+@once
+    <style>
+        .playmart-filter-select {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: none !important;
+        }
+
+        .playmart-filter-select::-ms-expand {
+            display: none;
+        }
+    </style>
+@endonce
+
 <section class="relative z-[60] {{ $contained ? 'mx-auto max-w-[1700px] px-4 py-5 sm:px-6 lg:px-8' : '' }}">
-    <div class="rounded-lg border border-[#2a475e] bg-[#0f1923]/90 p-2 shadow-2xl shadow-black/25">
+    <div class="rounded-xl border border-[#118dff]/35 bg-[#02060d]/95 p-3 shadow-[0_18px_48px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(102,192,244,0.08)] backdrop-blur-xl">
         <div class="relative" data-game-search data-autocomplete-url="{{ route('games.autocomplete') }}">
-            <form action="{{ route('games.search') }}" method="GET" class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_220px_220px_120px]">
-                <div class="relative">
+            <form action="{{ route('games.search') }}" method="GET" class="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_220px_240px_140px]">
+                <div class="relative md:col-span-2 xl:col-span-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="pointer-events-none absolute left-5 top-1/2 h-6 w-6 -translate-y-1/2 text-[#2fb7ff]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.1" d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z"/>
+                    </svg>
                     <input
                         type="text"
                         name="search"
@@ -19,59 +37,69 @@
                         autocomplete="off"
                         placeholder="Search for games, DLCs, and more..."
                         data-game-search-input
-                        class="h-12 w-full rounded-md border border-[#22364b] bg-[#07111d] pl-5 pr-12 text-sm font-semibold text-white outline-none transition placeholder:text-gray-500 focus:border-[#66c0f4] focus:ring-0"
+                        class="h-14 w-full rounded-lg border border-[#118dff]/55 bg-[#030912]/95 pl-14 pr-5 text-base font-bold text-white outline-none shadow-[inset_0_1px_0_rgba(102,192,244,0.07)] transition placeholder:text-slate-500 hover:border-[#2fb7ff] hover:bg-[#06111f] focus:border-[#2fb7ff] focus:bg-[#06111f] focus:ring-0"
                     >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z"/>
-                    </svg>
                 </div>
 
                 <div class="relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="pointer-events-none absolute left-4 top-1/2 h-6 w-6 -translate-y-1/2 text-[#2fb7ff]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12h4m-2-2v4m7-2h.01M18 10h.01M7.5 7h9A4.5 4.5 0 0 1 21 11.5v2.2a3.3 3.3 0 0 1-5.72 2.24l-.72-.77a2.2 2.2 0 0 0-1.6-.7h-1.92a2.2 2.2 0 0 0-1.6.7l-.72.77A3.3 3.3 0 0 1 3 13.7v-2.2A4.5 4.5 0 0 1 7.5 7Z"/>
+                    </svg>
                     <select
                         name="genre"
                         data-game-search-genre
                         onchange="this.form.submit()"
-                        class="h-12 w-full appearance-none rounded-md border border-[#22364b] bg-[#07111d] px-5 pr-10 text-sm font-semibold text-white outline-none transition focus:border-[#66c0f4] focus:ring-0"
+                        class="playmart-filter-select h-14 w-full appearance-none rounded-lg border border-[#2a475e] bg-[#030912]/95 pl-12 pr-10 text-sm font-black text-white outline-none shadow-[inset_0_1px_0_rgba(102,192,244,0.07)] transition hover:border-[#2fb7ff] hover:bg-[#06111f] focus:border-[#2fb7ff] focus:bg-[#06111f] focus:ring-0"
+                        style="color-scheme: dark;"
                     >
-                        <option value="" @selected(!$selectedGenre)>All Genres</option>
+                        <option value="" class="bg-[#07111d] text-slate-100" style="background-color: #07111d; color: #f8fafc;" @selected(!$selectedGenre)>All Genres</option>
                         @foreach($genres as $genre)
-                            <option value="{{ $genre->genre_id }}" @selected((string) $selectedGenre === (string) $genre->genre_id)>
+                            <option value="{{ $genre->genre_id }}" class="bg-[#07111d] text-slate-100" style="background-color: #07111d; color: #f8fafc;" @selected((string) $selectedGenre === (string) $genre->genre_id)>
                                 {{ $genre->name }}
                             </option>
                         @endforeach
                     </select>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#2fb7ff]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="m6 9 6 6 6-6"/>
                     </svg>
                 </div>
 
                 <div class="relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="pointer-events-none absolute left-4 top-1/2 h-6 w-6 -translate-y-1/2 text-[#2fb7ff]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m12 3 8 4-8 4-8-4 8-4Zm8 8-8 4-8-4m16 4-8 4-8-4"/>
+                    </svg>
                     <select
                         name="category"
                         data-game-search-category
                         onchange="this.form.submit()"
-                        class="h-12 w-full appearance-none rounded-md border border-[#22364b] bg-[#07111d] px-5 pr-10 text-sm font-semibold text-white outline-none transition focus:border-[#66c0f4] focus:ring-0"
+                        class="playmart-filter-select h-14 w-full appearance-none rounded-lg border border-[#2a475e] bg-[#030912]/95 pl-12 pr-10 text-sm font-black text-white outline-none shadow-[inset_0_1px_0_rgba(102,192,244,0.07)] transition hover:border-[#2fb7ff] hover:bg-[#06111f] focus:border-[#2fb7ff] focus:bg-[#06111f] focus:ring-0"
+                        style="color-scheme: dark;"
                     >
-                        <option value="" @selected(!$selectedCategory)>All Categories</option>
+                        <option value="" class="bg-[#07111d] text-slate-100" style="background-color: #07111d; color: #f8fafc;" @selected(!$selectedCategory)>All Categories</option>
                         @foreach($categories as $category)
-                            <option value="{{ $category->category_id }}" @selected((string) $selectedCategory === (string) $category->category_id)>
+                            <option value="{{ $category->category_id }}" class="bg-[#07111d] text-slate-100" style="background-color: #07111d; color: #f8fafc;" @selected((string) $selectedCategory === (string) $category->category_id)>
                                 {{ $category->name }}
                             </option>
                         @endforeach
                     </select>
-                    <svg xmlns="http://www.w3.org/2000/svg" class="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6"/>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#2fb7ff]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="m6 9 6 6 6-6"/>
                     </svg>
                 </div>
 
-                <button type="submit" class="steam-blue h-12 rounded-md px-7 text-sm font-black text-white shadow-lg shadow-blue-950/35 transition hover:brightness-110">
-                    Search
+                <button type="submit" class="h-14 rounded-lg bg-gradient-to-br from-[#06bfff] to-[#2d73ff] px-5 text-sm font-black uppercase tracking-wide text-white shadow-[0_12px_28px_rgba(17,141,255,0.28)] transition hover:-translate-y-0.5 hover:brightness-110 md:col-span-2 xl:col-span-1">
+                    <span class="flex items-center justify-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z"/>
+                        </svg>
+                        Search
+                    </span>
                 </button>
             </form>
 
             <div
                 data-game-search-results
-                class="absolute left-0 top-full z-[70] mt-2 hidden max-h-96 w-full overflow-auto rounded-lg border border-[#2a475e] bg-[#0f1923] shadow-2xl shadow-black/40"
+                class="relative z-[70] mt-4 hidden max-h-96 w-full overflow-auto rounded-xl border border-[#118dff]/35 bg-[#030912] shadow-2xl shadow-black/50"
             ></div>
         </div>
     </div>

@@ -12,7 +12,7 @@ class Screenshot extends Model
 
     protected $fillable = [
         'game_id',
-        'image_url'
+        'image_url',
     ];
 
     /*

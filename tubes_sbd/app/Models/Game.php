@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Game extends Model
@@ -18,19 +18,7 @@ class Game extends Model
 
     protected $table = 'games';
 
-    /*
-    |--------------------------------------------------------------------------
-    | Primary Key
-    |--------------------------------------------------------------------------
-    */
-
     protected $primaryKey = 'game_id';
-
-    /*
-    |--------------------------------------------------------------------------
-    | Mass Assignment
-    |--------------------------------------------------------------------------
-    */
 
     protected $fillable = [
         'title',
@@ -42,22 +30,10 @@ class Game extends Model
         'publisher_id',
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    | Casts
-    |--------------------------------------------------------------------------
-    */
-
     protected $casts = [
-        'price'        => 'decimal:2',
+        'price' => 'decimal:2',
         'release_date' => 'date',
     ];
-
-    /*
-    |--------------------------------------------------------------------------
-    | Relationships
-    |--------------------------------------------------------------------------
-    */
 
     // Relasi ke Developer (Many-to-One)
     public function developer()
@@ -79,7 +55,6 @@ class Game extends Model
         );
     }
 
-    // Relasi ke Genre (Many-to-Many via game_genres)
     public function genres()
     {
         return $this->belongsToMany(
@@ -136,6 +111,11 @@ class Game extends Model
     public function carts()
     {
         return $this->hasMany(Cart::class, 'game_id', 'game_id');
+    }
+
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class, 'game_id', 'game_id');
     }
 
     public function paymentItems()

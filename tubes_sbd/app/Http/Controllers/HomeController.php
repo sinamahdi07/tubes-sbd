@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Game;
 use App\Models\Category;
-use App\Models\Genre;
 use App\Models\Developer;
+use App\Models\Game;
+use App\Models\Genre;
 use App\Models\Publisher;
 use Illuminate\Http\Request;
 
@@ -19,14 +19,17 @@ class HomeController extends Controller
         $selectedDeveloper = $request->query('developer');
         $selectedPublisher = $request->query('publisher');
         $sort = $request->query('sort') === 'popular' ? 'popular' : 'latest';
+        $maxPrice = $request->integer('max_price') > 0 ? $request->integer('max_price') : null;
+        $discountedOnly = $request->boolean('discount');
 
         $categories = Category::orderBy('name')->get();
         $genres = Genre::orderBy('name')->get();
 
-        $gamesQuery = Game::with(['publisher', 'genres', 'categories', 'detail', 'platforms'])
+        $gamesQuery = Game::with(['publisher', 'genres', 'categories', 'detail', 'platforms', 'screenshots'])
             ->withPaidPurchasesCount()
+            ->withCount('reviews')
             ->when($search !== '', function ($query) use ($search) {
-                $query->where('title', 'like', $search . '%');
+                $query->where('title', 'like', $search.'%');
             })
             ->when($selectedGenre, function ($query) use ($selectedGenre) {
                 $query->whereHas('genres', function ($q) use ($selectedGenre) {
@@ -43,6 +46,23 @@ class HomeController extends Controller
             })
             ->when($selectedPublisher, function ($query) use ($selectedPublisher) {
                 $query->where('publisher_id', $selectedPublisher);
+            })
+            ->when($discountedOnly, function ($query) {
+                $query->whereHas('detail', function ($detailQuery) {
+                    $detailQuery->where('discount', '>', 0);
+                });
+            })
+            ->when($maxPrice, function ($query) use ($maxPrice) {
+                $query->where(function ($priceQuery) use ($maxPrice) {
+                    $priceQuery
+                        ->where('games.price', '<=', $maxPrice)
+                        ->orWhereHas('detail', function ($detailQuery) use ($maxPrice) {
+                            $detailQuery->whereRaw(
+                                'games.price * (1 - COALESCE(game_details.discount, 0) / 100.0) <= ?',
+                                [$maxPrice]
+                            );
+                        });
+                });
             });
 
         if ($sort === 'popular') {
@@ -61,18 +81,28 @@ class HomeController extends Controller
         $pageTitle = 'Semua Game';
         if ($selectedDeveloper) {
             $dev = Developer::find($selectedDeveloper);
-            if ($dev) $pageTitle = "Games developed by " . $dev->name;
+            if ($dev) {
+                $pageTitle = 'Games developed by '.$dev->name;
+            }
         } elseif ($selectedPublisher) {
             $pub = Publisher::find($selectedPublisher);
-            if ($pub) $pageTitle = "Games published by " . $pub->name;
+            if ($pub) {
+                $pageTitle = 'Games published by '.$pub->name;
+            }
         } elseif ($search) {
-            $pageTitle = "Search Results for: " . $search;
+            $pageTitle = 'Search Results for: '.$search;
+        } elseif ($discountedOnly) {
+            $pageTitle = 'Game yang lagi diskon';
+        } elseif ($maxPrice) {
+            $pageTitle = 'Game di bawah Rp '.number_format($maxPrice, 0, ',', '.');
         }
 
         return view('search', compact(
             'categories',
             'games',
             'genres',
+            'discountedOnly',
+            'maxPrice',
             'search',
             'sort',
             'selectedCategory',
@@ -101,7 +131,7 @@ class HomeController extends Controller
                     $q->where('categories.category_id', $categoryId);
                 });
             })
-            ->where('title', 'like', $search . '%')
+            ->where('title', 'like', $search.'%')
             ->orderBy('title')
             ->take(8)
             ->get()
@@ -110,7 +140,7 @@ class HomeController extends Controller
                 'title' => $game->title,
                 'price' => (float) $game->price,
                 'thumbnail_url' => $game->thumbnail_url,
-                'url' => url('/game/' . $game->game_id),
+                'url' => url('/game/'.$game->game_id),
             ]);
 
         return response()->json($games);

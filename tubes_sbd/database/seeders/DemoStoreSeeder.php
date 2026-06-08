@@ -83,7 +83,7 @@ class DemoStoreSeeder extends Seeder
                     'thumbnail_url' => 'https://images.unsplash.com/photo-1446776811953-b23d57bd21aa?q=80&w=1400&auto=format&fit=crop',
                     'short_description' => 'A vast sci-fi RPG set in a fractured galaxy with hostile worlds and ancient secrets.',
                     'description' => 'Build your legend across hostile planets, recruit a crew, and uncover the source of a galaxy-wide eclipse.',
-                    'minimum_requirements' => 'OS: Windows 10 64-bit' . PHP_EOL . 'Processor: Intel i5' . PHP_EOL . 'Memory: 8 GB RAM' . PHP_EOL . 'Graphics: GTX 1060',
+                    'minimum_requirements' => 'OS: Windows 10 64-bit'.PHP_EOL.'Processor: Intel i5'.PHP_EOL.'Memory: 8 GB RAM'.PHP_EOL.'Graphics: GTX 1060',
                     'website' => 'https://playmart.local/eclipse-frontier',
                 ],
                 [
@@ -99,7 +99,7 @@ class DemoStoreSeeder extends Seeder
                     'thumbnail_url' => 'https://images.unsplash.com/photo-1518709268805-4e9042af2176?q=80&w=1400&auto=format&fit=crop',
                     'short_description' => 'An action RPG where every choice shapes your destiny in a cursed kingdom.',
                     'description' => 'Enter a ruined realm, forge forbidden magic, and decide which houses rise from the ashes.',
-                    'minimum_requirements' => 'OS: Windows 10' . PHP_EOL . 'Processor: Intel i5' . PHP_EOL . 'Memory: 8 GB RAM',
+                    'minimum_requirements' => 'OS: Windows 10'.PHP_EOL.'Processor: Intel i5'.PHP_EOL.'Memory: 8 GB RAM',
                     'website' => 'https://playmart.local/veil-of-ashes',
                 ],
                 [
@@ -115,7 +115,7 @@ class DemoStoreSeeder extends Seeder
                     'thumbnail_url' => 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1400&auto=format&fit=crop',
                     'short_description' => 'High-speed arcade racing in a retro-future city of rain, lights, and rival crews.',
                     'description' => 'Tune hovercars, master neon tracks, and climb the underground racing ladder.',
-                    'minimum_requirements' => 'OS: Windows 10' . PHP_EOL . 'Processor: Intel i3' . PHP_EOL . 'Memory: 6 GB RAM',
+                    'minimum_requirements' => 'OS: Windows 10'.PHP_EOL.'Processor: Intel i3'.PHP_EOL.'Memory: 6 GB RAM',
                     'website' => 'https://playmart.local/neon-drift',
                 ],
                 [
@@ -131,7 +131,7 @@ class DemoStoreSeeder extends Seeder
                     'thumbnail_url' => 'https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?q=80&w=1400&auto=format&fit=crop',
                     'short_description' => 'Survive in a frozen world where cold is your enemy and fire is your currency.',
                     'description' => 'Gather survivors, ration supplies, and push through storms to find the last warm city.',
-                    'minimum_requirements' => 'OS: Windows 10' . PHP_EOL . 'Processor: Intel i5' . PHP_EOL . 'Memory: 8 GB RAM',
+                    'minimum_requirements' => 'OS: Windows 10'.PHP_EOL.'Processor: Intel i5'.PHP_EOL.'Memory: 8 GB RAM',
                     'website' => 'https://playmart.local/frostbound',
                 ],
                 [
@@ -147,7 +147,7 @@ class DemoStoreSeeder extends Seeder
                     'thumbnail_url' => 'https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?q=80&w=1400&auto=format&fit=crop',
                     'short_description' => 'Build, command, and conquer as your empire rises from iron and ambition.',
                     'description' => 'Lead armies, manage city states, and outmaneuver rival kingdoms across a living campaign map.',
-                    'minimum_requirements' => 'OS: Windows 10' . PHP_EOL . 'Processor: Intel i5' . PHP_EOL . 'Memory: 8 GB RAM',
+                    'minimum_requirements' => 'OS: Windows 10'.PHP_EOL.'Processor: Intel i5'.PHP_EOL.'Memory: 8 GB RAM',
                     'website' => 'https://playmart.local/iron-legacy',
                 ],
                 [
@@ -163,7 +163,7 @@ class DemoStoreSeeder extends Seeder
                     'thumbnail_url' => 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1400&auto=format&fit=crop',
                     'short_description' => 'A cozy farming sim with endless charm, quiet mornings, and tiny mysteries.',
                     'description' => 'Restore a seaside village, grow rare crops, decorate your home, and befriend odd neighbors.',
-                    'minimum_requirements' => 'OS: Windows 10' . PHP_EOL . 'Processor: Intel i3' . PHP_EOL . 'Memory: 4 GB RAM',
+                    'minimum_requirements' => 'OS: Windows 10'.PHP_EOL.'Processor: Intel i3'.PHP_EOL.'Memory: 4 GB RAM',
                     'website' => 'https://playmart.local/pixel-haven',
                 ],
                 [
@@ -179,7 +179,7 @@ class DemoStoreSeeder extends Seeder
                     'thumbnail_url' => 'https://images.unsplash.com/photo-1535223289827-42f1e9919769?q=80&w=1400&auto=format&fit=crop',
                     'short_description' => 'A stealth action thriller about a city that watches every move you make.',
                     'description' => 'Hack security grids, move through shadows, and expose a corporate conspiracy.',
-                    'minimum_requirements' => 'OS: Windows 10' . PHP_EOL . 'Processor: Intel i5' . PHP_EOL . 'Memory: 8 GB RAM',
+                    'minimum_requirements' => 'OS: Windows 10'.PHP_EOL.'Processor: Intel i5'.PHP_EOL.'Memory: 8 GB RAM',
                     'website' => 'https://playmart.local/shadow-protocol',
                 ],
                 [
@@ -195,7 +195,7 @@ class DemoStoreSeeder extends Seeder
                     'thumbnail_url' => 'https://images.unsplash.com/photo-1462331940025-496dfbfc7564?q=80&w=1400&auto=format&fit=crop',
                     'short_description' => 'Chart a lonely route through collapsed star systems and impossible signals.',
                     'description' => 'Explore derelict stations, decode alien beacons, and decide what humanity should become next.',
-                    'minimum_requirements' => 'OS: Windows 10 64-bit' . PHP_EOL . 'Processor: Intel i5' . PHP_EOL . 'Memory: 8 GB RAM',
+                    'minimum_requirements' => 'OS: Windows 10 64-bit'.PHP_EOL.'Processor: Intel i5'.PHP_EOL.'Memory: 8 GB RAM',
                     'website' => 'https://playmart.local/starfall-odyssey',
                 ],
             ];
@@ -329,7 +329,7 @@ class DemoStoreSeeder extends Seeder
         }
 
         $game->trailers()->create([
-            'title' => $data['title'] . ' Trailer',
+            'title' => $data['title'].' Trailer',
             'url' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
             'order' => $index,
         ]);
@@ -380,7 +380,7 @@ class DemoStoreSeeder extends Seeder
         $buyerIds = collect($buyers)->pluck('id');
 
         Payment::query()
-            ->where('payment_code', 'like', 'DEMO-%-' . $game->game_id)
+            ->where('payment_code', 'like', 'DEMO-%-'.$game->game_id)
             ->when($buyerIds->isNotEmpty(), function ($query) use ($buyerIds) {
                 $query->whereNotIn('user_id', $buyerIds->all());
             })
@@ -405,7 +405,7 @@ class DemoStoreSeeder extends Seeder
         $lineTotal = $game->final_price;
 
         $payment = Payment::updateOrCreate(
-            ['payment_code' => 'DEMO-' . $user->id . '-' . $game->game_id],
+            ['payment_code' => 'DEMO-'.$user->id.'-'.$game->game_id],
             [
                 'user_id' => $user->id,
                 'method' => 'qris',

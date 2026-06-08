@@ -7,27 +7,25 @@ use App\Models\Game;
 use App\Models\GameScreenshot;
 use App\Models\Genre;
 use App\Models\Publisher;
+use Carbon\Carbon;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Str;
+use Maatwebsite\Excel\Concerns\SkipsErrors;
+use Maatwebsite\Excel\Concerns\SkipsOnError;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithValidation;
-use Maatwebsite\Excel\Concerns\SkipsOnError;
-use Maatwebsite\Excel\Concerns\SkipsErrors;
+use PhpOffice\PhpSpreadsheet\Shared\Date;
 
-class GamesImport implements ToCollection, WithHeadingRow, SkipsOnError
+class GamesImport implements SkipsOnError, ToCollection, WithHeadingRow
 {
     use SkipsErrors;
 
     /**
      * Daftar error baris yang gagal diimport.
-     * @var array
      */
     public array $failures = [];
 
     /**
      * Jumlah baris yang berhasil diimport.
-     * @var int
      */
     public int $imported = 0;
 
@@ -65,17 +63,17 @@ class GamesImport implements ToCollection, WithHeadingRow, SkipsOnError
                 $releaseDate = $this->parseDate($row['release_date'] ?? null);
 
                 $game = Game::create([
-                    'title'         => trim($row['title']),
-                    'description'   => $row['description'] ?? null,
-                    'price'         => is_numeric($row['price'] ?? null) ? (float) $row['price'] : 0,
-                    'release_date'  => $releaseDate,
+                    'title' => trim($row['title']),
+                    'description' => $row['description'] ?? null,
+                    'price' => is_numeric($row['price'] ?? null) ? (float) $row['price'] : 0,
+                    'release_date' => $releaseDate,
                     'thumbnail_url' => $row['thumbnail'] ?? null,
-                    'developer_id'  => $developer->developer_id,
-                    'publisher_id'  => $publisher->publisher_id,
+                    'developer_id' => $developer->developer_id,
+                    'publisher_id' => $publisher->publisher_id,
                 ]);
 
                 // ── 4. Genres (many-to-many → 3NF) ──────────────────────────
-                if (!empty($row['genre'])) {
+                if (! empty($row['genre'])) {
                     $genreNames = array_filter(array_map('trim', explode(',', $row['genre'])));
                     foreach ($genreNames as $genreName) {
                         $genre = Genre::firstOrCreate(['name' => $genreName]);
@@ -85,13 +83,13 @@ class GamesImport implements ToCollection, WithHeadingRow, SkipsOnError
                 }
 
                 // ── 5. Screenshots (one-to-many → pisah tabel) ──────────────
-                if (!empty($row['screenshot'])) {
+                if (! empty($row['screenshot'])) {
                     $urls = array_filter(array_map('trim', explode(',', $row['screenshot'])));
                     foreach ($urls as $order => $url) {
                         GameScreenshot::create([
                             'game_id' => $game->game_id,
-                            'url'     => $url,
-                            'order'   => $order,
+                            'url' => $url,
+                            'order' => $order,
                         ]);
                     }
                 }
@@ -100,7 +98,7 @@ class GamesImport implements ToCollection, WithHeadingRow, SkipsOnError
 
             } catch (\Throwable $e) {
                 $this->failures[] = [
-                    'row'   => $index + 2, // +2 karena row 1 = header
+                    'row' => $index + 2, // +2 karena row 1 = header
                     'title' => $row['title'] ?? '-',
                     'error' => $e->getMessage(),
                 ];
@@ -121,7 +119,7 @@ class GamesImport implements ToCollection, WithHeadingRow, SkipsOnError
         // Excel serial date (integer)
         if (is_numeric($value) && (int) $value > 20000 && (int) $value < 100000) {
             try {
-                return \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($value)
+                return Date::excelToDateTimeObject($value)
                     ->format('Y-m-d');
             } catch (\Throwable) {
                 // fallthrough
@@ -130,7 +128,7 @@ class GamesImport implements ToCollection, WithHeadingRow, SkipsOnError
 
         // String date
         try {
-            return \Carbon\Carbon::parse($value)->format('Y-m-d');
+            return Carbon::parse($value)->format('Y-m-d');
         } catch (\Throwable) {
             return null;
         }

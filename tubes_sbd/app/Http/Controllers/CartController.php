@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Game;
 use App\Models\Payment;
-use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
@@ -19,7 +18,7 @@ class CartController extends Controller
             ->where('payments.status', Payment::STATUS_PAID)
             ->exists();
 
-        if($alreadyPurchased){
+        if ($alreadyPurchased) {
             return back()->with('error', 'You have already purchased this game!');
         }
 
@@ -27,7 +26,7 @@ class CartController extends Controller
             ->where('game_id', $game->game_id)
             ->first();
 
-        if($existingCart){
+        if ($existingCart) {
             if ((int) $existingCart->quantity !== 1) {
                 $existingCart->update(['quantity' => 1]);
             }
@@ -39,7 +38,7 @@ class CartController extends Controller
             Cart::create([
                 'user_id' => $user->id,
                 'game_id' => $game->game_id,
-                'quantity' => 1
+                'quantity' => 1,
             ]);
         }
 

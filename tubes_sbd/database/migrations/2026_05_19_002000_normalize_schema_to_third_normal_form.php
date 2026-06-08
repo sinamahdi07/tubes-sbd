@@ -184,6 +184,6 @@ return new class extends Migration
                 ->contains(fn ($row) => ($row->name ?? null) === $index);
         }
 
-        return collect(DB::select('SHOW INDEX FROM `' . $table . '` WHERE Key_name = ?', [$index]))->isNotEmpty();
+        return collect(DB::select('SHOW INDEX FROM `'.$table.'` WHERE Key_name = ?', [$index]))->isNotEmpty();
     }
 };

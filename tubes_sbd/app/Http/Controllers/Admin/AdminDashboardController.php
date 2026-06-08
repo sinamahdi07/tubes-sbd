@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Game;
-use App\Models\User;
-use App\Models\Developer;
-use App\Models\Publisher;
-use App\Models\Genre;
 use App\Models\Category;
+use App\Models\Developer;
+use App\Models\Game;
 use App\Models\GameReview;
+use App\Models\Genre;
 use App\Models\Payment;
+use App\Models\Publisher;
+use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
@@ -19,15 +19,15 @@ class AdminDashboardController extends Controller
     public function index()
     {
         $stats = [
-            'total_games'      => Game::count(),
-            'total_users'      => User::count(),
+            'total_games' => Game::count(),
+            'total_users' => User::count(),
             'total_developers' => Developer::count(),
             'total_publishers' => Publisher::count(),
-            'total_genres'     => Genre::count(),
+            'total_genres' => Genre::count(),
             'total_categories' => Category::count(),
-            'total_reviews'    => GameReview::count(),
-            'total_payments'   => Payment::count(),
-            'total_revenue'    => $this->paymentTotal('paid'),
+            'total_reviews' => GameReview::count(),
+            'total_payments' => Payment::count(),
+            'total_revenue' => $this->paymentTotal('paid'),
         ];
 
         $recentGames = Game::with(['developer', 'publisher'])

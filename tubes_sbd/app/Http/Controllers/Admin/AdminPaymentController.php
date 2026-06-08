@@ -20,10 +20,10 @@ class AdminPaymentController extends Controller
             $search = $request->search;
 
             $query->where(function ($q) use ($search) {
-                $q->where('payment_code', 'like', '%' . $search . '%')
+                $q->where('payment_code', 'like', '%'.$search.'%')
                     ->orWhereHas('user', function ($userQuery) use ($search) {
-                        $userQuery->where('name', 'like', '%' . $search . '%')
-                            ->orWhere('email', 'like', '%' . $search . '%');
+                        $userQuery->where('name', 'like', '%'.$search.'%')
+                            ->orWhere('email', 'like', '%'.$search.'%');
                     });
             });
         }
@@ -40,9 +40,9 @@ class AdminPaymentController extends Controller
 
         $stats = [
             'total_payments' => Payment::count(),
-            'paid_payments'  => Payment::where('status', 'paid')->count(),
-            'total_revenue'  => $this->paymentTotal('paid'),
-            'pending_total'  => $this->paymentTotal('pending'),
+            'paid_payments' => Payment::where('status', 'paid')->count(),
+            'total_revenue' => $this->paymentTotal('paid'),
+            'pending_total' => $this->paymentTotal('pending'),
         ];
 
         $statuses = Payment::query()
