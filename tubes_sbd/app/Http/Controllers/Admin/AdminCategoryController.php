@@ -74,4 +74,12 @@ class AdminCategoryController extends Controller
         return redirect()->route('admin.categories.index', ['trash' => 1])
             ->with('success', 'Category berhasil direstore!');
     }
+
+    public function forceDestroy(int $category)
+    {
+        Category::onlyTrashed()->findOrFail($category)->forceDelete();
+
+        return redirect()->route('admin.categories.index', ['trash' => 1])
+            ->with('success', 'Category berhasil dihapus permanen!');
+    }
 }

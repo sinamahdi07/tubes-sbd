@@ -279,4 +279,12 @@ class AdminGameController extends Controller
         return redirect()->route('admin.games.index', ['trash' => 1])
             ->with('success', 'Game berhasil direstore!');
     }
+
+    public function forceDestroy(int $game)
+    {
+        Game::onlyTrashed()->findOrFail($game)->forceDelete();
+
+        return redirect()->route('admin.games.index', ['trash' => 1])
+            ->with('success', 'Game berhasil dihapus permanen!');
+    }
 }

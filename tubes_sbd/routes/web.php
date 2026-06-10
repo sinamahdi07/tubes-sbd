@@ -124,6 +124,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
     Route::post('/users/{user}/toggle-admin', [AdminUserController::class, 'toggleAdmin'])->name('users.toggle-admin');
     Route::post('/users/{user}/restore', [AdminUserController::class, 'restore'])->name('users.restore');
+    Route::delete('/users/{user}/force-destroy', [AdminUserController::class, 'forceDestroy'])->name('users.force-destroy');
     Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
 
     // Payments
@@ -136,25 +137,31 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
 
     // Games
     Route::post('/games/{game}/restore', [AdminGameController::class, 'restore'])->name('games.restore');
+    Route::delete('/games/{game}/force-destroy', [AdminGameController::class, 'forceDestroy'])->name('games.force-destroy');
     Route::resource('games', AdminGameController::class);
 
     // Developers
     Route::post('/developers/{developer}/restore', [AdminDeveloperController::class, 'restore'])->name('developers.restore');
+    Route::delete('/developers/{developer}/force-destroy', [AdminDeveloperController::class, 'forceDestroy'])->name('developers.force-destroy');
     Route::resource('developers', AdminDeveloperController::class)->except(['create', 'show', 'edit']);
 
     // Publishers
     Route::post('/publishers/{publisher}/restore', [AdminPublisherController::class, 'restore'])->name('publishers.restore');
+    Route::delete('/publishers/{publisher}/force-destroy', [AdminPublisherController::class, 'forceDestroy'])->name('publishers.force-destroy');
     Route::resource('publishers', AdminPublisherController::class)->except(['create', 'show', 'edit']);
 
     // Genres
     Route::post('/genres/{genre}/restore', [AdminGenreController::class, 'restore'])->name('genres.restore');
+    Route::delete('/genres/{genre}/force-destroy', [AdminGenreController::class, 'forceDestroy'])->name('genres.force-destroy');
     Route::resource('genres', AdminGenreController::class)->except(['create', 'show', 'edit']);
 
     // Categories
     Route::post('/categories/{category}/restore', [AdminCategoryController::class, 'restore'])->name('categories.restore');
+    Route::delete('/categories/{category}/force-destroy', [AdminCategoryController::class, 'forceDestroy'])->name('categories.force-destroy');
     Route::resource('categories', AdminCategoryController::class);
 
     // Platforms
     Route::post('/platforms/{platform}/restore', [AdminPlatformController::class, 'restore'])->name('platforms.restore');
+    Route::delete('/platforms/{platform}/force-destroy', [AdminPlatformController::class, 'forceDestroy'])->name('platforms.force-destroy');
     Route::resource('platforms', AdminPlatformController::class);
 });

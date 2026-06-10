@@ -76,4 +76,12 @@ class AdminPlatformController extends Controller
         return redirect()->route('admin.platforms.index', ['trash' => 1])
             ->with('success', 'Platform berhasil direstore!');
     }
+
+    public function forceDestroy(int $platform)
+    {
+        Platform::onlyTrashed()->findOrFail($platform)->forceDelete();
+
+        return redirect()->route('admin.platforms.index', ['trash' => 1])
+            ->with('success', 'Platform berhasil dihapus permanen!');
+    }
 }

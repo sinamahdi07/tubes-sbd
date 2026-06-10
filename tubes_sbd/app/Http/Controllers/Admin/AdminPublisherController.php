@@ -61,4 +61,12 @@ class AdminPublisherController extends Controller
         return redirect()->route('admin.publishers.index', ['trash' => 1])
             ->with('success', 'Publisher berhasil direstore!');
     }
+
+    public function forceDestroy(int $publisher)
+    {
+        Publisher::onlyTrashed()->findOrFail($publisher)->forceDelete();
+
+        return redirect()->route('admin.publishers.index', ['trash' => 1])
+            ->with('success', 'Publisher berhasil dihapus permanen!');
+    }
 }

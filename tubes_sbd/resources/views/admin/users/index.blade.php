@@ -71,11 +71,16 @@
                                 @endif
                             </td>
                             <td class="p-4 text-sm text-gray-400">{{ $user->created_at->format('d M Y') }}</td>
-                            <td class="p-4 flex justify-center gap-2">
+                            <td class="p-4 flex flex-wrap justify-center gap-2">
                                 @if($isTrash)
                                     <form action="{{ route('admin.users.restore', $user->id) }}" method="POST" class="inline" onsubmit="return confirm('Restore user ini?');">
                                         @csrf
                                         <button type="submit" class="px-3 py-1 text-xs rounded bg-green-900 hover:bg-green-800 text-green-200 transition">Restore</button>
+                                    </form>
+                                    <form action="{{ route('admin.users.force-destroy', $user->id) }}" method="POST" class="inline" onsubmit="return confirm('Hapus permanen user ini? Data tidak bisa dikembalikan.');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="px-3 py-1 text-xs rounded bg-red-900 hover:bg-red-800 text-red-200 transition">Hapus Permanen</button>
                                     </form>
                                 @elseif($user->id !== auth()->id())
                                     <form action="{{ route('admin.users.toggle-admin', $user) }}" method="POST" class="inline">

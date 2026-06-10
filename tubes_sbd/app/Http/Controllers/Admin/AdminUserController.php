@@ -64,4 +64,16 @@ class AdminUserController extends Controller
         return redirect()->route('admin.users.index', ['trash' => 1])
             ->with('success', 'User berhasil direstore.');
     }
+
+    public function forceDestroy(int $user)
+    {
+        if ($user === auth()->id()) {
+            return back()->with('error', 'Kamu tidak bisa menghapus permanen akunmu sendiri!');
+        }
+
+        User::onlyTrashed()->findOrFail($user)->forceDelete();
+
+        return redirect()->route('admin.users.index', ['trash' => 1])
+            ->with('success', 'User berhasil dihapus permanen.');
+    }
 }

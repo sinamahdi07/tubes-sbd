@@ -61,4 +61,12 @@ class AdminDeveloperController extends Controller
         return redirect()->route('admin.developers.index', ['trash' => 1])
             ->with('success', 'Developer berhasil direstore!');
     }
+
+    public function forceDestroy(int $developer)
+    {
+        Developer::onlyTrashed()->findOrFail($developer)->forceDelete();
+
+        return redirect()->route('admin.developers.index', ['trash' => 1])
+            ->with('success', 'Developer berhasil dihapus permanen!');
+    }
 }

@@ -57,4 +57,12 @@ class AdminGenreController extends Controller
         return redirect()->route('admin.genres.index', ['trash' => 1])
             ->with('success', 'Genre berhasil direstore!');
     }
+
+    public function forceDestroy(int $genre)
+    {
+        Genre::onlyTrashed()->findOrFail($genre)->forceDelete();
+
+        return redirect()->route('admin.genres.index', ['trash' => 1])
+            ->with('success', 'Genre berhasil dihapus permanen!');
+    }
 }

@@ -113,7 +113,7 @@
                             </td>
                             <td class="p-4 text-gray-400 text-sm">{{ $game->release_date ? $game->release_date->format('d M Y') : '-' }}</td>
                             <td class="p-4 text-center">
-                                <div class="flex justify-center gap-2">
+                                <div class="flex flex-wrap justify-center gap-2">
                                     @if($isTrash)
                                         <form action="{{ route('admin.games.restore', $game->game_id) }}" method="POST" class="inline"
                                               onsubmit="return confirm('Restore game {{ addslashes($game->title) }}?');">
@@ -121,6 +121,15 @@
                                             <button type="submit"
                                                     class="px-3 py-1 text-xs bg-green-900/50 hover:bg-green-800 text-green-300 border border-green-800 rounded transition">
                                                 Restore
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('admin.games.force-destroy', $game->game_id) }}" method="POST" class="inline"
+                                              onsubmit="return confirm('Hapus permanen game {{ addslashes($game->title) }}? Data tidak bisa dikembalikan.');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit"
+                                                    class="px-3 py-1 text-xs bg-red-900/50 hover:bg-red-800 text-red-300 border border-red-800 rounded transition">
+                                                Hapus Permanen
                                             </button>
                                         </form>
                                     @else

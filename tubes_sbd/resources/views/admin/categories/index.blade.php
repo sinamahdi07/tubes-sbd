@@ -66,12 +66,17 @@
                                     </span>
                                 </td>
                                 <td class="p-4 text-center">
-                                    <div class="flex justify-center gap-2">
+                                    <div class="flex flex-wrap justify-center gap-2">
                                         @if($isTrash)
                                             <form action="{{ route('admin.categories.restore', $category->category_id) }}" method="POST"
                                                   onsubmit="return confirm('Restore kategori {{ addslashes($category->name) }}?');">
                                                 @csrf
                                                 <button type="submit" class="px-3 py-1 text-xs bg-green-900/50 hover:bg-green-800 text-green-300 border border-green-800 rounded transition">Restore</button>
+                                            </form>
+                                            <form action="{{ route('admin.categories.force-destroy', $category->category_id) }}" method="POST"
+                                                  onsubmit="return confirm('Hapus permanen kategori {{ addslashes($category->name) }}? Data tidak bisa dikembalikan.');">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="px-3 py-1 text-xs bg-red-900/50 hover:bg-red-800 text-red-300 border border-red-800 rounded transition">Hapus Permanen</button>
                                             </form>
                                         @else
                                             <button onclick="openEditModal({{ $category->category_id }}, '{{ addslashes($category->name) }}')"

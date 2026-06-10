@@ -68,12 +68,17 @@
                                 </td>
                                 <td class="p-4 text-center text-gray-300">{{ $genre->games_count }}</td>
                                 <td class="p-4 text-center">
-                                    <div class="flex justify-center gap-2">
+                                    <div class="flex flex-wrap justify-center gap-2">
                                         @if($isTrash)
                                             <form action="{{ route('admin.genres.restore', $genre->genre_id) }}" method="POST"
                                                   onsubmit="return confirm('Restore genre {{ addslashes($genre->name) }}?');">
                                                 @csrf
                                                 <button type="submit" class="px-3 py-1 text-xs bg-green-900/50 hover:bg-green-800 text-green-300 border border-green-800 rounded transition">Restore</button>
+                                            </form>
+                                            <form action="{{ route('admin.genres.force-destroy', $genre->genre_id) }}" method="POST"
+                                                  onsubmit="return confirm('Hapus permanen genre {{ addslashes($genre->name) }}? Data tidak bisa dikembalikan.');">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="px-3 py-1 text-xs bg-red-900/50 hover:bg-red-800 text-red-300 border border-red-800 rounded transition">Hapus Permanen</button>
                                             </form>
                                         @else
                                             <button onclick="openEditModal({{ $genre->genre_id }}, '{{ addslashes($genre->name) }}')"

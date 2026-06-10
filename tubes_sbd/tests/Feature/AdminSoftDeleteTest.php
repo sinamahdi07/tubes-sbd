@@ -2,9 +2,12 @@
 
 namespace Tests\Feature;
 
+use App\Models\Category;
 use App\Models\Developer;
 use App\Models\Game;
 use App\Models\GameReview;
+use App\Models\Genre;
+use App\Models\Platform;
 use App\Models\Publisher;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -188,5 +191,48 @@ class AdminSoftDeleteTest extends TestCase
             ->assertRedirect(route('admin.users.index', ['trash' => 1]));
 
         $this->assertNotSoftDeleted('users', ['id' => $target->id]);
+    }
+
+    public function test_admin_can_permanently_delete_soft_deleted_admin_records(): void
+    {
+        $admin = User::factory()->create(['is_admin' => true]);
+        $targetUser = User::factory()->create(['name' => 'Permanent Delete Target']);
+        $developer = Developer::create(['name' => 'Permanent Delete Developer']);
+        $publisher = Publisher::create(['name' => 'Permanent Delete Publisher']);
+        $game = Game::create([
+            'title' => 'Permanent Delete Game',
+            'description' => 'Game untuk test hapus permanen.',
+            'price' => 50000,
+            'developer_id' => $developer->developer_id,
+            'publisher_id' => $publisher->publisher_id,
+        ]);
+        $genre = Genre::create(['name' => 'Permanent Delete Genre']);
+        $category = Category::create(['name' => 'Permanent Delete Category']);
+        $platform = Platform::create([
+            'name' => 'Permanent Delete Platform',
+            'slug' => 'permanent-delete-platform',
+        ]);
+
+        $targets = [
+            [$targetUser, 'admin.users.force-destroy', 'users', 'id', $targetUser->id],
+            [$game, 'admin.games.force-destroy', 'games', 'game_id', $game->game_id],
+            [$developer, 'admin.developers.force-destroy', 'developers', 'developer_id', $developer->developer_id],
+            [$publisher, 'admin.publishers.force-destroy', 'publishers', 'publisher_id', $publisher->publisher_id],
+            [$genre, 'admin.genres.force-destroy', 'genres', 'genre_id', $genre->genre_id],
+            [$category, 'admin.categories.force-destroy', 'categories', 'category_id', $category->category_id],
+            [$platform, 'admin.platforms.force-destroy', 'platforms', 'platform_id', $platform->platform_id],
+        ];
+
+        foreach ($targets as [$model, $routeName, $table, $key, $id]) {
+            $model->delete();
+
+            $this->assertSoftDeleted($table, [$key => $id]);
+
+            $this->actingAs($admin)
+                ->delete(route($routeName, $id))
+                ->assertRedirect();
+
+            $this->assertDatabaseMissing($table, [$key => $id]);
+        }
     }
 }
