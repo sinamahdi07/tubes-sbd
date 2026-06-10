@@ -188,7 +188,6 @@ return array(
     'Database\\Seeders\\FriendshipSeeder' => $baseDir . '/database/seeders/FriendshipSeeder.php',
     'Database\\Seeders\\PlatformSeeder' => $baseDir . '/database/seeders/PlatformSeeder.php',
     'Database\\Seeders\\TransactionSeeder' => $baseDir . '/database/seeders/TransactionSeeder.php',
-    'Database\\Seeders\\UserSeeder' => $baseDir . '/database/seeders/UserSeeder.php',
     'DateError' => $vendorDir . '/symfony/polyfill-php83/Resources/stubs/DateError.php',
     'DateException' => $vendorDir . '/symfony/polyfill-php83/Resources/stubs/DateException.php',
     'DateInvalidOperationException' => $vendorDir . '/symfony/polyfill-php83/Resources/stubs/DateInvalidOperationException.php',
