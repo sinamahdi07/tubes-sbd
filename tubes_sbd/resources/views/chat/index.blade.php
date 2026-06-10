@@ -2,9 +2,19 @@
 
 @section('title', 'Chat - PlayMart')
 
+@push('styles')
+    <style>
+        @media (min-width: 1024px) {
+            .chat-layout {
+                min-height: 560px;
+            }
+        }
+    </style>
+@endpush
+
 @section('content')
-    <div class="py-10">
-        <div class="mx-auto grid w-full max-w-7xl gap-6 px-4 sm:px-6 lg:grid-cols-[360px_1fr] lg:px-8">
+    <div class="py-6 lg:py-8">
+        <div class="chat-layout mx-auto grid w-full max-w-7xl gap-6 px-4 sm:px-6 lg:grid-cols-[360px_1fr] lg:px-8">
             @include('chat.partials.conversation-list')
 
             <div class="flex min-h-[560px] items-center justify-center rounded-2xl border border-[#2a475e]/90 bg-[#0f1923]/90 p-8 text-center shadow-2xl shadow-black/25">

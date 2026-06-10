@@ -271,6 +271,7 @@ class DemoStoreSeeder extends Seeder
                 'email' => $userData['email'],
                 'password' => Hash::make($userData['password']),
                 'is_admin' => false,
+                'email_verified_at' => now(),
             ]);
             $user->deleted_at = null;
             $user->save();

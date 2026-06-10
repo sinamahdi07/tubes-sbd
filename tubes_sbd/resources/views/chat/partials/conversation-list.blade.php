@@ -1,4 +1,4 @@
-<div class="overflow-hidden rounded-2xl border border-[#2a475e]/90 bg-[#0f1923]/90 shadow-2xl shadow-black/25">
+<div class="chat-sidebar overflow-hidden rounded-2xl border border-[#2a475e]/90 bg-[#0f1923]/90 shadow-2xl shadow-black/25">
     <div class="border-b border-[#2a475e] bg-[#07111d]/70 p-5">
         <div class="flex items-center justify-between gap-3">
             <h2 class="text-lg font-black text-white">Chat</h2>
@@ -8,7 +8,7 @@
         </div>
     </div>
 
-    <div class="max-h-[640px] overflow-y-auto p-3">
+    <div class="chat-sidebar-list max-h-[640px] overflow-y-auto p-3">
         @forelse($friends as $listFriend)
             @php
                 $latestMessage = $latestMessages->get($listFriend->id);

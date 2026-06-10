@@ -131,6 +131,68 @@
                     >
                 @endif
 
+                @if($game->trailers->count() > 0)
+                    <div class="bg-[#16202d] p-6 sm:p-8 rounded-2xl border border-[#2a475e]">
+                        <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                            <div>
+                                <p class="text-xs font-black uppercase tracking-[0.25em] text-[#66c0f4]">
+                                    Media
+                                </p>
+                                <h2 class="mt-2 text-2xl font-black uppercase tracking-wider text-white">
+                                    Game Trailer
+                                </h2>
+                            </div>
+
+                            <span class="self-start rounded bg-[#0f1923] px-3 py-1 text-xs font-bold uppercase tracking-widest text-gray-300 sm:self-auto">
+                                {{ $game->trailers->count() }} trailer
+                            </span>
+                        </div>
+
+                        <div class="grid gap-5 {{ $game->trailers->count() > 1 ? 'md:grid-cols-2' : '' }}">
+                            @foreach($game->trailers as $trailer)
+                                <article class="overflow-hidden rounded-xl border border-[#2a475e] bg-[#0f1923]">
+                                    @if($trailer->embed_url)
+                                        <div class="aspect-video bg-black">
+                                            <iframe
+                                                src="{{ $trailer->embed_url }}"
+                                                title="{{ $trailer->title ?: $game->title . ' Trailer' }}"
+                                                class="h-full w-full"
+                                                loading="lazy"
+                                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                                referrerpolicy="strict-origin-when-cross-origin"
+                                                allowfullscreen
+                                            ></iframe>
+                                        </div>
+                                    @else
+                                        <a
+                                            href="{{ $trailer->url }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="flex aspect-video items-center justify-center bg-[#0a1018] p-6 text-center text-sm font-black uppercase tracking-widest text-[#66c0f4] transition hover:bg-[#111b28] hover:text-white"
+                                        >
+                                            Buka Trailer
+                                        </a>
+                                    @endif
+
+                                    <div class="border-t border-[#2a475e] p-4">
+                                        <h3 class="line-clamp-1 font-bold text-white">
+                                            {{ $trailer->title ?: $game->title . ' Trailer' }}
+                                        </h3>
+                                        <a
+                                            href="{{ $trailer->url }}"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="mt-2 inline-flex text-sm font-semibold text-[#66c0f4] transition hover:text-white"
+                                        >
+                                            Buka di tab baru
+                                        </a>
+                                    </div>
+                                </article>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+
                 <!-- DESCRIPTION -->
                 <div class="bg-[#16202d] p-8 rounded-2xl border border-[#2a475e]">
 
@@ -546,7 +608,7 @@
 
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                             <p class="text-sm text-gray-400" data-review-form-message>
-                                Kamu bisa edit review dengan submit ulang.
+                                Kamu bisa menulis lebih dari satu review untuk game ini.
                             </p>
                             <button type="submit" class="steam-blue rounded-xl px-6 py-3 font-black text-white transition hover:opacity-90">
                                 Submit Review
@@ -668,7 +730,6 @@
             const reviewBody = root.querySelector('[data-review-body]');
             const formMessage = root.querySelector('[data-review-form-message]');
             const formShell = root.querySelector('[data-review-form-shell]');
-            let formHydrated = false;
             let refreshTimer = null;
 
             const escapeText = (value) => {
@@ -697,16 +758,8 @@
                     return;
                 }
 
-                const userReview = payload.user_review;
-
-                if (userReview && reviewBody && !formHydrated) {
-                    reviewBody.value = userReview.body || '';
-                    const selector = `input[name="is_recommended"][value="${userReview.is_recommended ? 1 : 0}"]`;
-                    reviewForm?.querySelector(selector)?.click();
-                    if (formMessage) {
-                        formMessage.textContent = 'Review kamu sudah tersimpan. Submit ulang untuk edit.';
-                    }
-                    formHydrated = true;
+                if (formMessage) {
+                    formMessage.textContent = 'Kamu bisa menulis lebih dari satu review untuk game ini.';
                 }
             };
 
@@ -794,8 +847,10 @@
                 renderStats(payload.stats);
                 renderReviewForm(payload);
                 renderReviews(payload.reviews || []);
+                reviewForm.reset();
+                reviewForm.querySelector('input[name="is_recommended"][value="1"]')?.click();
                 if (formMessage) {
-                    formMessage.textContent = 'Review tersimpan dan feed sudah diperbarui.';
+                    formMessage.textContent = 'Review baru tersimpan. Kamu bisa menulis review lagi.';
                 }
             });
 

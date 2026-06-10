@@ -14,7 +14,6 @@ use App\Http\Controllers\CartController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\FriendController;
 use App\Http\Controllers\GameController;
-use App\Http\Controllers\GameImportController;
 use App\Http\Controllers\GameReviewController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PaymentController;
@@ -56,11 +55,13 @@ Route::get('/search-games', [HomeController::class, 'autocomplete'])
 
 // Cart
 Route::post('/cart/add/{game}', [CartController::class, 'add'])
-    ->middleware('auth')
+    ->middleware(['auth', 'verified'])
     ->name('cart.add');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/unread-count', [ChatController::class, 'unreadCount'])->name('chat.unread-count');
+    Route::get('/chat/{friend}/messages', [ChatController::class, 'messages'])->name('chat.messages');
     Route::get('/chat/{friend}', [ChatController::class, 'show'])->name('chat.show');
     Route::post('/chat/{friend}', [ChatController::class, 'store'])->name('chat.store');
 
@@ -108,15 +109,6 @@ Route::middleware('auth')->group(function () {
         ->name('payments.show');
 });
 
-/*
-|--------------------------------------------------------------------------
-| Import Excel
-|--------------------------------------------------------------------------
-*/
-
-Route::get('/import', [GameImportController::class, 'index'])->name('import.index');
-Route::post('/import', [GameImportController::class, 'store'])->name('import.store');
-
 require __DIR__.'/auth.php';
 
 /*
@@ -125,7 +117,7 @@ require __DIR__.'/auth.php';
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
 
     // Users

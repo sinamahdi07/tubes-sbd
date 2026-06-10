@@ -24,16 +24,12 @@ class GameReviewController extends Controller
             'body' => ['required', 'string', 'min:5', 'max:2000'],
         ]);
 
-        GameReview::updateOrCreate(
-            [
-                'game_id' => $game->game_id,
-                'user_id' => $request->user()->id,
-            ],
-            [
-                'is_recommended' => (bool) $validated['is_recommended'],
-                'body' => $validated['body'],
-            ]
-        );
+        GameReview::create([
+            'game_id' => $game->game_id,
+            'user_id' => $request->user()->id,
+            'is_recommended' => (bool) $validated['is_recommended'],
+            'body' => $validated['body'],
+        ]);
 
         return response()->json($this->payload($request, $game), 201);
     }
@@ -69,9 +65,6 @@ class GameReviewController extends Controller
                 'label' => $this->reviewLabel($percentage, $total),
             ],
             'can_review' => $this->hasPurchased($request, $game),
-            'user_review' => $request->user()
-                ? $game->reviews()->where('user_id', $request->user()->id)->first()
-                : null,
             'reviews' => $reviews->map(fn (GameReview $review) => [
                 'id' => $review->id,
                 'user_name' => $review->user?->name ?? 'Deleted User',

@@ -294,6 +294,7 @@ class GameController extends Controller
             'publisher',
             'developer',
             'screenshots',
+            'trailers',
             'genres',
             'categories',
             'platforms',

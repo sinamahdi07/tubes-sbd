@@ -21,9 +21,5 @@ class DatabaseSeeder extends Seeder
             TransactionSeeder::class,
             FriendshipSeeder::class,
         ]);
-
-        if (file_exists(database_path('seeders/data/games.xlsx'))) {
-            $this->call(GamesSeeder::class);
-        }
     }
 }

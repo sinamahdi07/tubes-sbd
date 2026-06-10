@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ChatMessage;
 use App\Models\Friendship;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -55,7 +56,51 @@ class ChatController extends Controller
         ]);
     }
 
-    public function store(Request $request, User $friend): RedirectResponse
+    public function unreadCount(Request $request): JsonResponse
+    {
+        return response()->json([
+            'unread_count' => ChatMessage::query()
+                ->where('receiver_id', $request->user()->id)
+                ->whereNull('read_at')
+                ->count(),
+        ]);
+    }
+
+    public function messages(Request $request, User $friend): JsonResponse
+    {
+        $user = $request->user();
+
+        abort_unless($this->areFriends($user->id, $friend->id), 403);
+
+        $afterId = max(0, (int) $request->query('after_id', 0));
+        $messages = ChatMessage::with(['sender:id,name', 'receiver:id,name'])
+            ->between($user->id, $friend->id)
+            ->when($afterId > 0, fn ($query) => $query->where('id', '>', $afterId))
+            ->oldest()
+            ->limit(80)
+            ->get();
+
+        $incomingIds = $messages
+            ->where('sender_id', $friend->id)
+            ->where('receiver_id', $user->id)
+            ->whereNull('read_at')
+            ->pluck('id');
+
+        if ($incomingIds->isNotEmpty()) {
+            ChatMessage::query()
+                ->whereIn('id', $incomingIds)
+                ->update(['read_at' => now()]);
+        }
+
+        return response()->json([
+            'messages' => $messages
+                ->map(fn (ChatMessage $message) => $this->messagePayload($message, $user))
+                ->values(),
+            'last_id' => $messages->last()?->id ?? $afterId,
+        ]);
+    }
+
+    public function store(Request $request, User $friend): RedirectResponse|JsonResponse
     {
         $user = $request->user();
         $friendship = $this->acceptedFriendship($user->id, $friend->id);
@@ -66,12 +111,18 @@ class ChatController extends Controller
             'body' => ['required', 'string', 'max:2000'],
         ]);
 
-        ChatMessage::create([
+        $message = ChatMessage::create([
             'sender_id' => $user->id,
             'receiver_id' => $friend->id,
             'friendship_id' => $friendship->id,
             'message' => $validated['body'],
         ]);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'message' => $this->messagePayload($message, $user),
+            ], 201);
+        }
 
         return redirect()
             ->route('chat.show', $friend)
@@ -139,6 +190,19 @@ class ChatController extends Controller
         return [
             'latestMessages' => $latestMessages,
             'unreadCounts' => $unreadCounts,
+        ];
+    }
+
+    private function messagePayload(ChatMessage $message, User $user): array
+    {
+        return [
+            'id' => $message->id,
+            'body' => $message->message,
+            'is_mine' => $message->sender_id === $user->id,
+            'date_label' => $message->sentDateLabel(),
+            'time_label' => $message->sentTimeLabel(),
+            'sent_at_label' => $message->sentAtLabel(),
+            'created_at' => $message->created_at?->toIso8601String(),
         ];
     }
 }

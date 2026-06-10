@@ -48,7 +48,7 @@ class GameReviewTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_purchased_user_can_create_and_update_review(): void
+    public function test_purchased_user_can_create_multiple_reviews(): void
     {
         $user = User::factory()->create();
         $game = $this->createGame();
@@ -69,14 +69,21 @@ class GameReviewTest extends TestCase
                 'body' => 'Setelah update terakhir performanya turun.',
             ])
             ->assertCreated()
-            ->assertJsonPath('stats.total', 1)
-            ->assertJsonPath('stats.recommended', 0);
+            ->assertJsonPath('stats.total', 2)
+            ->assertJsonPath('stats.recommended', 1);
 
-        $this->assertDatabaseCount('game_reviews', 1);
+        $this->assertDatabaseCount('game_reviews', 2);
+        $this->assertDatabaseHas('game_reviews', [
+            'game_id' => $game->game_id,
+            'user_id' => $user->id,
+            'is_recommended' => true,
+            'body' => 'Game ini seru dan stabil.',
+        ]);
         $this->assertDatabaseHas('game_reviews', [
             'game_id' => $game->game_id,
             'user_id' => $user->id,
             'is_recommended' => false,
+            'body' => 'Setelah update terakhir performanya turun.',
         ]);
     }
 

@@ -45,6 +45,75 @@ class ChatTest extends TestCase
         ]);
     }
 
+    public function test_user_can_send_message_with_json_response(): void
+    {
+        $user = User::factory()->create();
+        $friend = User::factory()->create();
+        $this->makeFriends($user, $friend);
+
+        $response = $this->actingAs($user)->postJson(route('chat.store', $friend), [
+            'body' => 'Langsung muncul tanpa reload.',
+        ]);
+
+        $response
+            ->assertCreated()
+            ->assertJsonPath('message.body', 'Langsung muncul tanpa reload.')
+            ->assertJsonPath('message.is_mine', true);
+    }
+
+    public function test_user_can_fetch_new_messages_without_refreshing_page(): void
+    {
+        $user = User::factory()->create();
+        $friend = User::factory()->create();
+        $friendship = $this->makeFriends($user, $friend);
+
+        $message = ChatMessage::create([
+            'sender_id' => $friend->id,
+            'receiver_id' => $user->id,
+            'friendship_id' => $friendship->id,
+            'message' => 'Pesan baru otomatis masuk.',
+        ]);
+
+        $response = $this->actingAs($user)->getJson(route('chat.messages', [
+            'friend' => $friend,
+            'after_id' => 0,
+        ]));
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('messages.0.id', $message->id)
+            ->assertJsonPath('messages.0.body', 'Pesan baru otomatis masuk.')
+            ->assertJsonPath('messages.0.is_mine', false);
+
+        $this->assertNotNull($message->fresh()->read_at);
+    }
+
+    public function test_user_can_see_total_unread_chat_count(): void
+    {
+        $user = User::factory()->create();
+        $friend = User::factory()->create();
+        $friendship = $this->makeFriends($user, $friend);
+
+        ChatMessage::create([
+            'sender_id' => $friend->id,
+            'receiver_id' => $user->id,
+            'friendship_id' => $friendship->id,
+            'message' => 'Pesan masuk belum dibaca.',
+        ]);
+
+        ChatMessage::create([
+            'sender_id' => $user->id,
+            'receiver_id' => $friend->id,
+            'friendship_id' => $friendship->id,
+            'message' => 'Pesan keluar tidak dihitung.',
+        ]);
+
+        $this->actingAs($user)
+            ->getJson(route('chat.unread-count'))
+            ->assertOk()
+            ->assertJsonPath('unread_count', 1);
+    }
+
     public function test_user_cannot_chat_with_non_friend(): void
     {
         $user = User::factory()->create();
