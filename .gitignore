@@ -1,6 +1,0 @@
-/vendor
-.DS_Store
-tubes_sbd/laravel
-/storage/logs/*.log
-bootstrap/cache/.gitignore
-storage/logs/.gitignore
