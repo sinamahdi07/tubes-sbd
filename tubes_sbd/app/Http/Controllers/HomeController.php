@@ -29,7 +29,7 @@ class HomeController extends Controller
             ->withPaidPurchasesCount()
             ->withCount('reviews')
             ->when($search !== '', function ($query) use ($search) {
-                $query->where('title', 'like', $search.'%');
+                $query->where('title', 'like', '%'.$search.'%');
             })
             ->when($selectedGenre, function ($query) use ($selectedGenre) {
                 $query->whereHas('genres', function ($q) use ($selectedGenre) {
@@ -131,7 +131,7 @@ class HomeController extends Controller
                     $q->where('categories.category_id', $categoryId);
                 });
             })
-            ->where('title', 'like', $search.'%')
+            ->where('title', 'like', '%'.$search.'%')
             ->orderBy('title')
             ->take(8)
             ->get()

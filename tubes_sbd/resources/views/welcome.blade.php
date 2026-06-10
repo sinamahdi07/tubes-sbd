@@ -48,16 +48,12 @@
             margin-top: 4.5rem !important;
         }
         .hero-panel {
-            --hero-height: 620px;
-            --hero-title-size: 4.25rem;
+            --hero-height: 400px; /* Default for mobile */
+            --hero-title-size: 2.2rem; /* Default for mobile */
             --hero-title-line: .98;
             --hero-title-lines: 4;
             --hero-title-height: calc(var(--hero-title-size) * var(--hero-title-line) * var(--hero-title-lines));
-            --hero-subtitle-height: 1.6rem;
-            --hero-description-height: 3.5rem;
-            --hero-copy-width: 760px;
-            --hero-media-width: 560px;
-            --hero-media-height: 520px;
+            --hero-copy-width: 100%; /* Default for mobile */
             height: var(--hero-height) !important;
             min-height: var(--hero-height) !important;
             max-height: var(--hero-height) !important;
@@ -120,7 +116,7 @@
             margin-top: 1.1rem !important;
         }
         .hero-description {
-            display: -webkit-box;
+            display: none; /* Sembunyikan di mobile */
             flex: 0 0 var(--hero-description-height);
             height: var(--hero-description-height) !important;
             overflow: hidden;
@@ -133,7 +129,7 @@
             height: 100%;
             min-height: 0;
             box-sizing: border-box;
-            grid-template-columns: minmax(0, 1fr);
+            grid-template-columns: 1fr; /* Default mobile 1 kolom */
             overflow: hidden;
             padding-top: 2.25rem !important;
             padding-bottom: 2.25rem !important;
@@ -142,51 +138,6 @@
             flex: 0 0 auto;
             min-height: 4.4rem;
             margin-top: 2rem !important;
-        }
-        .hero-media-card {
-            width: var(--hero-media-width) !important;
-            height: var(--hero-media-height) !important;
-            min-height: var(--hero-media-height) !important;
-            max-height: var(--hero-media-height) !important;
-            min-width: 0;
-            justify-self: end;
-            background: linear-gradient(180deg, rgba(15, 25, 35, .72), rgba(5, 10, 18, .9));
-            border: 1px solid rgba(102, 192, 244, .22);
-            box-shadow: 0 24px 70px rgba(0, 0, 0, .46);
-            backdrop-filter: blur(16px);
-        }
-        .hero-preview-frame {
-            aspect-ratio: 16 / 9;
-            flex: 0 0 auto;
-            width: 100%;
-            overflow: hidden;
-            border: 1px solid rgba(102, 192, 244, .16);
-            background: #07111d;
-        }
-        .hero-preview-image {
-            height: 100%;
-            width: 100%;
-            object-fit: cover;
-        }
-        .hero-tag-list {
-            flex: 0 0 4.7rem;
-            height: 4.7rem !important;
-            max-height: 4.7rem;
-            overflow: hidden;
-            align-content: flex-start;
-        }
-        .hero-meta-pill {
-            border: 1px solid rgba(102, 192, 244, .26);
-            background: rgba(7, 17, 29, .78);
-            color: #d7e9f8;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            max-width: calc(50% - .25rem);
-        }
-        .hero-fact-grid {
-            flex: 0 0 auto;
-            min-height: 4.9rem;
         }
         .game-card {
             background: #0f1923;
@@ -292,7 +243,7 @@
         }
         .showcase-grid {
             display: grid;
-            grid-template-columns: minmax(0, 1fr) minmax(380px, 500px);
+            grid-template-columns: 1fr; /* Default mobile 1 kolom */
             gap: 28px;
         }
         .showcase-row {
@@ -475,11 +426,11 @@
             box-shadow: 0 0 16px rgba(102, 192, 244, .58);
         }
         .budget-grid {
-            display: grid;
-            grid-template-columns: repeat(5, minmax(0, 1fr));
+            display: grid; /* Default for mobile (2 columns) */
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 24px;
         }
-        .budget-card {
+        .budget-card { /* Keep existing styles */
             min-width: 0;
             border: 1px solid rgba(42, 71, 94, .5);
             border-radius: 8px;
@@ -546,11 +497,6 @@
             0% { background-position: 120% 0; }
             100% { background-position: -120% 0; }
         }
-        @media (min-width: 1024px) {
-            .hero-slide-grid {
-                grid-template-columns: minmax(0, 1fr) var(--hero-media-width) !important;
-            }
-        }
         @media (max-width: 1280px) {
             .hero-panel {
                 --hero-height: 560px;
@@ -564,18 +510,6 @@
                 -webkit-line-clamp: 3;
                 line-clamp: 3;
             }
-            .hero-tag-list {
-                flex-basis: 4rem;
-                height: 4rem !important;
-                max-height: 4rem;
-            }
-            .hero-fact-grid {
-                min-height: 4.6rem;
-                padding-top: 1rem !important;
-            }
-            .showcase-grid {
-                grid-template-columns: 1fr;
-            }
             .category-carousel {
                 padding-inline: 50px;
             }
@@ -586,13 +520,20 @@
                 grid-template-columns: repeat(3, minmax(0, 1fr));
             }
         }
+        @media (min-width: 1024px) {
+            .showcase-grid {
+                grid-template-columns: 1fr 400px; /* Baru pakai 2 kolom di desktop */
+            }
+            .hero-description {
+                display: -webkit-box;
+            }
+        }
         @media (max-width: 768px) {
             .hero-panel {
-                --hero-height: 540px;
-                --hero-title-size: 3rem;
+                --hero-height: 400px; /* Ensure it's not too tall on smaller screens */
+                --hero-title-size: 2.2rem; /* Smaller title for mobile */
                 --hero-title-line: 1;
                 --hero-title-lines: 3;
-                --hero-copy-width: 100%;
             }
             .hero-copy {
                 max-width: 100%;
@@ -610,12 +551,10 @@
                 margin-top: 1.45rem !important;
             }
         }
-        @media (max-width: 640px) {
+        @media (max-width: 640px) { /* sm breakpoint */
             .hero-panel {
-                --hero-height: 520px;
-                --hero-title-size: 2.55rem;
+                --hero-height: 360px; /* Even smaller for very small phones */
                 --hero-title-lines: 3;
-                --hero-description-height: 3.15rem;
             }
             .showcase-row {
                 grid-template-columns: 112px minmax(0, 1fr);
@@ -648,15 +587,12 @@
             .category-arrow-right {
                 right: 0;
             }
-            .budget-grid {
-                grid-template-columns: 1fr;
-            }
         }
         @media (max-width: 420px) {
             .hero-panel {
-                --hero-height: 500px;
-                --hero-title-size: 2.2rem;
+                --hero-height: 320px; /* Smallest height for tiny screens */
                 --hero-title-lines: 2;
+                --hero-title-size: 1.8rem; /* Smallest title size */
             }
             .hero-title {
                 -webkit-line-clamp: 2;
@@ -689,13 +625,13 @@
                             @endif
                             decoding="async"
                         >
-                        <div class="absolute inset-0 bg-gradient-to-r from-[#050a12] via-[#07111d]/88 to-[#07111d]/32"></div>
+                        <div class="absolute inset-0 bg-gradient-to-r from-[#050a12] via-[#050a12]/80 to-transparent"></div>
                         <div class="absolute inset-0 bg-gradient-to-t from-[#050a12]/86 via-[#050a12]/18 to-[#050a12]/16"></div>
 
                         <div class="hero-slide-grid relative z-10 grid items-center gap-8 px-6 py-10 md:px-12 lg:px-20">
                             <div class="hero-copy">
                                 <span class="hero-kicker inline-flex rounded-md border border-[#66c0f4]/25 bg-[#063b80]/90 px-4 py-2 text-xs font-black uppercase tracking-wider text-[#66c0f4] shadow-lg shadow-blue-950/30">
-                                    Featured
+                                    Featured Game
                                 </span>
 
                                 <h1 class="hero-title font-black uppercase tracking-tight text-white">
@@ -707,7 +643,7 @@
                                 </p>
 
                                 <p class="hero-description mt-5 max-w-2xl text-base font-semibold leading-7 text-gray-200 md:text-lg">
-                                    {{ $descriptionFor($heroGame, 150) }}
+                                    {{ $descriptionFor($heroGame, 120) }}
                                 </p>
 
                                 <div class="hero-actions flex flex-wrap items-center gap-4">
@@ -715,45 +651,15 @@
                                         <span class="price-discount rounded-md px-3 py-2 text-lg font-black">-{{ $featuredDiscount }}%</span>
                                         <span class="text-sm font-semibold text-gray-500 line-through">{{ $formatPrice($heroGame->price) }}</span>
                                     @endif
-                                    <span class="text-3xl font-black text-white">{{ $formatPrice($featuredFinal) }}</span>
-                                    <a href="{{ url('/game/' . $heroGame->game_id) }}" class="steam-blue ml-0 rounded-lg px-8 py-4 text-base font-black text-white shadow-lg shadow-blue-950/40 transition hover:-translate-y-0.5 hover:brightness-110 sm:ml-3">
+                                    <span class="text-2xl font-black text-white">{{ $formatPrice($featuredFinal) }}</span>
+                                    <a href="{{ url('/game/' . $heroGame->game_id) }}" class="steam-blue ml-0 rounded-lg px-6 py-3 text-base font-black text-white shadow-lg shadow-blue-950/40 transition hover:-translate-y-0.5 hover:brightness-110 sm:ml-3">
                                         View Game
                                     </a>
-                                    <a href="{{ url('/game/' . $heroGame->game_id) }}" class="icon-button h-12 w-12 rounded-lg" aria-label="Open {{ $heroGame->title }}">
+                                    <a href="{{ url('/game/' . $heroGame->game_id) }}" class="icon-button h-10 w-10 rounded-lg" aria-label="Open {{ $heroGame->title }}">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0-7 7m7-7H3"/>
                                         </svg>
                                     </a>
-                                </div>
-                            </div>
-
-                            <div class="hero-media-card hidden overflow-hidden rounded-lg p-4 lg:flex lg:flex-col">
-                                <div class="hero-preview-frame rounded-md">
-                                    <img
-                                        src="{{ $imageFor($heroGame) }}"
-                                        alt="{{ $heroGame->title }} preview"
-                                        class="hero-preview-image"
-                                        loading="lazy"
-                                        decoding="async"
-                                    >
-                                </div>
-                                <div class="hero-tag-list mt-4 flex flex-wrap gap-2">
-                                    @foreach($heroGame->genres->take(3) as $heroGenre)
-                                        <span class="hero-meta-pill rounded px-3 py-1.5 text-xs font-black uppercase">{{ $heroGenre->name }}</span>
-                                    @endforeach
-                                    @foreach($heroGame->categories->take(2) as $heroCategory)
-                                        <span class="hero-meta-pill rounded px-3 py-1.5 text-xs font-black uppercase">{{ $heroCategory->name }}</span>
-                                    @endforeach
-                                </div>
-                                <div class="hero-fact-grid mt-auto grid grid-cols-2 gap-3 pt-5 text-sm font-bold text-gray-300">
-                                    <div class="rounded-md border border-[#2a475e]/70 bg-[#07111d]/70 p-3">
-                                        <span class="block text-xs uppercase tracking-[0.18em] text-gray-500">Rilis</span>
-                                        <span class="mt-1 block text-white">{{ $releaseDateFor($heroGame) }}</span>
-                                    </div>
-                                    <div class="rounded-md border border-[#2a475e]/70 bg-[#07111d]/70 p-3">
-                                        <span class="block text-xs uppercase tracking-[0.18em] text-gray-500">Harga</span>
-                                        <span class="mt-1 block text-white">{{ $formatPrice($featuredFinal) }}</span>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -960,10 +866,19 @@
                         @foreach($browseCategoryCards as $card)
                             <a
                                 href="{{ $card['url'] }}"
-                                class="category-card flex items-center justify-center"
-                                style="background-image: {{ $card['overlay'] }}, url('{{ $card['image'] }}');"
+                                class="category-card flex items-center justify-center relative"
                             >
-                                <span class="category-label px-5 py-3 text-center text-base font-black text-balance md:text-lg">
+                                <img
+                                    src="{{ $card['image'] }}"
+                                    alt="{{ $card['label'] }}"
+                                    class="absolute inset-0 h-full w-full object-cover"
+                                    loading="lazy"
+                                    decoding="async"
+                                >
+                                {{-- Overlay gradient dari controller --}}
+                                <div class="absolute inset-0" style="background: {{ $card['overlay'] }}"></div>
+                                
+                                <span class="category-label relative z-10 px-5 py-3 text-center text-base font-black text-balance md:text-lg">
                                     {{ $card['label'] }}
                                 </span>
                             </a>
