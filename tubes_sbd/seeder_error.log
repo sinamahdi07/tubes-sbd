@@ -1,0 +1,26 @@
+
+   INFO  Seeding database.  
+
+Membaca file CSV...
+
+   ValueError 
+
+  array_combine(): Argument #1 ($keys) and argument #2 ($values) must have the same number of elements
+
+  at database/seeders/GamesSeeder.php:52
+     48▕                     $skipCount++;
+     49▕                     continue;
+     50▕                 }
+     51▕ 
+  ➜  52▕                 $data = array_combine($header, $row);
+     53▕ 
+     54▕                 // --- 1. Simpan game utama ---
+     55▕                 $appId = (int) ($data['app_id'] ?? 0);
+     56▕                 if ($appId === 0) {
+
+  1   database/seeders/GamesSeeder.php:52
+      [2m+23 vendor frames [22m
+
+  25  artisan:16
+      Illuminate\Foundation\Application::handleCommand(Object(Symfony\Component\Console\Input\ArgvInput))
+
