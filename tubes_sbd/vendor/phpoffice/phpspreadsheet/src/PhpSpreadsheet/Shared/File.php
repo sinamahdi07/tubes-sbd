@@ -2,7 +2,10 @@
 
 namespace PhpOffice\PhpSpreadsheet\Shared;
 
+<<<<<<< HEAD
 use Composer\Pcre\Preg;
+=======
+>>>>>>> 8de6f1e4e3b970ccba1eda9c099aaa0891cb7b9a
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\Reader\Exception as ReaderException;
 use ZipArchive;
@@ -142,6 +145,7 @@ class File
     }
 
     /**
+<<<<<<< HEAD
      * Blocks phar:// and similar RCE-bearing wrappers.
      * Note that many protocols, including http and zip, will already
      * return false for is_file.
@@ -158,6 +162,21 @@ class File
         ) {
             throw new Exception(
                 "Disallowed stream wrapper: {$filename}"
+=======
+     * All filenames starting with protocol (e.g. phar://) are prohibited.
+     * Note that many protocols, including http and zip, will already
+     * return false for is_file.
+     * A whitelist of protocols may be added if needed in future.
+     */
+    public static function prohibitWrappers(string $filename): void
+    {
+        $scheme = parse_url($filename, PHP_URL_SCHEME);
+        // strlen check > 1 to avoid issues with Windows absolute paths (e.g. C:\...), Windows quirks :)
+        // since no built-in or commonly registered PHP stream wrapper uses a single-character scheme, this should be ok, to my knowledge
+        if (is_string($scheme) && strlen($scheme) > 1) {
+            throw new Exception(
+                "Stream wrappers are not permitted as file paths: {$filename}"
+>>>>>>> 8de6f1e4e3b970ccba1eda9c099aaa0891cb7b9a
             );
         }
     }

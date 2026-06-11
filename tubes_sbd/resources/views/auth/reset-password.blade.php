@@ -22,18 +22,34 @@
 
         body > .min-h-screen {
             position: relative;
+            display: grid;
+            min-height: 100vh;
             padding: 24px;
+            place-items: center;
         }
 
         body > .min-h-screen > div {
             display: flex;
             width: 100% !important;
             max-width: none !important;
+            min-height: calc(100vh - 48px);
+            align-items: center;
             justify-content: center;
             margin-top: 0 !important;
             padding: 0 !important;
             overflow: visible !important;
             box-shadow: none !important;
+        }
+
+        @media (max-height: 760px) {
+            body > .min-h-screen {
+                place-items: start center;
+            }
+
+            body > .min-h-screen > div {
+                min-height: 0;
+                align-items: flex-start;
+            }
         }
 
         .auth-card {
@@ -45,6 +61,11 @@
             background: linear-gradient(180deg, rgba(15, 25, 35, .96), rgba(4, 9, 17, .96));
             box-shadow: 0 28px 80px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .05);
             padding: 34px;
+        }
+
+        .auth-card,
+        .auth-card * {
+            box-sizing: border-box;
         }
 
         .auth-brand {
@@ -137,9 +158,11 @@
 
         .auth-input-wrap {
             position: relative;
+            width: 100%;
         }
 
         .auth-input {
+            display: block;
             width: 100%;
             min-height: 54px;
             border: 1px solid rgba(42, 71, 94, .92);
@@ -199,6 +222,15 @@
         .password-toggle svg {
             width: 20px;
             height: 20px;
+        }
+
+        .password-toggle [data-eye-closed],
+        .password-toggle.is-visible [data-eye-open] {
+            display: none;
+        }
+
+        .password-toggle.is-visible [data-eye-closed] {
+            display: block;
         }
 
         .field-error {

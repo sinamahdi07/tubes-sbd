@@ -25,23 +25,42 @@
 
         body > .min-h-screen {
             position: relative;
+            display: grid;
+            min-height: 100vh;
             padding: 24px;
+<<<<<<< HEAD
 
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
+=======
+            place-items: center;
+>>>>>>> 8de6f1e4e3b970ccba1eda9c099aaa0891cb7b9a
         }
 
         body > .min-h-screen > div {
             display: flex;
             width: 100% !important;
             max-width: none !important;
+            min-height: calc(100vh - 48px);
+            align-items: center;
             justify-content: center;
             margin-top: 0 !important;
             padding: 0 !important;
             overflow: visible !important;
             box-shadow: none !important;
+        }
+
+        @media (max-height: 760px) {
+            body > .min-h-screen {
+                place-items: start center;
+            }
+
+            body > .min-h-screen > div {
+                min-height: 0;
+                align-items: flex-start;
+            }
         }
 
         .auth-card {
@@ -53,6 +72,11 @@
             background: linear-gradient(180deg, rgba(15, 25, 35, .96), rgba(4, 9, 17, .96));
             box-shadow: 0 28px 80px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .05);
             padding: 34px;
+        }
+
+        .auth-card,
+        .auth-card * {
+            box-sizing: border-box;
         }
 
         .auth-brand {
@@ -156,9 +180,11 @@
 
         .auth-input-wrap {
             position: relative;
+            width: 100%;
         }
 
         .auth-input {
+            display: block;
             width: 100%;
             box-sizing: border-box;
             min-height: 56px;
@@ -221,8 +247,26 @@
             height: 20px;
         }
 
+<<<<<<< HEAD
         .hidden {
             display: none !important;
+=======
+        .password-toggle [data-eye-closed],
+        .password-toggle.is-visible [data-eye-open] {
+            display: none;
+        }
+
+        .password-toggle.is-visible [data-eye-closed] {
+            display: block;
+        }
+
+        .field-error {
+            display: block;
+            margin-top: 8px;
+            color: #fca5a5;
+            font-size: 13px;
+            line-height: 1.4;
+>>>>>>> 8de6f1e4e3b970ccba1eda9c099aaa0891cb7b9a
         }
 
         .auth-row {
