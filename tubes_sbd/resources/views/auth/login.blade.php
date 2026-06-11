@@ -15,7 +15,7 @@
 
         body::before {
             content: "";
-            position: fixed;
+            position: absolute;
             inset: 0;
             pointer-events: none;
             background:
@@ -25,6 +25,10 @@
 
         body > .min-h-screen {
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
             padding: 24px;
         }
 
@@ -32,11 +36,24 @@
             display: flex;
             width: 100% !important;
             max-width: none !important;
+            min-height: calc(100vh - 48px);
+            align-items: center;
             justify-content: center;
             margin-top: 0 !important;
             padding: 0 !important;
             overflow: visible !important;
             box-shadow: none !important;
+        }
+
+        @media (max-height: 760px) {
+            body > .min-h-screen {
+                place-items: start center;
+            }
+
+            body > .min-h-screen > div {
+                min-height: 0;
+                align-items: flex-start;
+            }
         }
 
         .auth-card {
@@ -48,6 +65,11 @@
             background: linear-gradient(180deg, rgba(15, 25, 35, .96), rgba(4, 9, 17, .96));
             box-shadow: 0 28px 80px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .05);
             padding: 34px;
+        }
+
+        .auth-card,
+        .auth-card * {
+            box-sizing: border-box;
         }
 
         .auth-brand {
@@ -151,10 +173,13 @@
 
         .auth-input-wrap {
             position: relative;
+            width: 100%;
         }
 
         .auth-input {
+            display: block;
             width: 100%;
+            box-sizing: border-box;
             min-height: 56px;
             border: 1px solid rgba(42, 71, 94, .92);
             border-radius: 12px;
@@ -213,6 +238,10 @@
         .password-toggle svg {
             width: 20px;
             height: 20px;
+        }
+
+        .hidden {
+            display: none !important;
         }
 
         .field-error {
@@ -288,30 +317,69 @@
             font-weight: 700;
         }
 
-        @media (max-width: 640px) {
-            .auth-brand {
-                margin-bottom: 26px;
-            }
-
-            .auth-logo {
-                width: 68px;
-                height: 56px;
-            }
-
-            .auth-title {
-                font-size: 42px;
-            }
-
-            .auth-card {
-                padding: 26px 20px;
-                border-radius: 16px;
-            }
-
-            .auth-row {
-                align-items: flex-start;
-                flex-direction: column;
-            }
+    @media (max-width: 768px) {
+        body > .min-h-screen {
+            padding: 16px;
         }
+
+        .auth-card {
+            width: 100%;
+            max-width: 100%;
+            padding: 24px 18px;
+            border-radius: 16px;
+        }
+
+        .auth-logo {
+            width: 60px;
+            height: 50px;
+        }
+
+        .auth-title {
+            font-size: clamp(32px, 10vw, 42px);
+        }
+
+        .auth-subtitle {
+            font-size: 14px;
+        }
+
+        .auth-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .auth-input {
+            min-height: 50px;
+            font-size: 14px;
+        }
+
+        .auth-submit {
+            min-height: 50px;
+            font-size: 14px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        body > .min-h-screen {
+            padding: 12px;
+        }
+
+        .auth-card {
+            padding: 20px 16px;
+        }
+
+        .auth-title {
+            font-size: 34px;
+        }
+
+        .auth-subtitle {
+            font-size: 13px;
+        }
+
+        .auth-switch {
+            font-size: 13px;
+        }
+    }
     </style>
 
     <section class="auth-card">
@@ -373,13 +441,23 @@
                         class="auth-input has-toggle @error('password') is-invalid @enderror"
                         data-password-input
                     >
-                    <button type="button" class="password-toggle" data-password-toggle aria-label="Tampilkan password" aria-pressed="false">
+                    <button
+                        type="button"
+                        class="password-toggle"
+                        data-password-toggle
+                        aria-label="Tampilkan password"
+                        aria-pressed="false">
+
                         <svg data-eye-open xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12 18 18.75 12 18.75 2.25 12 2.25 12Z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15.25a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5Z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M2.25 12s3.75-6.75 9.75-6.75S21.75 12 21.75 12 18 18.75 12 18.75 2.25 12 2.25 12Z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 15.25a3.25 3.25 0 1 0 0-6.5 3.25 3.25 0 0 0 0 6.5Z"/>
                         </svg>
+
                         <svg data-eye-closed class="hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m3 3 18 18M10.6 10.6A3.25 3.25 0 0 0 12 15.25c1.8 0 3.25-1.45 3.25-3.25 0-.5-.11-.96-.31-1.38M7.4 7.67C4.25 9.58 2.25 12 2.25 12S6 18.75 12 18.75c1.72 0 3.19-.38 4.44-.95M12.94 5.3c5.43.6 8.81 6.7 8.81 6.7a19.1 19.1 0 0 1-2.48 3.18"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="m3 3 18 18M10.6 10.6A3.25 3.25 0 0 0 12 15.25c1.8 0 3.25-1.45 3.25-3.25 0-.5-.11-.96-.31-1.38M7.4 7.67C4.25 9.58 2.25 12 2.25 12S6 18.75 12 18.75c1.72 0 3.19-.38 4.44-.95M12.94 5.3c5.43.6 8.81 6.7 8.81 6.7a19.1 19.1 0 0 1-2.48 3.18"/>
                         </svg>
                     </button>
                 </div>
@@ -410,22 +488,35 @@
 
     <script>
         document.querySelectorAll('[data-password-toggle]').forEach((button) => {
-            const wrap = button.closest('.auth-input-wrap');
-            const input = wrap?.querySelector('[data-password-input]');
-            const eyeOpen = button.querySelector('[data-eye-open]');
-            const eyeClosed = button.querySelector('[data-eye-closed]');
+        const wrap = button.closest('.auth-input-wrap');
+        const input = wrap?.querySelector('[data-password-input]');
 
-            button.addEventListener('click', () => {
-                if (!input) return;
+        const eyeOpen = button.querySelector('[data-eye-open]');
+        const eyeClosed = button.querySelector('[data-eye-closed]');
 
-                const visible = input.type === 'text';
-                input.type = visible ? 'password' : 'text';
-                button.classList.toggle('is-visible', !visible);
-                button.setAttribute('aria-label', visible ? 'Tampilkan password' : 'Sembunyikan password');
-                button.setAttribute('aria-pressed', String(!visible));
-                eyeOpen?.classList.toggle('hidden', !visible);
-                eyeClosed?.classList.toggle('hidden', visible);
-                input.focus();
+        button.addEventListener('click', () => {
+        if (!input) return;
+
+        const isVisible = input.type === 'text';
+
+        input.type = isVisible ? 'password' : 'text';
+
+        button.classList.toggle('is-visible', !isVisible);
+
+        eyeOpen?.classList.toggle('hidden', !isVisible);
+        eyeClosed?.classList.toggle('hidden', isVisible);
+
+        button.setAttribute(
+            'aria-label',
+            isVisible ? 'Tampilkan password' : 'Sembunyikan password'
+        );
+
+        button.setAttribute(
+            'aria-pressed',
+            String(!isVisible)
+        );
+
+        input.focus();
             });
         });
     </script>
