@@ -1,20 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Profile - PlayMart</title>
+@extends('layouts.store')
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://cdn.tailwindcss.com"></script>
+@section('title', 'Detail Profile - PlayMart')
 
+@push('styles')
     <style>
-        body {
-            background: #1b2838;
-            color: white;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
         .steam-blue {
             background: linear-gradient(90deg,#06bfff,#2d73ff);
         }
@@ -24,10 +13,9 @@
             backdrop-filter: blur(10px);
         }
     </style>
-</head>
-<body class="min-h-screen">
-    <x-store-nav />
+@endpush
 
+@section('content')
     <main class="max-w-7xl mx-auto px-6 py-12">
         <section class="glass border border-[#2a475e] rounded-3xl overflow-hidden mb-8">
             <div class="p-8 bg-gradient-to-r from-[#0f1923] to-[#16202d]">

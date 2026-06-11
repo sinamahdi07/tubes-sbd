@@ -156,9 +156,28 @@
         @media (max-width: 640px) {
             .search-result-row {
                 grid-template-columns: 100px minmax(0, 1fr);
-                min-height: 104px;
-                gap: 12px;
+                min-height: 110px;
+                gap: 15px;
+                padding: 15px;
                 transform: none !important;
+            }
+            .search-result-thumb {
+                height: 80px !important;
+                border-radius: 12px;
+            }
+            .search-result-row span.text-xl {
+                font-size: 1.4rem !important;
+                line-height: 1.1;
+                margin-bottom: 6px;
+            }
+            .search-result-row span.text-base {
+                font-size: 1rem !important;
+                margin-top: 6px !important;
+            }
+            .search-result-row span.text-sm {
+                font-size: 0.9rem !important;
+                margin-top: 10px !important;
+                gap: 12px !important;
             }
             .search-result-price {
                 grid-column: 1 / -1;
@@ -166,30 +185,36 @@
                 justify-content: space-between;
                 align-items: center;
                 width: 100%;
-                padding-top: 8px;
-                border-top: 1px solid rgba(42, 71, 94, 0.3);
+                padding-top: 15px;
+                margin-top: 8px;
+                border-top: 2px solid rgba(42, 71, 94, 0.5);
             }
             .search-result-price .rounded-md {
-                padding: 4px 10px;
-                font-size: 0.875rem;
+                padding: 10px 18px;
+                font-size: 1.25rem;
+                background: #0f1923;
+                border-color: #66c0f4;
+            }
+            .search-result-price .text-sm {
+                font-size: 1.1rem !important;
             }
             .search-hover-popover {
                 display: none !important;
             }
             .search-pagination-panel {
-                margin-top: 1.75rem !important;
+                margin-top: 3rem !important;
             }
             .search-pagination-controls {
-                gap: .55rem;
+                gap: 1rem;
             }
             .search-page-button {
-                height: 42px;
-                min-width: 42px;
-                border-radius: 10px;
-                font-size: .92rem;
+                height: 60px;
+                min-width: 60px;
+                border-radius: 15px;
+                font-size: 1.25rem;
             }
             .search-page-ellipsis {
-                height: 42px;
+                height: 60px;
             }
 
             /* Mobile Collapsible Filters */

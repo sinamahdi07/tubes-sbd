@@ -14,21 +14,24 @@
     $isChatActive = $active === 'chat' || request()->routeIs('chat.*');
     $isWishlistActive = $active === 'wishlist' || request()->routeIs('wishlist.*');
     $linkBase = 'relative flex h-[72px] items-center text-[15px] font-bold text-gray-300 transition hover:text-white';
-    $mobileNavBase = 'flex min-w-0 flex-col items-center justify-center gap-1 rounded-lg px-1 py-2 text-[11px] font-black transition';
+    $mobileNavBase = 'flex min-w-0 flex-col items-center justify-center gap-1 rounded-xl px-1 py-2.5 text-[12px] font-black transition';
 @endphp
 
-<nav class="sticky left-0 right-0 top-0 z-50 border-b border-[#2a475e]/80 bg-[#050a12]/90 shadow-xl shadow-black/25 backdrop-blur">
-    <div class="mx-auto flex h-[72px] w-full max-w-[1700px] items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
+<nav class="hidden lg:sticky left-0 right-0 top-0 z-50 border-b border-white/10 bg-[#050a12]/80 shadow-2xl backdrop-blur-xl lg:flex">
+    <div class="mx-auto flex h-24 w-full max-w-[1700px] items-center justify-between gap-4 px-5 sm:px-6 lg:px-8">
         <div class="flex min-w-0 items-center gap-8">
-            <a href="{{ route('home') }}" class="flex shrink-0 items-center gap-3">
-                <img 
-                    src="{{ asset('GAMESTORE.png') }}" 
-                    alt="Logo" 
-                    class="h-11 w-11 object-contain rounded-lg shadow-lg shadow-blue-950/20"
-                    decoding="async"
-                >
-                <span class="hidden text-2xl font-black tracking-wide text-white sm:inline">
-                    Play<span class="text-[#118dff]">Mart</span>
+            <a href="{{ route('home') }}" class="flex shrink-0 items-center gap-3 group">
+                <div class="relative">
+                    <div class="absolute -inset-1 rounded-2xl bg-gradient-to-tr from-[#118dff] to-[#66c0f4] opacity-30 blur group-hover:opacity-50 transition"></div>
+                    <img 
+                        src="{{ asset('GAMESTORE.png') }}" 
+                        alt="Logo" 
+                        class="relative h-14 w-14 object-contain rounded-2xl shadow-2xl"
+                        decoding="async"
+                    >
+                </div>
+                <span class="text-3xl font-black tracking-tighter text-white sm:inline uppercase">
+                    PLAY<span class="text-[#118dff]">MART</span>
                 </span>
             </a>
 
