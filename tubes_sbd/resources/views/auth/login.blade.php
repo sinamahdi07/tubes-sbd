@@ -25,18 +25,11 @@
 
         body > .min-h-screen {
             position: relative;
-            display: grid;
-            min-height: 100vh;
-            padding: 24px;
-<<<<<<< HEAD
-
             display: flex;
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-=======
-            place-items: center;
->>>>>>> 8de6f1e4e3b970ccba1eda9c099aaa0891cb7b9a
+            padding: 24px;
         }
 
         body > .min-h-screen > div {
@@ -247,17 +240,8 @@
             height: 20px;
         }
 
-<<<<<<< HEAD
         .hidden {
             display: none !important;
-=======
-        .password-toggle [data-eye-closed],
-        .password-toggle.is-visible [data-eye-open] {
-            display: none;
-        }
-
-        .password-toggle.is-visible [data-eye-closed] {
-            display: block;
         }
 
         .field-error {
@@ -266,7 +250,6 @@
             color: #fca5a5;
             font-size: 13px;
             line-height: 1.4;
->>>>>>> 8de6f1e4e3b970ccba1eda9c099aaa0891cb7b9a
         }
 
         .auth-row {
