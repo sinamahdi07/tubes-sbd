@@ -304,8 +304,40 @@ class GameController extends Controller
         $isWishlisted = false;
 
         if (auth()->check()) {
-            $isWishlisted = Wishlist::where('user_id', auth()->id())
+            $isWishlisted = \App\Models\Wishlist::where('user_id', auth()->id())
                 ->where('game_id', $game->game_id)
+                ->exists();
+        }
+
+        // Reviews Logic
+        $reviews = $game->reviews()
+            ->with('user:id,name')
+            ->latest()
+            ->take(20)
+            ->get();
+
+        $totalReviews = $game->reviews()->count();
+        $recommendedReviews = $game->reviews()->where('is_recommended', true)->count();
+        $reviewPercentage = $totalReviews > 0 ? (int) round(($recommendedReviews / $totalReviews) * 100) : 0;
+        
+        $reviewLabel = 'No Reviews';
+        if ($totalReviews > 0) {
+            $reviewLabel = match (true) {
+                $reviewPercentage >= 95 => 'Overwhelmingly Positive',
+                $reviewPercentage >= 80 => 'Very Positive',
+                $reviewPercentage >= 70 => 'Mostly Positive',
+                $reviewPercentage >= 40 => 'Mixed',
+                $reviewPercentage >= 20 => 'Mostly Negative',
+                default => 'Very Negative',
+            };
+        }
+
+        $canReview = false;
+        if (auth()->check()) {
+            $canReview = \App\Models\Payment::join('payment_items', 'payments.id', '=', 'payment_items.payment_id')
+                ->where('payments.user_id', auth()->id())
+                ->where('payment_items.game_id', $game->game_id)
+                ->where('payments.status', \App\Models\Payment::STATUS_PAID)
                 ->exists();
         }
 
@@ -332,6 +364,16 @@ class GameController extends Controller
             $relatedGames = $relatedGames->concat($fallbackGames)->values();
         }
 
-        return view('game.show', compact('game', 'isWishlisted', 'relatedGames'));
+        return view('game.show', compact(
+            'game', 
+            'isWishlisted', 
+            'relatedGames', 
+            'reviews', 
+            'totalReviews', 
+            'reviewPercentage', 
+            'reviewLabel',
+            'canReview'
+        ));
     }
 }
+

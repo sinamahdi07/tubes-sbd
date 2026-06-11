@@ -1,227 +1,227 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel - @yield('title', 'Dashboard')</title>
+    <title>Admin Hub - @yield('title', 'Dashboard')</title>
     <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
-
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
+        :root {
+            --admin-bg: #050a12;
+            --admin-card: rgba(255, 255, 255, 0.02);
+            --admin-accent: #118dff;
+            --admin-accent-glow: rgba(17, 141, 255, 0.3);
+        }
+
         body {
-            background: #171d25;
+            background: var(--admin-bg);
             color: #c6d4df;
-            font-family: 'Motiva Sans', Arial, Helvetica, sans-serif;
-            overflow-x: hidden;
+            font-family: 'Figtree', sans-serif;
+            overflow: hidden;
         }
 
         .admin-sidebar {
-            background: #1b2838;
-            border-right: 1px solid #2a475e;
+            background: rgba(15, 25, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .admin-content {
-            background: #171d25;
+        .premium-card {
+            background: var(--admin-card);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .premium-card:hover {
+            border-color: rgba(17, 141, 255, 0.2);
+            background: rgba(255, 255, 255, 0.04);
         }
 
-        .steam-card {
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid #2a475e;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-        }
-
-        .nav-link {
-            color: #c6d4df;
-            transition: all 0.2s ease;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            color: #fff;
-            background: #2a475e;
-            border-left: 3px solid #66c0f4;
-        }
-
-        .steam-btn-primary {
-            background: linear-gradient(to bottom, #47bfff 5%, #1a44c2 100%);
-            color: white;
-            border: none;
-            transition: .2s ease;
-        }
-
-        .steam-btn-primary:hover {
-            background: linear-gradient(to bottom, #66c0f4 5%, #1a44c2 100%);
-            transform: scale(1.02);
-        }
-
-        .steam-btn-danger {
-            background: linear-gradient(to right, #8b0000, #ff4c4c);
-            color: white;
-            border: none;
-            transition: .2s ease;
-        }
-        
-        .steam-btn-danger:hover {
-            background: linear-gradient(to right, #a52a2a, #ff6666);
-            transform: scale(1.02);
-        }
-
-        .steam-table th {
-            background: #1b2838;
-            color: #66c0f4;
+        .nav-link-premium {
+            display: flex;
+            align-items: center;
+            padding: 0.875rem 1.5rem;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 700;
             text-transform: uppercase;
-            font-size: 0.85rem;
-            letter-spacing: 0.05em;
+            letter-spacing: 0.1em;
+            font-size: 0.75rem;
+            border-radius: 1rem;
+            margin: 0.25rem 0.75rem;
+            transition: all 0.3s ease;
         }
-
-        .steam-table tr {
-            border-bottom: 1px solid #2a475e;
-        }
-
-        .steam-table tr:hover {
-            background: rgba(42, 71, 94, 0.4);
-        }
-        
-        .steam-input {
-            background: #222c36;
-            border: 1px solid #1b2838;
+        .nav-link-premium:hover, .nav-link-premium.active {
             color: #fff;
-            border-radius: 4px;
+            background: rgba(17, 141, 255, 0.1);
+            box-shadow: inset 0 0 20px rgba(17, 141, 255, 0.05);
         }
-        .steam-input:focus {
-            outline: none;
-            border-color: #66c0f4;
-            box-shadow: 0 0 5px rgba(102, 192, 244, 0.5);
+        .nav-link-premium.active {
+            color: var(--admin-accent);
+            border: 1px solid rgba(17, 141, 255, 0.2);
+        }
+
+        .admin-header {
+            background: rgba(15, 25, 35, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .mobile-bottom-nav {
+            background: rgba(15, 25, 35, 0.95);
+            backdrop-filter: blur(30px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(17, 141, 255, 0.3); }
+
+        @media (max-width: 1024px) {
+            .admin-sidebar { display: none; }
+            .main-content { padding-bottom: 80px; }
         }
     </style>
+    @stack('styles')
 </head>
 <body class="flex h-screen overflow-hidden">
 
-    <!-- Sidebar -->
-    <aside class="w-64 admin-sidebar hidden md:flex flex-col">
-        <div class="p-6 border-b border-gray-700/50 flex items-center gap-3">
-            <svg class="w-8 h-8 text-[#66c0f4]" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
-            </svg>
-            <span class="text-xl font-bold text-white tracking-wider">ADMIN</span>
+    <!-- Desktop Sidebar -->
+    <aside class="w-72 admin-sidebar hidden lg:flex flex-col shadow-2xl">
+        <div class="p-8 border-b border-white/5">
+            <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-4 group">
+                <div class="h-12 w-12 rounded-2xl bg-white/5 p-2 transition-all group-hover:scale-110 group-hover:bg-[#118dff]/10">
+                    <img src="{{ asset('GAMESTORE.png') }}" alt="Logo" class="h-full w-full object-contain">
+                </div>
+                <div>
+                    <span class="text-2xl font-black tracking-tighter text-white block leading-none">ADMIN<span class="text-[#118dff]">HUB</span></span>
+                    <span class="text-[9px] font-black uppercase tracking-[0.4em] text-gray-500">PlayMart Core</span>
+                </div>
+            </a>
         </div>
 
-        <nav class="flex-1 overflow-y-auto py-4">
+        <nav class="flex-1 overflow-y-auto py-6">
+            <div class="px-8 mb-4">
+                <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-600">Management</h3>
+            </div>
             <ul class="space-y-1">
-                <li>
-                    <a href="{{ route('admin.dashboard') }}" class="nav-link flex items-center px-6 py-3 {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
-                        Dashboard
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.games.index') }}" class="nav-link flex items-center px-6 py-3 {{ request()->routeIs('admin.games.*') ? 'active' : '' }}">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Games
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.users.index') }}" class="nav-link flex items-center px-6 py-3 {{ request()->routeIs('admin.users.*') ? 'active' : '' }}">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                        Users
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.payments.index') }}" class="nav-link flex items-center px-6 py-3 {{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2m0-6h2a2 2 0 012 2v2a2 2 0 01-2 2h-2m0-6v6"></path>
-                        </svg>
-                        Payments
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.reviews.index') }}" class="nav-link flex items-center px-6 py-3 {{ request()->routeIs('admin.reviews.*') ? 'active' : '' }}">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h6m-6 4h3m-6 4 3.5-3.5H19a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v8.5a2 2 0 0 0 2 2h1v3.5z"></path>
-                        </svg>
-                        Reviews
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.developers.index') }}" class="nav-link flex items-center px-6 py-3 {{ request()->routeIs('admin.developers.*') ? 'active' : '' }}">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path></svg>
-                        Developers
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.publishers.index') }}" class="nav-link flex items-center px-6 py-3 {{ request()->routeIs('admin.publishers.*') ? 'active' : '' }}">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                        Publishers
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.genres.index') }}" class="nav-link flex items-center px-6 py-3 {{ request()->routeIs('admin.genres.*') ? 'active' : '' }}">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
-                        Genres
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.categories.index') }}" class="nav-link flex items-center px-6 py-3 {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
-                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7h16M4 12h16M4 17h10"></path>
-                        </svg>
-                        Categories
-                    </a>
-                </li>
+                @php
+                    $menuItems = [
+                        ['route' => 'admin.dashboard', 'icon' => 'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z', 'label' => 'Dashboard'],
+                        ['route' => 'admin.games.index', 'icon' => 'M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z', 'label' => 'Games'],
+                        ['route' => 'admin.users.index', 'icon' => 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z', 'label' => 'Users'],
+                        ['route' => 'admin.payments.index', 'icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', 'label' => 'Payments'],
+                        ['route' => 'admin.reviews.index', 'icon' => 'M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.86 9.86 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8Z', 'label' => 'Reviews'],
+                        ['route' => 'admin.developers.index', 'icon' => 'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4', 'label' => 'Developers'],
+                        ['route' => 'admin.publishers.index', 'icon' => 'M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4', 'label' => 'Publishers'],
+                        ['route' => 'admin.genres.index', 'icon' => 'M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z', 'label' => 'Genres'],
+                        ['route' => 'admin.categories.index', 'icon' => 'M4 7h16M4 12h16M4 17h10', 'label' => 'Categories'],
+                    ];
+                @endphp
+                
+                @foreach($menuItems as $item)
+                    <li>
+                        <a href="{{ route($item['route']) }}" class="nav-link-premium {{ request()->routeIs($item['route'] . '*') ? 'active' : '' }}">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="{{ $item['icon'] }}"></path></svg>
+                            {{ $item['label'] }}
+                        </a>
+                    </li>
+                @endforeach
             </ul>
         </nav>
 
-        <div class="p-4 border-t border-gray-700/50">
-            <a href="/" class="flex items-center justify-center w-full px-4 py-2 text-sm text-gray-300 bg-gray-800 hover:bg-gray-700 rounded transition">
-                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                Kembali ke Web
+        <div class="p-8 border-t border-white/5">
+            <a href="{{ route('home') }}" class="flex items-center justify-center w-full px-6 py-4 rounded-2xl bg-white text-black font-black text-xs uppercase tracking-widest shadow-xl transition-all hover:scale-105 active:scale-95">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                Main Store
             </a>
         </div>
     </aside>
 
-    <!-- Main Content -->
-    <main class="flex-1 flex flex-col admin-content overflow-hidden">
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col overflow-hidden relative">
         <!-- Header -->
-        <header class="bg-[#1b2838] border-b border-[#2a475e] p-4 flex items-center justify-between shadow-sm">
-            <h1 class="text-xl font-bold text-white">@yield('title', 'Dashboard')</h1>
-            
+        <header class="admin-header px-8 py-5 flex items-center justify-between z-40">
             <div class="flex items-center gap-4">
-                <span class="text-sm text-gray-400">Admin: <span class="text-[#66c0f4]">{{ auth()->user()->name ?? 'Administrator' }}</span></span>
+                <div class="lg:hidden h-10 w-10 rounded-xl bg-white/5 p-2 mr-2">
+                    <img src="{{ asset('GAMESTORE.png') }}" alt="Logo" class="h-full w-full object-contain">
+                </div>
+                <h1 class="text-2xl font-black tracking-tighter text-white">@yield('title', 'Dashboard')</h1>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <div class="hidden sm:flex flex-col items-end">
+                    <span class="text-[10px] font-black text-gray-500 uppercase tracking-widest">Active Session</span>
+                    <span class="text-xs font-bold text-[#66c0f4]">{{ auth()->user()->name }}</span>
+                </div>
+                
+                <div class="h-10 w-px bg-white/5 mx-2"></div>
+                
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="text-xs px-3 py-1 bg-gray-700 hover:bg-red-600 text-white rounded transition">Logout</button>
+                    <button type="submit" class="h-11 w-11 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center border border-red-500/20 hover:bg-red-500 hover:text-white transition-all active:scale-90 shadow-lg shadow-red-500/10">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    </button>
                 </form>
             </div>
         </header>
 
-        <!-- Content Area -->
-        <div class="flex-1 overflow-auto p-6">
+        <!-- Dynamic Content -->
+        <div class="flex-1 overflow-y-auto p-8 main-content store-scrollbar">
+            <!-- Breadcrumbs or Back to Home for Mobile -->
+            <div class="lg:hidden mb-8">
+                <a href="{{ route('home') }}" class="inline-flex items-center gap-3 px-6 py-3 rounded-xl bg-[#118dff]/10 text-[#118dff] font-black text-xs uppercase tracking-widest border border-[#118dff]/20">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                    Back to Store Front
+                </a>
+            </div>
+
             @if(session('success'))
-                <div class="bg-green-900/50 border-l-4 border-green-500 text-green-200 p-4 mb-6 rounded shadow" role="alert">
-                    <p>{{ session('success') }}</p>
+                <div class="mb-8 animate-in fade-in slide-in-from-top-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 p-5 flex items-center gap-4 text-emerald-400 font-bold shadow-xl shadow-emerald-500/5">
+                    <div class="h-10 w-10 rounded-xl bg-emerald-500/20 flex items-center justify-center shrink-0">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" /></svg>
+                    </div>
+                    {{ session('success') }}
                 </div>
             @endif
 
             @if(session('error'))
-                <div class="bg-red-900/50 border-l-4 border-red-500 text-red-200 p-4 mb-6 rounded shadow" role="alert">
-                    <p>{{ session('error') }}</p>
-                </div>
-            @endif
-
-            @if ($errors->any())
-                <div class="bg-red-900/50 border-l-4 border-red-500 text-red-200 p-4 mb-6 rounded shadow">
-                    <ul class="list-disc list-inside">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+                <div class="mb-8 animate-in fade-in slide-in-from-top-4 rounded-2xl bg-red-500/10 border border-red-500/20 p-5 flex items-center gap-4 text-red-400 font-bold shadow-xl shadow-red-500/5">
+                    <div class="h-10 w-10 rounded-xl bg-red-500/20 flex items-center justify-center shrink-0">
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </div>
+                    {{ session('error') }}
                 </div>
             @endif
 
             @yield('content')
         </div>
+
+        <!-- Mobile Bottom Nav -->
+        <nav class="fixed bottom-0 left-0 right-0 h-20 mobile-bottom-nav lg:hidden z-50 flex items-center justify-around px-4">
+            <a href="{{ route('admin.dashboard') }}" class="flex flex-col items-center gap-1 {{ request()->routeIs('admin.dashboard') ? 'text-[#118dff]' : 'text-gray-500' }}">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                <span class="text-[8px] font-black uppercase tracking-widest">Home</span>
+            </a>
+            <a href="{{ route('admin.games.index') }}" class="flex flex-col items-center gap-1 {{ request()->routeIs('admin.games.*') ? 'text-[#118dff]' : 'text-gray-500' }}">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path></svg>
+                <span class="text-[8px] font-black uppercase tracking-widest">Games</span>
+            </a>
+            <a href="{{ route('admin.payments.index') }}" class="flex flex-col items-center gap-1 {{ request()->routeIs('admin.payments.*') ? 'text-[#118dff]' : 'text-gray-500' }}">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span class="text-[8px] font-black uppercase tracking-widest">Pay</span>
+            </a>
+            <a href="{{ route('admin.users.index') }}" class="flex flex-col items-center gap-1 {{ request()->routeIs('admin.users.*') ? 'text-[#118dff]' : 'text-gray-500' }}">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                <span class="text-[8px] font-black uppercase tracking-widest">Users</span>
+            </a>
+        </nav>
     </main>
 
     @stack('scripts')

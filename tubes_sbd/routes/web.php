@@ -75,6 +75,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/game/{game}/reviews', [GameReviewController::class, 'store'])
         ->name('games.reviews.store');
 
+    Route::get('/games/search', [GameController::class, 'search'])->name('games.search');
+
     Route::delete('/game/{game}/reviews/{review}', [GameReviewController::class, 'destroy'])
         ->name('games.reviews.destroy');
 

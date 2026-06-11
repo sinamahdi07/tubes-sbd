@@ -55,6 +55,8 @@ class GameReviewController extends Controller
         $total = $game->reviews()->count();
         $recommended = $game->reviews()->where('is_recommended', true)->count();
         $percentage = $total > 0 ? (int) round(($recommended / $total) * 100) : 0;
+        
+        $currentUserId = $request->user()?->id;
 
         return [
             'stats' => [
@@ -69,11 +71,11 @@ class GameReviewController extends Controller
                 'id' => $review->id,
                 'user_name' => $review->user?->name ?? 'Deleted User',
                 'initial' => strtoupper(substr($review->user?->name ?? 'U', 0, 1)),
-                'is_recommended' => $review->is_recommended,
+                'is_recommended' => (bool) $review->is_recommended,
                 'body' => $review->body,
-                'created_at' => $review->created_at?->diffForHumans(),
-                'updated_at' => $review->updated_at?->diffForHumans(),
-                'is_owner' => $request->user()?->id === $review->user_id,
+                'created_at' => $review->created_at?->diffForHumans() ?? 'Just now',
+                'updated_at' => $review->updated_at?->diffForHumans() ?? 'Just now',
+                'is_owner' => $currentUserId && (int) $currentUserId === (int) $review->user_id,
             ]),
         ];
     }

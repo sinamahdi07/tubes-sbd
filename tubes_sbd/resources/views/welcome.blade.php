@@ -17,6 +17,48 @@
 
 @push('styles')
     <style>
+        :root {
+            --pm-blue: #118dff;
+            --pm-green: #1DB954;
+            --pm-bg: #050a12;
+        }
+
+        body {
+            background-color: var(--pm-bg);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(17, 141, 255, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 0%, rgba(29, 185, 84, 0.03) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(17, 141, 255, 0.05) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, rgba(29, 185, 84, 0.03) 0px, transparent 50%);
+            background-attachment: fixed;
+        }
+
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.2, 1, 0.3, 1);
+        }
+        .reveal-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .hero-info-glass {
+            background: rgba(15, 25, 35, 0.45);
+            backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .game-card-hover {
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .game-card-hover:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
         .store-panel {
             background:
                 linear-gradient(180deg, rgba(15, 25, 35, 0.92), rgba(7, 17, 29, 0.94)),
@@ -500,6 +542,113 @@
             background-size: 220% 100%;
             animation: playmart-shimmer 1.35s ease-in-out infinite;
         }
+
+        /* MOBILE BRAND HEADER */
+        .mobile-brand-header {
+            display: none;
+            padding: 20px 0 20px;
+            background: linear-gradient(to bottom, rgba(17, 141, 255, 0.08), rgba(5, 10, 18, 0.2));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+        @media (max-width: 1024px) {
+            .mobile-brand-header { display: block; }
+        }
+
+        .mobile-quick-action {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.6);
+            transition: all 0.2s ease;
+        }
+        .mobile-quick-action:active {
+            transform: scale(0.9);
+            background: rgba(102, 192, 244, 0.1);
+            color: #66c0f4;
+        }
+
+        .mobile-search-bar {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 14px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 15px;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 13px;
+            text-decoration: none;
+        }
+
+        .discount-grid-mobile {
+            display: grid;
+            gap: 12px;
+        }
+        @media (max-width: 640px) {
+            .discount-item-hidden { display: none; }
+            .discount-item-hidden.is-visible { display: block; }
+        }
+
+        /* ENHANCED DISCOUNTS & POPULAR CHARTS */
+        .discount-card {
+            position: relative;
+            background: #0f1923;
+            border: 1px solid rgba(139, 197, 63, 0.2);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .discount-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: #8bc53f;
+            box-shadow: 0 15px 35px rgba(139, 197, 63, 0.15);
+        }
+        .discount-badge-premium {
+            background: linear-gradient(135deg, #8bc53f, #4a8c2c);
+            color: #fff;
+            font-weight: 900;
+            padding: 4px 10px;
+            border-radius: 4px;
+            box-shadow: 0 4px 12px rgba(139, 197, 63, 0.4);
+            font-size: 1.1rem;
+        }
+
+        .popular-rank-bg {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1;
+            opacity: 0.1;
+            position: absolute;
+            left: -10px;
+            top: -5px;
+            z-index: 0;
+            font-family: 'Black Ops One', cursive, sans-serif;
+            color: #66c0f4;
+            transition: all 0.3s ease;
+        }
+        .popular-row:hover .popular-rank-bg {
+            opacity: 0.3;
+            transform: scale(1.1) translateX(5px);
+            color: #fff;
+        }
+        .popular-row {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05) !important;
+            margin-bottom: 12px;
+            border-radius: 12px !important;
+            overflow: hidden;
+            position: relative;
+            z-index: 1;
+        }
+        .popular-row:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(102, 192, 244, 0.3) !important;
+        }
+
         @keyframes playmart-shimmer {
             0% { background-position: 120% 0; }
             100% { background-position: -120% 0; }
@@ -554,63 +703,73 @@
         }
         @media (max-width: 640px) {
             .hero-panel {
-                --hero-height: 340px;
-                --hero-title-size: 2rem;
+                --hero-height: 380px;
+                --hero-title-size: 1.85rem;
                 --hero-title-lines: 3;
-                --hero-description-height: 0; /* Sembunyikan deskripsi di mobile sangat kecil untuk compact */
+                --hero-description-height: 0;
             }
-            .hero-slide-grid { padding-top: 1rem !important; padding-bottom: 1rem !important; }
-            .hero-actions { margin-top: 0.75rem !important; min-height: 2.5rem; }
-            .hero-actions a.steam-blue { padding: 0.75rem 1.25rem; font-size: 0.875rem; }
-            .hero-actions .icon-button { height: 2.5rem; width: 2.5rem; }
+            .hero-slide-grid { padding-top: 1.5rem !important; padding-bottom: 1.5rem !important; padding-left: 1rem !important; padding-right: 1rem !important; }
+            .hero-actions { margin-top: 1rem !important; min-height: 2.5rem; gap: 0.75rem !important; }
+            .hero-actions a.steam-blue { padding: 0.6rem 1rem; font-size: 0.8rem; flex-grow: 1; text-align: center; }
+            .hero-actions .icon-button { height: 2.5rem; width: 2.5rem; flex-shrink: 0; }
+            .hero-actions .text-3xl { font-size: 1.5rem !important; }
+
+            .store-container { padding-left: 1rem !important; padding-right: 1rem !important; }
+            section { margin-top: 3.5rem !important; }
             
+            #discover { margin-top: 1.5rem !important; }
+
+            .showcase-tabs { gap: 1rem !important; padding-bottom: 4px; }
+            .showcase-tab { font-size: 1rem !important; padding-bottom: 8px; }
+
             .showcase-row {
-                grid-template-columns: 112px minmax(0, 1fr);
+                grid-template-columns: 100px minmax(0, 1fr);
                 gap: 12px;
-                padding: 8px;
+                padding: 10px;
+                margin-bottom: 8px;
             }
+            .showcase-thumb { height: 65px !important; }
             .showcase-price {
                 grid-column: 1 / -1;
                 justify-self: stretch;
+                margin-top: 4px;
+                font-size: 0.875rem !important;
+                min-height: 36px !important;
             }
             .category-track {
-                grid-auto-columns: minmax(225px, 82%);
+                grid-auto-columns: minmax(200px, 75%);
+                gap: 16px !important;
+                padding-bottom: 20px !important;
             }
             .category-carousel {
-                padding-inline: 42px;
+                padding-inline: 1rem !important;
             }
             .category-carousel::before,
             .category-carousel::after {
-                width: 44px;
-                bottom: 36px;
+                display: none;
             }
             .category-card {
-                min-height: 180px;
+                min-height: 160px;
             }
             .category-arrow {
-                height: 48px;
-                width: 36px;
-            }
-            .category-arrow-left {
-                left: 0;
-            }
-            .category-arrow-right {
-                right: 0;
+                display: none !important;
             }
             
             .budget-grid {
                 grid-template-columns: 1fr;
-                gap: 12px;
+                gap: 16px;
             }
 
+            .section-heading { font-size: 1.5rem !important; }
+
             .popular-row {
-                grid-template-columns: 28px 70px 1fr;
-                gap: 10px;
-                padding: 6px;
+                grid-template-columns: 32px 80px 1fr;
+                gap: 12px;
+                padding: 10px;
             }
             .popular-thumb {
-                height: 40px;
-                width: 70px;
+                height: 45px;
+                width: 80px;
             }
         }
         @media (max-width: 420px) {
@@ -629,6 +788,45 @@
 
 @section('content')
     <main class="store-home">
+        <!-- MOBILE BRAND HEADER -->
+        <div class="mobile-brand-header store-container">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-xl overflow-hidden shadow-lg shadow-blue-500/20">
+                        <img src="{{ asset('GAMESTORE.png') }}" alt="PlayMart Logo" class="h-full w-full object-cover">
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-black text-white leading-none tracking-tighter">PLAYMART</h1>
+                        <p class="text-[10px] font-bold text-[#66c0f4] uppercase tracking-[0.2em] mt-1">Level Up Your Library</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('cart.index') }}" class="mobile-quick-action relative">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        @if($cartCount > 0)
+                            <span class="absolute top-2 right-2 flex h-2 w-2 rounded-full bg-success"></span>
+                        @endif
+                    </a>
+                    <a href="{{ route('games.search') }}" class="mobile-quick-action">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                        </svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- QUICK SEARCH BAR MOBILE -->
+            <a href="#discover" class="mobile-search-bar group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-colors group-active:text-[#66c0f4]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <span>Cari game, genre, atau kategori...</span>
+            </a>
+        </div>
+
         @if($featuredGames->isNotEmpty())
                 <section class="store-container relative pt-5" data-hero-carousel>
                 @foreach($featuredGames as $slideIndex => $heroGame)
@@ -723,7 +921,7 @@
             </section>
         @endif
 
-        <section id="discover" class="store-container mt-4">
+        <section id="discover" class="store-container mt-4 reveal-on-scroll">
             <x-game-search
                 :value="$search"
                 :categories="$categories"
@@ -735,7 +933,11 @@
         </section>
 
         @if($showcaseTabs->isNotEmpty())
-            <section id="store-showcase" class="store-container mt-12" data-showcase>
+            <section id="store-showcase" class="store-container mt-20 reveal-on-scroll" data-showcase>
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="h-10 w-2 rounded-full bg-[#118dff]"></div>
+                    <h2 class="text-4xl font-black text-white tracking-tighter uppercase">Market Catalogue</h2>
+                </div>
                 <div class="showcase-tabs store-scrollbar flex gap-8 overflow-x-auto">
                     @foreach($showcaseTabs as $tabIndex => $tab)
                         <button
@@ -876,8 +1078,11 @@
         @endif
 
         @if($browseCategoryCards->isNotEmpty())
-            <section id="browse-categories" class="store-container mt-20">
-                <h2 class="section-heading font-black text-white">Telusuri Berdasarkan Kategori</h2>
+            <section id="browse-categories" class="store-container mt-28 reveal-on-scroll">
+                <div class="flex items-center gap-4 mb-10">
+                    <div class="h-10 w-2 rounded-full bg-[#1DB954]"></div>
+                    <h2 class="text-4xl font-black text-white tracking-tighter uppercase">Genre Exploration</h2>
+                </div>
 
                 <div class="category-carousel mt-8" data-category-carousel>
                     @if($browseCategoryCards->count() > 1)
@@ -921,13 +1126,13 @@
 
         @if($budgetDeals->isNotEmpty())
             <section id="budget-deals" class="store-container mt-20">
-                <div class="mb-7 flex flex-wrap items-center justify-between gap-5">
+                <div class="mb-7 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
                     <h2 class="section-heading font-black text-white">Di Bawah Rp 90.000</h2>
 
-                    <div class="flex flex-wrap items-center gap-2 text-base font-bold text-gray-200">
-                        <span class="mr-1">Lebih banyak lagi:</span>
+                    <div class="flex flex-wrap items-center gap-3 text-base font-bold text-gray-200">
+                        <span class="mr-1 text-sm md:text-base">Lebih banyak:</span>
                         @foreach($budgetQuickLinks as $quickLink)
-                            <a href="{{ $quickLink['url'] }}" class="budget-more-link rounded px-5 py-2 text-sm font-black">
+                            <a href="{{ $quickLink['url'] }}" class="budget-more-link rounded px-4 md:px-5 py-2 text-xs md:text-sm font-black whitespace-nowrap">
                                 {{ $quickLink['label'] }}
                             </a>
                         @endforeach
@@ -1048,66 +1253,67 @@
                 </section>
 
                 <section id="events">
-                    <div class="mb-3 flex items-center justify-between gap-4">
+                    <div class="mb-5 flex items-center justify-between gap-4">
                         <div class="flex items-center gap-3">
-                            <span class="flex h-7 w-7 items-center justify-center text-[#118dff]">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor">
+                            <span class="flex h-8 w-8 items-center justify-center text-[#8bc53f] bg-[#8bc53f] bg-opacity-10 rounded-lg">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                                     <path d="M12 2c2.8 2.2 4.2 4.64 4.2 7.32 0 1.1-.25 2.03-.74 2.8.73-.27 1.48-.82 2.24-1.66.9 1.08 1.35 2.32 1.35 3.73A6.92 6.92 0 0 1 12 21a6.92 6.92 0 0 1-7.05-6.81c0-2.7 1.43-5.13 4.3-7.29-.2 1.56.1 2.8.92 3.72.86.96 1.97 1.32 3.35 1.08.72-2.22.21-5.46-1.52-9.7Z"/>
                                 </svg>
                             </span>
-                            <h2 class="section-heading font-black uppercase tracking-tight text-white">Game Lagi Diskon</h2>
+                            <h2 class="section-heading font-black uppercase tracking-tight text-white">Specials & Discounts</h2>
                         </div>
-                        <a href="{{ route('games.search', array_merge(request()->only('search', 'genre', 'category'), ['discount' => 1])) }}" class="store-link hidden items-center gap-2 text-sm font-black sm:inline-flex">
-                            View All
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/>
-                            </svg>
+                        <a href="{{ route('games.search', array_merge(request()->only('search', 'genre', 'category'), ['discount' => 1])) }}" class="group flex items-center gap-2 text-sm font-black text-[#8bc53f] transition-all hover:text-white">
+                            View All Deals
+                            <div class="flex h-6 w-6 items-center justify-center rounded-full bg-[#8bc53f] bg-opacity-10 group-hover:bg-opacity-100 group-hover:text-black transition-all">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="m9 5 7 7-7 7"/>
+                                </svg>
+                            </div>
                         </a>
                     </div>
 
-                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+                    <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
                         @forelse($discountedGames as $game)
                             @php
                                 $discount = $discountFor($game);
                                 $finalPrice = $finalPriceFor($game);
                             @endphp
-                            <a href="{{ url('/game/' . $game->game_id) }}" class="block">
-                                <article class="game-card relative min-h-[150px] overflow-hidden rounded-lg">
-                                    <img src="{{ $imageFor($game) }}" alt="{{ $game->title }}" class="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-[#050a12] via-[#050a12]/52 to-transparent"></div>
-                                    <span class="icon-button absolute right-2 top-2 h-8 w-8 rounded-md" aria-hidden="true">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 8.25c0-2.49-2.02-4.5-4.5-4.5-1.72 0-3.22.96-3.98 2.38A4.49 4.49 0 0 0 8.5 3.75C6.02 3.75 4 5.76 4 8.25c0 7.22 8 11.5 8 11.5s9-4.28 9-11.5Z"/>
-                                        </svg>
-                                    </span>
-                                    <div class="absolute inset-x-0 bottom-0 p-3">
-                                        <h3 class="line-clamp-2 text-base font-black uppercase leading-tight text-white">{{ $game->title }}</h3>
-                                        <div class="mt-2 flex flex-wrap items-center gap-2">
-                                            @if($discount > 0)
-                                                <span class="price-discount rounded px-2 py-0.5 text-xs font-black">-{{ $discount }}%</span>
-                                            @endif
-                                            <span class="text-xs font-black text-white">{{ $formatPrice($finalPrice) }}</span>
+                            <a href="{{ url('/game/' . $game->game_id) }}" class="block group">
+                                <article class="discount-card relative min-h-[180px] overflow-hidden rounded-2xl">
+                                    <img src="{{ $imageFor($game) }}" alt="{{ $game->title }}" class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy" decoding="async">
+                                    <div class="absolute inset-0 bg-gradient-to-t from-[#050a12] via-[#050a12]/40 to-transparent"></div>
+                                    
+                                    <div class="absolute top-3 left-3">
+                                        <div class="discount-badge-premium">-{{ $discount }}%</div>
+                                    </div>
+
+                                    <div class="absolute inset-x-0 bottom-0 p-4">
+                                        <h3 class="line-clamp-1 text-base font-black uppercase leading-tight text-white mb-2">{{ $game->title }}</h3>
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-xs text-gray-400 line-through font-bold">{{ $formatPrice($game->price) }}</span>
+                                            <span class="text-sm font-black text-[#8bc53f]">{{ $formatPrice($finalPrice) }}</span>
                                         </div>
                                     </div>
                                 </article>
                             </a>
                         @empty
-                            <div class="store-panel rounded-lg p-8 text-gray-300 sm:col-span-2 lg:col-span-3 xl:col-span-6">Belum ada game yang lagi diskon.</div>
+                            <div class="store-panel rounded-lg p-8 text-gray-300 sm:col-span-2 lg:col-span-3 xl:col-span-6 text-center italic">Belum ada game yang lagi diskon.</div>
                         @endforelse
                     </div>
                 </section>
             </div>
 
-            <aside class="store-panel h-fit rounded-lg p-6 xl:sticky xl:top-24">
-                <div class="mb-6 flex items-center gap-3">
-                    <span class="flex h-8 w-8 items-center justify-center text-[#ff7b22]">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2c2.8 2.2 4.2 4.64 4.2 7.32 0 1.1-.25 2.03-.74 2.8.73-.27 1.48-.82 2.24-1.66.9 1.08 1.35 2.32 1.35 3.73A6.92 6.92 0 0 1 12 21a6.92 6.92 0 0 1-7.05-6.81c0-2.7 1.43-5.13 4.3-7.29-.2 1.56.1 2.8.92 3.72.86.96 1.97 1.32 3.35 1.08.72-2.22.21-5.46-1.52-9.7Z"/>
-                        </svg>
-                    </span>
-                    <div>
-                        <h2 class="text-2xl font-black text-white">Popular Right Now</h2>
+            <aside class="store-panel h-fit rounded-2xl p-6 xl:sticky xl:top-24 border-[#66c0f4] border-opacity-10">
+                <div class="mb-8 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-[#118dff] bg-opacity-10 p-2 rounded-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#118dff]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                            </svg>
+                        </div>
+                        <h2 class="text-2xl font-black text-white uppercase tracking-tighter">Popular Charts</h2>
                     </div>
+                    <div class="text-[10px] font-black text-[#66c0f4] bg-[#66c0f4] bg-opacity-10 px-2 py-1 rounded">LIVE UPDATES</div>
                 </div>
 
                 <div class="space-y-4">
@@ -1117,37 +1323,32 @@
                             $finalPrice = $finalPriceFor($game);
                             $purchaseCount = (int) ($game->paid_purchases_count ?? 0);
                         @endphp
-                        <a href="{{ url('/game/' . $game->game_id) }}" class="popular-row grid grid-cols-[34px_118px_1fr] items-center gap-3 rounded-lg border-b border-[#2a475e]/20 p-2 hover:bg-[#16202d]/50 transition-colors last:border-0">
-                            <span class="text-center text-lg font-black text-[#66c0f4]">{{ $rank + 1 }}</span>
-                            <span class="block overflow-hidden rounded-md">
-                                <img src="{{ $imageFor($game) }}" alt="{{ $game->title }}" class="popular-thumb h-16 w-[118px] object-cover" loading="lazy" decoding="async">
-                            </span>
-                            <span class="min-w-0">
-                                <span class="block truncate text-sm font-black uppercase text-white">{{ $game->title }}</span>
-                                <span class="mt-1 flex items-center gap-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19V5m0 14h16M8 17v-5m4 5V8m4 9v-8"/>
-                                    </svg>
-                                    <span class="text-[10px] font-bold text-gray-400">{{ number_format($purchaseCount, 0, ',', '.') }} Sold</span>
-                                </span>
-                                <span class="mt-1.5 flex flex-wrap items-center gap-2">
+                        <a href="{{ url('/game/' . $game->game_id) }}" class="popular-row flex items-center gap-4 p-3 group no-underline transition-all">
+                            <div class="popular-rank-bg">{{ $rank + 1 }}</div>
+                            <div class="relative z-10 w-24 flex-shrink-0">
+                                <img src="{{ $imageFor($game) }}" alt="{{ $game->title }}" class="h-14 w-24 object-cover rounded-lg shadow-lg border border-white border-opacity-5" loading="lazy" decoding="async">
+                            </div>
+                            <div class="relative z-10 flex-grow min-w-0">
+                                <h3 class="truncate text-xs font-black uppercase text-white mb-1 group-hover:text-[#66c0f4] transition-colors">{{ $game->title }}</h3>
+                                <div class="flex items-center gap-3">
+                                    <div class="flex items-center gap-1">
+                                        <div class="w-1 h-1 rounded-full bg-success"></div>
+                                        <span class="text-[9px] font-black text-gray-500 uppercase tracking-widest">{{ number_format($purchaseCount, 0, ',', '.') }} Sold</span>
+                                    </div>
                                     @if($discount > 0)
-                                        <span class="text-[10px] font-black text-[#8bc53f]">-{{ $discount }}%</span>
+                                        <span class="text-[9px] font-black text-[#8bc53f] bg-[#8bc53f] bg-opacity-10 px-1.5 py-0.5 rounded">-{{ $discount }}%</span>
                                     @endif
-                                    <span class="text-xs font-black text-white">{{ $formatPrice($finalPrice) }}</span>
-                                </span>
-                            </span>
+                                </div>
+                                <div class="mt-1 text-[11px] font-black text-white">{{ $formatPrice($finalPrice) }}</div>
+                            </div>
                         </a>
                     @empty
-                        <div class="rounded-lg border border-[#2a475e] bg-[#07111d]/80 p-5 text-sm text-gray-300">Belum ada game populer.</div>
+                        <div class="rounded-lg border border-[#2a475e] bg-[#07111d]/80 p-5 text-sm text-gray-300 text-center italic">Belum ada game populer.</div>
                     @endforelse
                 </div>
 
-                <a href="{{ route('games.search', array_merge(request()->only('search', 'genre', 'category'), ['sort' => 'popular'])) }}" class="mt-7 flex items-center justify-center gap-2 rounded-lg border border-[#2a475e] px-4 py-3.5 text-center text-sm font-black text-[#58a9ff] transition hover:border-[#66c0f4] hover:bg-[#0f1923] hover:text-white">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19V5m0 14h16M8 17v-5m4 5V8m4 9v-8"/>
-                    </svg>
-                    View Top Sellers
+                <a href="{{ route('games.search', array_merge(request()->only('search', 'genre', 'category'), ['sort' => 'popular'])) }}" class="mt-8 flex items-center justify-center gap-2 rounded-xl border border-[#2a475e] bg-white bg-opacity-[0.02] px-4 py-4 text-center text-xs font-black text-[#66c0f4] transition-all hover:border-[#66c0f4] hover:bg-[#66c0f4] hover:text-black uppercase tracking-widest">
+                    Explore Global Top Sellers
                 </a>
             </aside>
         </section>
@@ -1477,6 +1678,35 @@
 
                 renderDots();
                 updateControls();
+            });
+
+            // SHOW MORE DISCOUNTS MOBILE
+            const btnShowMore = document.getElementById('btn-show-more-discounts');
+            if (btnShowMore) {
+                btnShowMore.addEventListener('click', () => {
+                    const hiddenItems = document.querySelectorAll('.discount-item-hidden');
+                    hiddenItems.forEach(item => {
+                        item.classList.add('is-visible');
+                    });
+                    btnShowMore.parentElement.remove(); // Remove the button after showing all
+                });
+            }
+
+            // SCROLL REVEAL ANIMATION
+            const revealCallback = (entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    }
+                });
+            };
+
+            const revealObserver = new IntersectionObserver(revealCallback, {
+                threshold: 0.1
+            });
+
+            document.querySelectorAll('.reveal-on-scroll').forEach(section => {
+                revealObserver.observe(section);
             });
         });
     </script>

@@ -79,15 +79,19 @@ class HomeController extends Controller
 
         // Logika untuk menentukan judul halaman (misal: "Games developed by Valve")
         $pageTitle = 'Semua Game';
+        $resultsCount = null;
+
         if ($selectedDeveloper) {
-            $dev = Developer::find($selectedDeveloper);
+            $dev = Developer::withCount('games')->find($selectedDeveloper);
             if ($dev) {
                 $pageTitle = 'Games developed by '.$dev->name;
+                $resultsCount = $dev->games_count;
             }
         } elseif ($selectedPublisher) {
-            $pub = Publisher::find($selectedPublisher);
+            $pub = Publisher::withCount('games')->find($selectedPublisher);
             if ($pub) {
                 $pageTitle = 'Games published by '.$pub->name;
+                $resultsCount = $pub->games_count;
             }
         } elseif ($search) {
             $pageTitle = 'Search Results for: '.$search;
@@ -107,7 +111,8 @@ class HomeController extends Controller
             'sort',
             'selectedCategory',
             'selectedGenre',
-            'pageTitle'
+            'pageTitle',
+            'resultsCount'
         ));
     }
 
