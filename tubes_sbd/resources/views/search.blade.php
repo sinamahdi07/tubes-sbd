@@ -43,7 +43,7 @@
             position: fixed;
             top: 0;
             left: 0;
-            z-index: 90;
+            z-index: 40; /* Di bawah top nav */
             display: none;
             width: min(300px, calc(100vw - 32px));
             pointer-events: none;
@@ -141,15 +141,37 @@
                 grid-template-columns: 180px minmax(0, 1fr);
             }
             .search-result-price {
+                grid-column: 1 / -1;
+                justify-self: end;
+                margin-top: -30px;
+            }
+        }
+        @media (max-width: 768px) {
+            .search-result-price {
                 grid-column: 2;
                 justify-self: start;
+                margin-top: 0;
             }
         }
         @media (max-width: 640px) {
             .search-result-row {
-                grid-template-columns: 112px minmax(0, 1fr);
+                grid-template-columns: 100px minmax(0, 1fr);
                 min-height: 104px;
+                gap: 12px;
                 transform: none !important;
+            }
+            .search-result-price {
+                grid-column: 1 / -1;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                width: 100%;
+                padding-top: 8px;
+                border-top: 1px solid rgba(42, 71, 94, 0.3);
+            }
+            .search-result-price .rounded-md {
+                padding: 4px 10px;
+                font-size: 0.875rem;
             }
             .search-hover-popover {
                 display: none !important;
@@ -169,6 +191,14 @@
             .search-page-ellipsis {
                 height: 42px;
             }
+
+            /* Mobile Collapsible Filters */
+            .mobile-filter-hidden {
+                display: none;
+            }
+            .mobile-filter-active {
+                display: block;
+            }
         }
     </style>
 @endpush
@@ -177,17 +207,32 @@
     @php
         $fallbackImage = 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?q=70&w=800&auto=format&fit=crop';
         $formatPrice = fn ($price) => (float) $price <= 0 ? 'Gratis' : 'Rp ' . number_format($price, 0, ',', '.');
+        $cartCount = auth()->check() ? auth()->user()->carts()->count() : 0;
     @endphp
 
-    <x-game-search
-        :value="$search"
-        :categories="$categories"
-        :genres="$genres"
-        :selected-category="$selectedCategory"
-        :selected-genre="$selectedGenre"
-    />
+    <div x-data="{ showFilters: false }" class="relative z-[30]">
+        <!-- Mobile Filter Toggle -->
+        <div class="store-container pt-4 sm:hidden">
+            <button @click="showFilters = !showFilters" class="flex w-full items-center justify-center gap-2 rounded-lg border border-[#2a475e] bg-[#16202d] py-3 text-sm font-black uppercase text-[#66c0f4]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                </svg>
+                <span x-text="showFilters ? 'Hide Filters' : 'Show Filters'"></span>
+            </button>
+        </div>
 
-    <main class="mx-auto max-w-[1700px] px-4 py-10 sm:px-6 lg:px-8">
+        <div :class="showFilters ? 'mobile-filter-active' : 'mobile-filter-hidden'" class="sm:block">
+            <x-game-search
+                :value="$search"
+                :categories="$categories"
+                :genres="$genres"
+                :selected-category="$selectedCategory"
+                :selected-genre="$selectedGenre"
+            />
+        </div>
+    </div>
+
+    <main class="mx-auto max-w-[1700px] px-4 py-10 pb-24 md:pb-10 sm:px-6 lg:px-8">
         <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
             <div>
                 <p class="text-sm font-black uppercase tracking-[0.22em] text-[#66c0f4]">
@@ -408,6 +453,7 @@
             @endif
         @endif
     </main>
+
 @endsection
 
 @push('scripts')

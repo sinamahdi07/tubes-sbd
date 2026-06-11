@@ -10,8 +10,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
 
     <style>
-        body {
-            background: #1b2838;
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+
+        body { 
+            background-color: #07111d;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
         }
 
         .steam-blue {
@@ -32,79 +35,126 @@
             transform: scale(1.05);
             filter: saturate(1.12);
         }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Spotify-style Hero Overlay */
+        .hero-gradient {
+            background: linear-gradient(to bottom, transparent 0%, rgba(7, 17, 29, 0.4) 50%, rgba(7, 17, 29, 1) 100%);
+        }
+
+        .spotify-fab {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+        }
+
+        .spotify-fab:active {
+            transform: scale(0.95);
+            filter: brightness(0.9);
+        }
+
+        .sticky-buy-bar {
+            box-shadow: 0 -10px 25px rgba(0,0,0,0.5);
+        }
     </style>
 </head>
 
-<body class="text-white min-h-screen">
+<body class="text-white min-h-screen pb-32 lg:pb-10">
+
+    @php
+        // Definisikan harga dan diskon agar bisa dipakai di seluruh halaman
+        $discount = $game->detail->discount ?? 0;
+        $originalPrice = $game->price;
+        $finalPrice = $discount > 0 ? $originalPrice * (1 - $discount / 100) : $originalPrice;
+
+        // Inisialisasi status user
+        $isPurchased = false;
+        $isInCart = false;
+        $isWishlisted = false;
+
+        if(auth()->check()) {
+            $userId = auth()->id();
+            $isPurchased = \App\Models\Payment::join('payment_items', 'payments.id', '=', 'payment_items.payment_id')
+                ->where('payments.user_id', $userId)
+                ->where('payment_items.game_id', $game->game_id)
+                ->where('payments.status', \App\Models\Payment::STATUS_PAID)
+                ->exists();
+
+            $isInCart = \App\Models\Cart::where('user_id', $userId)
+                ->where('game_id', $game->game_id)
+                ->exists();
+
+            $isWishlisted = \App\Models\Wishlist::where('user_id', $userId)
+                ->where('game_id', $game->game_id)
+                ->exists();
+        }
+    @endphp
 
     <x-store-nav />
 
     <!-- TOP HERO -->
-    <section class="relative h-[500px]">
-
+    <section class="relative h-[45vh] sm:h-[50vh] md:h-[65vh] overflow-hidden">
         <img
             src="{{ $game->thumbnail_url }}"
             class="absolute inset-0 w-full h-full object-cover"
         >
+        <div class="absolute inset-0 hero-gradient"></div>
 
-        <div class="absolute inset-0 bg-black/70"></div>
-
-        <div class="relative z-10 max-w-7xl mx-auto px-6 h-full flex items-end pb-16">
-
-            <div>
+        <div class="relative z-10 max-w-7xl mx-auto px-6 h-full flex flex-col justify-end pb-8">
+            <div class="w-full">
+                <p class="text-[10px] font-bold uppercase tracking-[0.3em] text-[#66c0f4] mb-2 opacity-90">
+                    Official Store
+                </p>
+                
+                <h1 class="text-5xl sm:text-6xl md:text-8xl font-black mb-6 tracking-tighter leading-[0.85] uppercase italic">
+                    {{ $game->title }}
+                </h1>
 
                 {{-- Discount Badge --}}
                 @if($game->detail && $game->detail->discount > 0)
-                <div class="inline-block bg-[#4c6b22] text-[#beee11] font-bold text-sm px-3 py-1 rounded mb-3">
+                <div class="inline-block bg-[#beee11] text-[#102008] font-black text-xs px-4 py-1.5 rounded-full mb-4 shadow-xl">
                     -{{ $game->detail->discount }}%
                 </div>
                 @endif
 
-                <h1 class="text-6xl font-bold mb-4">
-                    {{ $game->title }}
-                </h1>
-
-                {{-- Short description --}}
-                @if($game->detail && $game->detail->short_description)
-                <p class="text-gray-300 text-base max-w-2xl mb-4">
-                    {{ $game->detail->short_description }}
-                </p>
-                @endif
-
-                <div class="flex flex-wrap gap-4 text-sm text-[#66c0f4]">
+                <div class="flex flex-wrap items-center gap-x-6 gap-y-2 text-[10px] sm:text-xs text-[#66c0f4] font-bold uppercase tracking-[0.2em]">
                     <span>Developer: 
                         @if($game->developer)
-                            <a href="{{ route('games.search', ['developer' => $game->developer->developer_id]) }}" class="hover:underline">{{ $game->developer->name }}</a>
+                            <a href="{{ route('games.search', ['developer' => $game->developer->developer_id]) }}" class="text-white hover:text-[#66c0f4] transition">{{ $game->developer->name }}</a>
                         @else
                             -
                         @endif
                     </span>
                     <span>Publisher: 
                         @if($game->publisher)
-                            <a href="{{ route('games.search', ['publisher' => $game->publisher->publisher_id]) }}" class="hover:underline">{{ $game->publisher->name }}</a>
+                            <a href="{{ route('games.search', ['publisher' => $game->publisher->publisher_id]) }}" class="text-white hover:text-[#66c0f4] transition">{{ $game->publisher->name }}</a>
                         @else
                             -
                         @endif
                     </span>
                 </div>
-
             </div>
-
         </div>
-
     </section>
 
+    <!-- FLOATING ACTION AREA (MOBILE ONLY) -->
+    <div class="relative z-20 -mt-8 px-6 lg:hidden h-1">
+        {{-- Space reserved for floating area (button removed as requested) --}}
+    </div>
+
     <!-- CONTENT -->
-    <section class="max-w-7xl mx-auto px-6 py-10">
-
-        <div class="grid lg:grid-cols-3 gap-10">
-
+    <section class="max-w-7xl mx-auto px-6 py-8 md:py-12">
+        <div class="grid lg:grid-cols-3 gap-6 md:gap-10">
             <!-- LEFT -->
-            <div class="lg:col-span-2 space-y-8">
-
+            <div class="lg:col-span-2 space-y-8 md:space-y-12">
                 @if($game->screenshots->count() > 0)
+                    <div class="text-[10px] font-black text-gray-500 uppercase tracking-[0.4em] mb-4">Gallery</div>
                     <!-- MAIN SCREENSHOT VIEWER -->
-                    <div class="relative rounded-2xl overflow-hidden bg-black mb-6 w-full" style="aspect-ratio: 16/9;">
+                    <div class="relative rounded-xl md:rounded-2xl overflow-hidden bg-black mb-4 md:mb-6 w-full shadow-2xl" style="aspect-ratio: 16/9;">
                         <img id="main-screenshot"
                              src="{{ $game->screenshots->first()->url }}"
                              class="w-full h-full object-contain transition-all duration-300"
@@ -112,10 +162,10 @@
                     </div>
 
                     <!-- SCREENSHOT THUMBNAILS -->
-                    <div class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-3">
+                    <div class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2 md:gap-3">
                         @foreach($game->screenshots as $i => $shot)
                             <button onclick="changeScreenshot('{{ $shot->url }}', this)"
-                                    class="screenshot-thumb rounded-xl overflow-hidden border-2 {{ $i === 0 ? 'border-[#66c0f4]' : 'border-transparent' }} hover:border-[#66c0f4] transition focus:outline-none"
+                                    class="screenshot-thumb rounded-lg md:rounded-xl overflow-hidden border-2 {{ $i === 0 ? 'border-[#66c0f4]' : 'border-transparent' }} hover:border-[#66c0f4] transition focus:outline-none"
                                     title="Screenshot {{ $i + 1 }}">
                                 <img src="{{ $shot->url }}"
                                      class="w-full aspect-video object-cover"
@@ -127,14 +177,14 @@
                     <!-- MAIN IMAGE (FALLBACK) -->
                     <img
                         src="{{ $game->thumbnail_url }}"
-                        class="w-full h-[500px] object-cover rounded-2xl mb-6"
+                        class="w-full h-[200px] sm:h-[300px] md:h-[400px] object-cover rounded-xl md:rounded-2xl mb-4"
                     >
                 @endif
 
                 @if($game->trailers->count() > 0)
-                    <div class="bg-[#16202d] p-6 sm:p-8 rounded-2xl border border-[#2a475e]">
-                        <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                            <div>
+                    <div class="glass-panel p-4 sm:p-8 rounded-2xl">
+                        <div class="mb-3 md:mb-6 flex items-center justify-between">
+                            <div class="min-w-0">
                                 <p class="text-xs font-black uppercase tracking-[0.25em] text-[#66c0f4]">
                                     Media
                                 </p>
@@ -143,13 +193,13 @@
                                 </h2>
                             </div>
 
-                            <span class="self-start rounded bg-[#0f1923] px-3 py-1 text-xs font-bold uppercase tracking-widest text-gray-300 sm:self-auto">
+                            <span class="shrink-0 rounded bg-[#0f1923] px-2 py-1 text-[10px] font-bold uppercase tracking-widest text-gray-400">
                                 {{ $game->trailers->count() }} trailer
                             </span>
                         </div>
 
-                        <div class="grid gap-5 {{ $game->trailers->count() > 1 ? 'md:grid-cols-2' : '' }}">
-                            @foreach($game->trailers as $trailer)
+                        <div class="grid gap-4 {{ $game->trailers->count() > 1 ? 'md:grid-cols-2' : '' }}">
+                            @foreach($game->trailers->take(2) as $trailer) {{-- Hanya ambil 2 agar compact --}}
                                 <article class="overflow-hidden rounded-xl border border-[#2a475e] bg-[#0f1923]">
                                     @if($trailer->embed_url)
                                         <div class="aspect-video bg-black">
@@ -174,7 +224,7 @@
                                         </a>
                                     @endif
 
-                                    <div class="border-t border-[#2a475e] p-4">
+                                    <div class="border-t border-[#2a475e] p-3">
                                         <h3 class="line-clamp-1 font-bold text-white">
                                             {{ $trailer->title ?: $game->title . ' Trailer' }}
                                         </h3>
@@ -194,17 +244,17 @@
                 @endif
 
                 <!-- DESCRIPTION -->
-                <div class="bg-[#16202d] p-8 rounded-2xl border border-[#2a475e]">
+                <div class="glass-panel p-8 sm:p-16 rounded-[2.5rem] md:rounded-[3rem]">
 
-                    <h2 class="text-2xl font-black uppercase tracking-wider mb-6 text-white border-b border-[#2a475e] pb-4">About This Game</h2>
+                    <h2 class="text-2xl md:text-4xl font-black uppercase tracking-tight mb-8 text-white border-b border-white/10 pb-4">About This Game</h2>
 
                     @if($game->detail && $game->detail->short_description)
-                        <p class="text-[#66c0f4] font-bold text-lg mb-6 leading-relaxed">
+                        <p class="text-white font-bold text-xl md:text-3xl mb-8 md:mb-10 leading-tight">
                             {{ $game->detail->short_description }}
                         </p>
                     @endif
 
-                    <p class="text-gray-300 leading-relaxed text-base">
+                    <p class="text-gray-300 leading-relaxed text-lg md:text-xl font-medium">
                         {{ $game->description }}
                     </p>
 
@@ -233,29 +283,30 @@
                                 ->values();
                         @endphp
 
-                        <div class="mt-12 pt-8 border-t border-[#2a475e]">
-                            <h3 class="text-lg font-bold text-white mb-4 flex items-center gap-2">
+                        <div class="mt-10 md:mt-16 pt-8 border-t border-[#2a475e]/50">
+                            <h3 class="text-2xl font-black text-white mb-6 flex items-center gap-3 uppercase tracking-tighter">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#66c0f4]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                 </svg>
                                 System Requirements
                             </h3>
 
-                            <div class="rounded-2xl border border-[#2a475e]/70 bg-[#0f1923] p-5">
+                            <div class="rounded-2xl border border-[#2a475e]/60 bg-gradient-to-br from-[#0f1923] to-[#07111d] p-5 md:p-8 shadow-2xl">
                                 <div class="mb-5 flex items-center justify-between gap-3 border-b border-[#2a475e]/70 pb-4">
                                     <p class="text-[#66c0f4] text-xs font-black uppercase tracking-widest">Minimum Requirements</p>
                                     <span class="rounded-lg bg-[#16202d] px-3 py-1 text-xs font-bold text-gray-400">PC Specs</span>
                                 </div>
 
-                                <div class="grid gap-3 md:grid-cols-2">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                                     @foreach($requirementRows as $requirement)
-                                        <div class="rounded-xl border border-[#2a475e]/60 bg-[#07111d] p-4 {{ empty($requirement['label']) ? 'md:col-span-2' : '' }}">
+                                        <div class="group relative overflow-hidden rounded-xl border border-[#2a475e]/40 bg-[#16202d]/60 p-4 transition-all hover:border-[#66c0f4]/40 hover:bg-[#1b2838] {{ empty($requirement['label']) ? 'md:col-span-2' : '' }}">
+                                            <div class="absolute inset-y-0 left-0 w-1 bg-[#66c0f4]/20 group-hover:bg-[#66c0f4] transition-colors"></div>
                                             @if($requirement['label'])
-                                                <p class="mb-1 text-[11px] font-black uppercase tracking-widest text-[#66c0f4]">
+                                                <p class="text-[10px] font-black uppercase tracking-[0.15em] text-[#66c0f4]/80 mb-1">
                                                     {{ $requirement['label'] }}
                                                 </p>
                                             @endif
-                                            <p class="text-sm font-semibold leading-relaxed text-gray-300">
+                                            <p class="text-sm font-semibold leading-relaxed text-gray-200">
                                                 {{ $requirement['value'] }}
                                             </p>
                                         </div>
@@ -277,62 +328,31 @@
 
             <!-- RIGHT SIDEBAR -->
             <div>
-
-                <div class="bg-[#16202d]
-                            rounded-2xl
-                            p-6
-                            border border-[#2a475e]
-                            sticky top-5">
-
+                <div class="glass-panel rounded-2xl p-6 lg:sticky lg:top-24 hidden lg:block">
                     <!-- GAME IMAGE -->
                     <img
                         src="{{ $game->thumbnail_url }}"
-                        class="rounded-xl mb-6"
+                        class="rounded-lg md:rounded-xl mb-4 md:mb-6 w-full hidden lg:block"
                     >
 
-                    <!-- REVIEW -->
-                    <div class="mb-5">
-
-                        <div class="text-gray-400 text-sm mb-1">
-
-                            Reviews
-
-                        </div>
-
-                        <div class="text-[#66c0f4] font-bold text-lg">
-                            <span data-review-label>No Reviews</span>
-                        </div>
-
-                        <div class="mt-1 text-xs text-gray-500" data-review-percent>
-                            0% dari 0 review menyukai game ini
-                        </div>
-
-                    </div>
+                    <!-- STATS
+                    -->
 
                     <!-- RELEASE -->
-                    <div class="mb-5">
-
+                    <div class="mb-4">
                         <div class="text-gray-400 text-sm mb-1">
-
                             Release Date
-
                         </div>
-
-                        <div>
-
+                        <div class="text-sm font-bold">
                             {{ $game->release_date ? \Carbon\Carbon::parse($game->release_date)->translatedFormat('d F Y') : '-' }}
-
                         </div>
-
                     </div>
 
                     <!-- DEVELOPER -->
-                    <div class="mb-5">
-
+                    <div class="mb-4">
                         <div class="text-gray-400 text-sm mb-1">
                             Developer
                         </div>
-
                         @if($game->developer)
                             <a href="{{ route('games.search', ['developer' => $game->developer->developer_id]) }}" 
                                class="text-[#66c0f4] font-medium hover:underline block">
@@ -341,16 +361,13 @@
                         @else
                             <div class="text-white">-</div>
                         @endif
-
                     </div>
 
                     <!-- PUBLISHER -->
-                    <div class="mb-5">
-
+                    <div class="mb-4">
                         <div class="text-gray-400 text-sm mb-1">
                             Publisher
                         </div>
-
                         @if($game->publisher)
                             <a href="{{ route('games.search', ['publisher' => $game->publisher->publisher_id]) }}" 
                                class="text-[#66c0f4] font-medium hover:underline block">
@@ -359,40 +376,28 @@
                         @else
                             <div class="text-white">-</div>
                         @endif
-
                     </div>
 
                     <!-- GENRES -->
-                    <div class="mb-6">
-
+                    <div class="mb-4">
                         <div class="text-gray-400 text-sm mb-2">
-
                             Genres
-
                         </div>
-
                         <div class="flex flex-wrap gap-2">
-
                             @foreach($game->genres as $genre)
-
                                 <span class="bg-[#2a475e]
                                              px-3 py-1
                                              rounded-lg
                                              text-sm">
-
                                     {{ $genre->name }}
-
                                 </span>
-
                             @endforeach
-
                         </div>
-
                     </div>
 
                     <!-- CATEGORIES -->
                     @if($game->categories->isNotEmpty())
-                    <div class="mb-6">
+                    <div class="mb-4">
 
                         <div class="text-gray-400 text-sm mb-2">
 
@@ -492,24 +497,7 @@
                     </a>
                     @endif
 
-                    <!-- BUTTON -->
-                    @php
-                        $isPurchased = false;
-                        $isInCart = false;
-                        $isWishlisted = $isWishlisted ?? false;
-                        if(auth()->check()) {
-                            $isPurchased = \App\Models\Payment::join('payment_items', 'payments.id', '=', 'payment_items.payment_id')
-                                ->where('payments.user_id', auth()->id())
-                                ->where('payment_items.game_id', $game->game_id)
-                                ->where('payments.status', \App\Models\Payment::STATUS_PAID)
-                                ->exists();
-
-                            $isInCart = \App\Models\Cart::where('user_id', auth()->id())
-                                ->where('game_id', $game->game_id)
-                                ->exists();
-                        }
-                    @endphp
-
+                    <!-- DESKTOP BUTTONS -->
                     @if($isPurchased)
                         <div class="w-full mt-5 py-4 rounded-xl text-lg font-bold bg-green-600/20 border border-green-600 text-green-400 text-center">
                             ✓ Already Owned
@@ -545,15 +533,52 @@
                             Add to Wishlist
                         </a>
                     @endauth
-
                 </div>
-
             </div>
+        </div>
 
+        <!-- STICKY MOBILE BUY BAR -->
+        <div class="fixed bottom-[88px] left-0 right-0 z-[100] lg:hidden">
+            <div class="mx-4 mb-4">
+                <div class="sticky-buy-bar bg-[#0d1c2e]/95 backdrop-blur-2xl flex items-center justify-between gap-4 rounded-3xl p-5 shadow-[0_-15px_40px_rgba(0,0,0,0.7)] border border-white/10">
+                    <div class="flex flex-col">
+                        @if($discount > 0)
+                            <span class="text-[11px] text-gray-500 line-through font-bold">Rp {{ number_format($originalPrice, 0, ',', '.') }}</span>
+                        @endif
+                        <span class="text-xl font-black text-[#66c0f4]">
+                            {{ $originalPrice == 0 ? 'FREE' : 'Rp' . number_format($finalPrice, 0, ',', '.') }}
+                        </span>
+                    </div>
+
+                    <div class="flex gap-2">
+                        @auth
+                            <form action="{{ route('wishlist.toggle', $game) }}" method="POST">
+                                @csrf
+                                <button class="flex h-12 w-12 items-center justify-center rounded-xl bg-[#0f1923] border border-[#2a475e] transition active:scale-90">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 {{ $isWishlisted ? 'fill-[#66c0f4] text-[#66c0f4]' : 'text-gray-400' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 8.25c0 6.75-9 11.25-9 11.25S3 15 3 8.25A4.75 4.75 0 0 1 11.1 5L12 6l.9-1A4.75 4.75 0 0 1 21 8.25Z"/>
+                                    </svg>
+                                </button>
+                            </form>
+                        @endauth
+
+                        @if($isPurchased)
+                            <div class="px-6 h-12 flex items-center justify-center rounded-xl bg-green-600 font-black text-xs uppercase tracking-widest text-white shadow-lg">Owned</div>
+                        @elseif($isInCart)
+                            <a href="{{ route('cart.index') }}" class="px-6 h-12 flex items-center justify-center rounded-xl bg-[#66c0f4] font-black text-xs uppercase tracking-widest text-[#07111d] shadow-lg">In Cart</a>
+                        @else
+                            <form action="{{ route('cart.add', $game->game_id) }}" method="POST">
+                                @csrf
+                                <button class="steam-blue px-6 h-12 flex items-center justify-center rounded-xl font-black text-xs uppercase tracking-widest text-white shadow-lg active:scale-95 transition">Add to Cart</button>
+                            </form>
+                        @endif
+                    </div>
+                </div>
+            </div>
         </div>
 
         <section
-            class="mt-10 bg-[#16202d] p-8 rounded-2xl border border-[#2a475e]"
+            class="mt-6 md:mt-10 bg-[#16202d] p-4 sm:p-8 rounded-2xl border border-[#2a475e]"
             data-review-root
             data-reviews-url="{{ route('games.reviews.index', $game) }}"
             data-is-authenticated="{{ auth()->check() ? '1' : '0' }}"
@@ -563,21 +588,21 @@
                 data-login-url="{{ route('login') }}"
             @endauth
         >
-            <div class="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                <div>
-                    <h2 class="text-3xl font-bold">Reviews</h2>
-                    <p class="mt-2 text-gray-400">
-                        Bagikan pendapat kamu setelah membeli game ini.
+            <div class="flex flex-col gap-6 md:flex-row md:items-center md:justify-between border-b border-[#2a475e]/40 pb-8">
+                <div class="text-left">
+                    <h2 class="text-3xl md:text-4xl font-black uppercase tracking-tighter text-white">Community Reviews</h2>
+                    <p class="mt-2 text-sm font-medium text-gray-400">
+                        Pendapat komunitas tentang game ini.
                     </p>
                 </div>
 
-                <div class="rounded-xl border border-[#2a475e] bg-[#0f1923] px-5 py-4 text-right">
-                    <p class="text-2xl font-black text-[#66c0f4]" data-review-label>No Reviews</p>
-                    <p class="mt-1 text-sm text-gray-400" data-review-percent>0% dari 0 review menyukai game ini</p>
+                <div class="relative overflow-hidden flex flex-col items-center justify-center rounded-2xl border border-[#2a475e] bg-gradient-to-b from-[#1b2838] to-[#0f1923] p-6 shadow-2xl min-w-[260px] text-center">
+                    <p class="relative z-10 text-3xl font-black text-[#66c0f4] mb-1" data-review-label>No Reviews</p>
+                    <p class="text-[10px] uppercase font-black tracking-[0.2em] text-gray-500" data-review-percent>0% Positive</p>
                 </div>
             </div>
 
-            <div class="mt-6 rounded-2xl border border-[#2a475e] bg-[#0f1923] p-5" data-review-form-shell>
+            <div class="mt-4 rounded-xl border border-[#2a475e] bg-[#0f1923] p-4 sm:p-5" data-review-form-shell>
                 @auth
                     <form data-review-form class="space-y-4">
                         <div class="flex flex-wrap gap-3">
@@ -606,7 +631,7 @@
                             data-review-body
                         ></textarea>
 
-                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                        <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                             <p class="text-sm text-gray-400" data-review-form-message>
                                 Kamu bisa menulis lebih dari satu review untuk game ini.
                             </p>
@@ -626,16 +651,16 @@
             </div>
 
             <div class="mt-6 space-y-4" data-review-list>
-                <div class="rounded-xl border border-[#2a475e] bg-[#0f1923] p-5 text-gray-400">
+                <div class="rounded-xl border border-[#2a475e] bg-[#0f1923] p-4 text-gray-400 text-sm">
                     Loading reviews...
                 </div>
             </div>
         </section>
 
         @if(($relatedGames ?? collect())->isNotEmpty())
-            <section class="mt-10 bg-[#16202d] p-8 rounded-2xl border border-[#2a475e]">
-                <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                    <div>
+            <section class="mt-6 md:mt-10 bg-[#16202d] p-5 sm:p-8 rounded-2xl border border-[#2a475e]">
+                <div class="mb-4 md:mb-6 flex items-end justify-between">
+                    <div class="min-w-0">
                         <h2 class="text-3xl font-bold">Game Lainnya</h2>
                         <p class="mt-2 text-gray-400">
                             Rekomendasi game lain yang mungkin kamu suka.
@@ -667,20 +692,20 @@
                                 >
                             </div>
 
-                            <div class="p-5">
-                                <h3 class="line-clamp-2 min-h-[3.5rem] text-lg font-black leading-tight text-white group-hover:text-[#66c0f4]">
+                            <div class="p-4 md:p-5">
+                                <h3 class="line-clamp-2 min-h-[3rem] text-sm md:text-lg font-black leading-tight text-white group-hover:text-[#66c0f4]">
                                     {{ $relatedGame->title }}
                                 </h3>
 
-                                <div class="mt-3 flex flex-wrap gap-2">
+                                <div class="mt-2 flex flex-wrap gap-1.5">
                                     @foreach($relatedGame->genres->take(2) as $genre)
-                                        <span class="rounded bg-[#2a475e] px-2 py-1 text-xs font-bold text-gray-300">
+                                        <span class="rounded bg-[#2a475e] px-2 py-0.5 text-[10px] md:text-xs font-bold text-gray-400">
                                             {{ $genre->name }}
                                         </span>
                                     @endforeach
                                 </div>
 
-                                <div class="mt-5 flex items-center justify-between gap-3">
+                                <div class="mt-4 flex items-center justify-between gap-3">
                                     @if($relatedDiscount > 0)
                                         <span class="rounded bg-[#4c6b22] px-2 py-1 text-xs font-black text-[#beee11]">
                                             -{{ $relatedDiscount }}%

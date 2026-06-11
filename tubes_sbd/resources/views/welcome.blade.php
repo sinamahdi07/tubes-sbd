@@ -33,19 +33,19 @@
         }
         #recommended {
             order: 20;
-            margin-top: 2rem !important;
+            margin-top: 1.5rem !important;
         }
         #store-showcase {
             order: 60;
-            margin-top: 4.5rem !important;
+            margin-top: 2.5rem !important;
         }
         #browse-categories {
             order: 30;
-            margin-top: 4.5rem !important;
+            margin-top: 2.5rem !important;
         }
         #budget-deals {
             order: 40;
-            margin-top: 4.5rem !important;
+            margin-top: 2.5rem !important;
         }
         .hero-panel {
             --hero-height: 620px;
@@ -190,6 +190,11 @@
             width: 34px;
             background: #66c0f4;
             box-shadow: 0 0 16px rgba(102, 192, 244, .62);
+        }
+        /* Memastikan container search tidak menimpa nav */
+        #discover {
+            position: relative;
+            z-index: 40;
         }
         [data-hero-carousel] {
             touch-action: pan-y;
@@ -549,13 +554,20 @@
         }
         @media (max-width: 640px) {
             .hero-panel {
-                --hero-height: 520px;
-                --hero-title-size: 2.55rem;
+                --hero-height: 340px;
+                --hero-title-size: 2rem;
                 --hero-title-lines: 3;
-                --hero-description-height: 3.15rem;
+                --hero-description-height: 0; /* Sembunyikan deskripsi di mobile sangat kecil untuk compact */
             }
+            .hero-slide-grid { padding-top: 1rem !important; padding-bottom: 1rem !important; }
+            .hero-actions { margin-top: 0.75rem !important; min-height: 2.5rem; }
+            .hero-actions a.steam-blue { padding: 0.75rem 1.25rem; font-size: 0.875rem; }
+            .hero-actions .icon-button { height: 2.5rem; width: 2.5rem; }
+            
             .showcase-row {
                 grid-template-columns: 112px minmax(0, 1fr);
+                gap: 12px;
+                padding: 8px;
             }
             .showcase-price {
                 grid-column: 1 / -1;
@@ -585,14 +597,26 @@
             .category-arrow-right {
                 right: 0;
             }
+            
             .budget-grid {
                 grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .popular-row {
+                grid-template-columns: 28px 70px 1fr;
+                gap: 10px;
+                padding: 6px;
+            }
+            .popular-thumb {
+                height: 40px;
+                width: 70px;
             }
         }
         @media (max-width: 420px) {
             .hero-panel {
-                --hero-height: 500px;
-                --hero-title-size: 2.2rem;
+                --hero-height: 320px;
+                --hero-title-size: 1.8rem;
                 --hero-title-lines: 2;
             }
             .hero-title {
@@ -604,7 +628,7 @@
 @endpush
 
 @section('content')
-    <main class="store-home pb-12">
+    <main class="store-home">
         @if($featuredGames->isNotEmpty())
                 <section class="store-container relative pt-5" data-hero-carousel>
                 @foreach($featuredGames as $slideIndex => $heroGame)
@@ -643,13 +667,13 @@
                                     {{ $heroGame->genres->take(3)->pluck('name')->join(' / ') ?: 'Explore. Play. Collect.' }}
                                 </p>
 
-                                <p class="hero-description mt-5 max-w-2xl text-base font-semibold leading-7 text-gray-200 md:text-lg">
+                                <p class="hero-description mt-5 max-w-2xl text-base font-semibold leading-7 text-gray-200 md:text-lg sm:block hidden">
                                     {{ $descriptionFor($heroGame, 150) }}
                                 </p>
 
                                 <div class="hero-actions flex flex-wrap items-center gap-4">
                                     @if($featuredDiscount > 0)
-                                        <span class="price-discount rounded-md px-3 py-2 text-lg font-black">-{{ $featuredDiscount }}%</span>
+                                        <span class="price-discount rounded-md px-2 py-1 text-sm sm:text-lg font-black">-{{ $featuredDiscount }}%</span>
                                         <span class="text-sm font-semibold text-gray-500 line-through">{{ $formatPrice($heroGame->price) }}</span>
                                     @endif
                                     <span class="text-3xl font-black text-white">{{ $formatPrice($featuredFinal) }}</span>
@@ -970,10 +994,10 @@
                                 $finalPrice = $finalPriceFor($leadRecommended);
                             @endphp
                             <a href="{{ url('/game/' . $leadRecommended->game_id) }}" class="block">
-                                <article class="game-card relative min-h-[320px] overflow-hidden rounded-lg md:min-h-[380px]">
+                                <article class="game-card relative min-h-[240px] overflow-hidden rounded-lg md:min-h-[380px]">
                                     <img src="{{ $imageFor($leadRecommended) }}" alt="{{ $leadRecommended->title }}" class="absolute inset-0 h-full w-full object-cover" loading="lazy" decoding="async">
                                     <div class="absolute inset-0 bg-gradient-to-t from-[#050a12] via-[#050a12]/48 to-transparent"></div>
-                                    <div class="absolute inset-x-0 bottom-0 p-6">
+                                    <div class="absolute inset-x-0 bottom-0 p-4 sm:p-6">
                                         <h3 class="line-clamp-2 text-3xl font-black uppercase leading-none text-white md:text-4xl">{{ $leadRecommended->title }}</h3>
                                         <p class="mt-4 max-w-md text-base font-semibold leading-relaxed text-gray-300 line-clamp-2">{{ $descriptionFor($leadRecommended, 115) }}</p>
                                         <div class="mt-4 flex flex-wrap items-center gap-3">
@@ -1093,24 +1117,24 @@
                             $finalPrice = $finalPriceFor($game);
                             $purchaseCount = (int) ($game->paid_purchases_count ?? 0);
                         @endphp
-                        <a href="{{ url('/game/' . $game->game_id) }}" class="popular-row grid grid-cols-[34px_118px_1fr] items-center gap-3 rounded-lg border border-transparent p-2.5 hover:border-[#2a475e] hover:bg-[#0f1923]/78">
-                            <span class="text-center text-xl font-black text-[#66c0f4]/80">{{ $rank + 1 }}</span>
+                        <a href="{{ url('/game/' . $game->game_id) }}" class="popular-row grid grid-cols-[34px_118px_1fr] items-center gap-3 rounded-lg border-b border-[#2a475e]/20 p-2 hover:bg-[#16202d]/50 transition-colors last:border-0">
+                            <span class="text-center text-lg font-black text-[#66c0f4]">{{ $rank + 1 }}</span>
                             <span class="block overflow-hidden rounded-md">
                                 <img src="{{ $imageFor($game) }}" alt="{{ $game->title }}" class="popular-thumb h-16 w-[118px] object-cover" loading="lazy" decoding="async">
                             </span>
                             <span class="min-w-0">
-                                <span class="block truncate text-base font-black uppercase text-white">{{ $game->title }}</span>
-                                <span class="mt-1 inline-flex items-center gap-1 rounded bg-[#0b2a44]/90 px-2 py-0.5 text-[11px] font-black uppercase text-[#66c0f4]">
+                                <span class="block truncate text-sm font-black uppercase text-white">{{ $game->title }}</span>
+                                <span class="mt-1 flex items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 19V5m0 14h16M8 17v-5m4 5V8m4 9v-8"/>
                                     </svg>
-                                    {{ number_format($purchaseCount, 0, ',', '.') }}
+                                    <span class="text-[10px] font-bold text-gray-400">{{ number_format($purchaseCount, 0, ',', '.') }} Sold</span>
                                 </span>
-                                <span class="mt-2 flex flex-wrap items-center gap-2 text-sm">
+                                <span class="mt-1.5 flex flex-wrap items-center gap-2">
                                     @if($discount > 0)
-                                        <span class="price-discount rounded px-2 py-0.5 text-xs font-black">-{{ $discount }}%</span>
+                                        <span class="text-[10px] font-black text-[#8bc53f]">-{{ $discount }}%</span>
                                     @endif
-                                    <span class="font-black text-white">{{ $formatPrice($finalPrice) }}</span>
+                                    <span class="text-xs font-black text-white">{{ $formatPrice($finalPrice) }}</span>
                                 </span>
                             </span>
                         </a>

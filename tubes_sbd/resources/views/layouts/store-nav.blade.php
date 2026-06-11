@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="top-nav fixed w-full z-50">
+<nav x-data="{ open: false }" class="top-nav sticky top-0 w-full hidden lg:block">
     <div class="store-container flex justify-between h-16">
         <div class="flex items-center">
             <!-- Logo -->
@@ -11,8 +11,14 @@
             <!-- Navigation Links (Desktop) -->
             <div class="hidden space-x-6 sm:-my-px sm:ml-10 sm:flex">
                 <a href="{{ route('home') }}" class="nav-link {{ request()->routeIs('home') ? 'is-active' : '' }} px-1 pt-1 text-sm font-bold uppercase tracking-widest transition">Store</a>
+                <a href="{{ route('games.search') }}" class="nav-link {{ request()->routeIs('games.search') ? 'is-active' : '' }} px-1 pt-1 text-sm font-bold uppercase tracking-widest transition">Search</a>
                 <a href="{{ url('/about') }}" class="nav-link {{ request()->routeIs('about') ? 'is-active' : '' }} px-1 pt-1 text-sm font-bold uppercase tracking-widest transition">About</a>
                 <a href="{{ url('/support') }}" class="nav-link {{ request()->routeIs('support') ? 'is-active' : '' }} px-1 pt-1 text-sm font-bold uppercase tracking-widest transition">Support</a>
+                
+                {{-- Menu Admin Langsung di Atas --}}
+                @if(Auth::check() && Auth::user()->is_admin)
+                    <a href="{{ route('admin.dashboard') }}" class="px-1 pt-1 text-sm font-bold uppercase tracking-widest text-amber-400 hover:text-white transition flex items-center gap-1">🛡 Admin Panel</a>
+                @endif
             </div>
         </div>
 
@@ -60,48 +66,6 @@
                 </x-dropdown>
             @else
                 <a href="{{ route('login') }}" class="text-[#66c0f4] hover:text-white text-sm font-bold uppercase">Login</a>
-            @endauth
-        </div>
-
-        <!-- Hamburger -->
-        <div class="-mr-2 flex items-center sm:hidden">
-            <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-[#1b2838] focus:outline-none transition-all duration-200">
-                <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                    <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                    <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-            </button>
-        </div>
-    </div>
-
-    <!-- Responsive Navigation Menu (Mobile) -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-[#171a21] border-t border-[#1b2838] shadow-2xl overflow-hidden transition-all duration-300">
-        <div class="pt-2 pb-3 space-y-1">
-            <a href="{{ route('home') }}" class="block pl-4 pr-4 py-3 text-base font-bold text-gray-300 hover:text-white hover:bg-[#1b2838] border-l-4 border-transparent hover:border-[#66c0f4] transition">Store</a>
-            <a href="{{ url('/about') }}" class="block pl-4 pr-4 py-3 text-base font-bold text-gray-300 hover:text-white hover:bg-[#1b2838] border-l-4 border-transparent hover:border-[#66c0f4] transition">About</a>
-            <a href="{{ url('/support') }}" class="block pl-4 pr-4 py-3 text-base font-bold text-gray-300 hover:text-white hover:bg-[#1b2838] border-l-4 border-transparent hover:border-[#66c0f4] transition">Support</a>
-            <a href="{{ route('cart.index') }}" class="block pl-4 pr-4 py-3 text-base font-bold text-gray-300 hover:text-white hover:bg-[#1b2838] border-l-4 border-transparent hover:border-[#66c0f4] transition">Cart ({{ $cartCount }})</a>
-        </div>
-
-        <!-- Mobile Auth Info -->
-        <div class="pt-4 pb-1 border-t border-[#1b2838]">
-            @auth
-                <div class="px-4">
-                    <div class="font-medium text-base text-white">{{ Auth::user()->name }}</div>
-                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-                </div>
-                <div class="mt-3 space-y-1">
-                    <x-responsive-nav-link :href="route('profile.edit')">{{ __('Profile') }}</x-responsive-nav-link>
-                    @if(Auth::user()->is_admin)<x-responsive-nav-link :href="route('admin.dashboard')">🛡 Admin Panel</x-responsive-nav-link>@endif
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <x-responsive-nav-link :href="route('logout')" onclick="event.preventDefault(); this.closest('form').submit();">{{ __('Log Out') }}</x-responsive-nav-link>
-                    </form>
-                </div>
-            @else
-                <div class="px-4 py-2">
-                    <a href="{{ route('login') }}" class="block w-full text-center py-3 bg-[#66c0f4] text-white font-black rounded-md">Login</a>
-                </div>
             @endauth
         </div>
     </div>

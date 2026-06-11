@@ -10,8 +10,12 @@
         </div>
     </x-slot>
 
-    <div class="py-10">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+    @php
+        $cartCount = auth()->check() ? auth()->user()->carts()->count() : 0;
+    @endphp
+
+    <div class="py-6 sm:py-10 pb-24 md:pb-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4 sm:space-y-6">
             <div class="grid gap-6 md:grid-cols-3">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6">

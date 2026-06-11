@@ -23,12 +23,12 @@
 @section('content')
     <main class="mx-auto w-full max-w-[1700px] px-4 py-8 sm:px-6 lg:px-8">
         <section
-            class="relative min-h-[360px] overflow-hidden rounded-lg border border-[#2a475e]/90 bg-[#07111d] md:min-h-[460px]"
+            class="relative min-h-[280px] overflow-hidden rounded-lg border border-[#2a475e]/90 bg-[#07111d] md:min-h-[460px]"
             style="background-image: linear-gradient(90deg, rgba(5,10,18,.96) 0%, rgba(5,10,18,.78) 42%, rgba(5,10,18,.18) 100%), url('https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=1800&auto=format&fit=crop'); background-size: cover; background-position: center;"
         >
-            <div class="flex min-h-[360px] max-w-3xl flex-col justify-center px-6 py-12 md:min-h-[460px] md:px-12">
+            <div class="flex min-h-[280px] max-w-3xl flex-col justify-center px-6 py-8 md:min-h-[460px] md:px-12">
                 <p class="text-sm font-black uppercase tracking-[0.24em] text-[#66c0f4]">About PlayMart</p>
-                <h1 class="mt-4 text-4xl font-black leading-tight text-white md:text-6xl">PlayMart adalah website toko game digital.</h1>
+                <h1 class="mt-3 text-3xl font-black leading-tight text-white md:text-6xl">PlayMart adalah website toko game digital.</h1>
                 <p class="mt-5 max-w-2xl text-base leading-relaxed text-gray-300 md:text-lg">
                     Simulasi ekosistem gaming modern yang dirancang untuk memberikan pengalaman eksplorasi, pembelian, dan interaksi komunitas dalam satu platform terintegrasi.
                 </p>
