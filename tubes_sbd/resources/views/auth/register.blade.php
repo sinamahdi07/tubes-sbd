@@ -4,6 +4,7 @@
             margin: 0;
             min-height: 100vh;
             overflow-x: hidden;
+            background-attachment: scroll;
             background:
                 radial-gradient(circle at 18% 18%, rgba(47, 183, 255, .13), transparent 34%),
                 linear-gradient(135deg, rgba(2, 6, 13, .72), rgba(8, 17, 30, .62)),
@@ -15,7 +16,7 @@
 
         body::before {
             content: "";
-            position: fixed;
+            position: absolute;
             inset: 0;
             pointer-events: none;
             background:
@@ -26,6 +27,11 @@
         body > .min-h-screen {
             position: relative;
             padding: 24px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
         }
 
         body > .min-h-screen > div {
@@ -118,6 +124,7 @@
 
         .auth-input {
             width: 100%;
+            box-sizing: border-box;
             min-height: 54px;
             border: 1px solid rgba(42, 71, 94, .92);
             border-radius: 12px;
@@ -178,6 +185,10 @@
             height: 20px;
         }
 
+        .hidden {
+            display: none !important;
+        }
+
         .field-error {
             margin-top: 8px;
             color: #fca5a5;
@@ -232,25 +243,90 @@
             color: #ffffff;
         }
 
-        @media (max-width: 640px) {
-            .auth-brand {
-                margin-bottom: 26px;
-            }
+            @media (max-width: 768px) {
 
-            .auth-logo {
-                width: 68px;
-                height: 56px;
-            }
-
-            .auth-title {
-                font-size: 42px;
-            }
-
-            .auth-card {
-                padding: 26px 20px;
-                border-radius: 16px;
-            }
+        body > .min-h-screen {
+            padding: 16px;
         }
+
+        .auth-card {
+            width: 100%;
+            max-width: 100%;
+            padding: 24px 18px;
+            border-radius: 16px;
+        }
+
+        .auth-logo {
+            width: 60px;
+            height: 50px;
+        }
+
+        .auth-title {
+            font-size: clamp(32px, 10vw, 42px);
+        }
+
+        .auth-subtitle {
+            font-size: 14px;
+        }
+
+        .auth-input {
+            min-height: 50px;
+            font-size: 14px;
+        }
+
+        .auth-submit {
+            min-height: 50px;
+            font-size: 14px;
+        }
+
+        .password-toggle {
+            width: 34px;
+            height: 34px;
+        }
+    }
+
+            @media (max-width: 480px) {
+
+        body > .min-h-screen {
+            padding: 12px;
+        }
+
+        .auth-card {
+            padding: 20px 16px;
+            border-radius: 14px;
+        }
+
+        .auth-brand {
+            margin-bottom: 20px;
+        }
+
+        .auth-title {
+            font-size: 34px;
+        }
+
+        .auth-subtitle {
+            font-size: 13px;
+        }
+
+        .auth-field label {
+            font-size: 11px;
+        }
+
+        .auth-input {
+            min-height: 48px;
+            font-size: 14px;
+        }
+
+        .auth-submit {
+            min-height: 48px;
+            font-size: 13px;
+            letter-spacing: .05em;
+        }
+
+        .auth-switch {
+            font-size: 13px;
+        }
+    }
     </style>
 
     <section class="auth-card">
