@@ -10,7 +10,9 @@ use App\Models\Genre;
 use App\Models\Platform;
 use App\Models\Publisher;
 use App\Models\User;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
 use Tests\TestCase;
 
 class AdminSoftDeleteTest extends TestCase
@@ -191,6 +193,24 @@ class AdminSoftDeleteTest extends TestCase
             ->assertRedirect(route('admin.users.index', ['trash' => 1]));
 
         $this->assertNotSoftDeleted('users', ['id' => $target->id]);
+    }
+
+    public function test_admin_can_verify_user_email(): void
+    {
+        Event::fake();
+
+        $admin = User::factory()->create(['is_admin' => true]);
+        $target = User::factory()->unverified()->create(['name' => 'Unverified Target']);
+
+        $this->assertFalse($target->hasVerifiedEmail());
+
+        $this->actingAs($admin)
+            ->post(route('admin.users.verify-email', $target))
+            ->assertRedirect()
+            ->assertSessionHas('success');
+
+        $this->assertTrue($target->refresh()->hasVerifiedEmail());
+        Event::assertDispatched(Verified::class);
     }
 
     public function test_admin_can_permanently_delete_soft_deleted_admin_records(): void

@@ -2,124 +2,186 @@
 
 @section('title', 'Manajemen Payment')
 
+@push('styles')
+<style>
+    .data-row { transition: background 0.2s ease; }
+    .data-row:hover { background: rgba(17, 141, 255, 0.04); }
+    .data-row td { border-bottom: 1px solid rgba(255,255,255,0.04); }
+</style>
+@endpush
+
 @section('content')
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="steam-card rounded-lg p-6">
-            <p class="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-1">Total Payment</p>
-            <p class="text-3xl font-bold text-white">{{ $stats['total_payments'] }}</p>
+
+    {{-- ===== STAT MINI CARDS ===== --}}
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div class="premium-card p-5">
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 mb-2">Total Payment</p>
+            <p class="text-3xl font-black text-white">{{ number_format($stats['total_payments']) }}</p>
         </div>
-        <div class="steam-card rounded-lg p-6 border-l-4 border-l-green-500">
-            <p class="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-1">Paid</p>
-            <p class="text-3xl font-bold text-white">{{ $stats['paid_payments'] }}</p>
+        <div class="premium-card p-5" style="border-color:rgba(34,197,94,0.25);background:linear-gradient(145deg,rgba(34,197,94,0.08),rgba(34,197,94,0.02))">
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-emerald-400 mb-2">Paid</p>
+            <p class="text-3xl font-black text-emerald-300">{{ number_format($stats['paid_payments']) }}</p>
         </div>
-        <div class="steam-card rounded-lg p-6">
-            <p class="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-1">Revenue</p>
-            <p class="text-3xl font-bold text-green-400">Rp {{ number_format($stats['total_revenue'], 0, ',', '.') }}</p>
+        <div class="premium-card p-5" style="border-color:rgba(17,141,255,0.25);background:linear-gradient(145deg,rgba(17,141,255,0.08),rgba(17,141,255,0.02))">
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-blue-400 mb-2">Revenue</p>
+            <p class="text-2xl font-black text-blue-300">Rp {{ number_format($stats['total_revenue'], 0, ',', '.') }}</p>
         </div>
-        <div class="steam-card rounded-lg p-6">
-            <p class="text-gray-400 text-sm font-semibold uppercase tracking-wider mb-1">Pending Value</p>
-            <p class="text-3xl font-bold text-yellow-400">Rp {{ number_format($stats['pending_total'], 0, ',', '.') }}</p>
+        <div class="premium-card p-5" style="border-color:rgba(234,179,8,0.25);background:linear-gradient(145deg,rgba(234,179,8,0.08),rgba(234,179,8,0.02))">
+            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-yellow-400 mb-2">Pending Value</p>
+            <p class="text-2xl font-black text-yellow-300">Rp {{ number_format($stats['pending_total'], 0, ',', '.') }}</p>
         </div>
     </div>
 
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-        <form method="GET" action="{{ route('admin.payments.index') }}" class="grid md:grid-cols-4 gap-3 flex-1">
-            <input
-                type="text"
-                name="search"
-                value="{{ request('search') }}"
-                placeholder="Cari kode, user, email..."
-                class="p-2 steam-input rounded"
-            >
+    {{-- ===== FILTER BAR ===== --}}
+    <form method="GET" action="{{ route('admin.payments.index') }}"
+          class="flex items-center gap-3 mb-6 flex-wrap lg:flex-nowrap">
 
-            <select name="status" class="p-2 steam-input rounded">
-                <option value="">Semua Status</option>
-                @foreach($statuses as $status)
-                    <option value="{{ $status }}" {{ request('status') === $status ? 'selected' : '' }}>
-                        {{ ucfirst($status) }}
-                    </option>
-                @endforeach
-            </select>
-
-            <select name="method" class="p-2 steam-input rounded">
-                <option value="">Semua Metode</option>
-                @foreach($methods as $method)
-                    <option value="{{ $method }}" {{ request('method') === $method ? 'selected' : '' }}>
-                        {{ ucwords(str_replace('_', ' ', $method)) }}
-                    </option>
-                @endforeach
-            </select>
-
-            <div class="flex gap-2">
-                <button type="submit" class="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition text-sm">
-                    Filter
-                </button>
-
-                @if(request()->hasAny(['search', 'status', 'method']))
-                    <a href="{{ route('admin.payments.index') }}" class="px-3 py-2 text-gray-400 hover:text-white text-sm self-center">
-                        Reset
-                    </a>
-                @endif
+        {{-- Search --}}
+        <div class="relative flex-1 min-w-0">
+            <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none">
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z"/>
+                </svg>
             </div>
-        </form>
-    </div>
+            <input type="text" name="search" value="{{ request('search') }}"
+                   placeholder="Cari kode, user, email..."
+                   class="w-full pl-9 pr-3 py-2.5 rounded-xl text-sm font-medium text-white placeholder-gray-500
+                          bg-white/5 border border-white/10 focus:border-[#118dff]/60
+                          focus:outline-none focus:ring-2 focus:ring-[#118dff]/20 transition-all">
+        </div>
 
-    <div class="steam-card rounded-lg overflow-hidden">
+        {{-- Status --}}
+        <select name="status"
+                class="py-2.5 px-3 rounded-xl text-sm font-medium text-white bg-white/5 border border-white/10
+                       focus:border-[#118dff]/60 focus:outline-none focus:ring-2 focus:ring-[#118dff]/20
+                       flex-shrink-0 w-36 appearance-none cursor-pointer transition-all"
+                style="background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m19 9-7 7-7-7'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 10px center;background-size:16px;padding-right:32px">
+            <option value="">Semua Status</option>
+            @foreach($statuses as $status)
+                <option value="{{ $status }}" {{ request('status') === $status ? 'selected' : '' }}>
+                    {{ ucfirst($status) }}
+                </option>
+            @endforeach
+        </select>
+
+        {{-- Method --}}
+        <select name="method"
+                class="py-2.5 px-3 rounded-xl text-sm font-medium text-white bg-white/5 border border-white/10
+                       focus:border-[#118dff]/60 focus:outline-none focus:ring-2 focus:ring-[#118dff]/20
+                       flex-shrink-0 w-44 appearance-none cursor-pointer transition-all"
+                style="background-image:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%236b7280'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m19 9-7 7-7-7'/%3E%3C/svg%3E\");background-repeat:no-repeat;background-position:right 10px center;background-size:16px;padding-right:32px">
+            <option value="">Semua Metode</option>
+            @foreach($methods as $method)
+                <option value="{{ $method }}" {{ request('method') === $method ? 'selected' : '' }}>
+                    {{ ucwords(str_replace('_', ' ', $method)) }}
+                </option>
+            @endforeach
+        </select>
+
+        {{-- Filter --}}
+        <button type="submit"
+                class="flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest
+                       bg-white/5 border border-white/10 text-gray-300 hover:bg-[#118dff]/15 hover:border-[#118dff]/40
+                       hover:text-white transition-all whitespace-nowrap">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 4h18M7 8h10M11 12h2M13 16h-2"/>
+            </svg>
+            Filter
+        </button>
+
+        @if(request()->hasAny(['search', 'status', 'method']))
+            <a href="{{ route('admin.payments.index') }}"
+               class="flex-shrink-0 flex items-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest
+                      text-gray-500 hover:text-red-400 border border-transparent hover:border-red-500/30 transition-all whitespace-nowrap">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18 18 6M6 6l12 12"/>
+                </svg>
+                Reset
+            </a>
+        @endif
+    </form>
+
+    {{-- ===== TABLE ===== --}}
+    <div class="premium-card overflow-hidden">
         <div class="overflow-x-auto">
-            <table class="w-full text-left steam-table">
+            <table class="w-full text-left">
                 <thead>
-                    <tr>
-                        <th class="p-4">Kode Payment</th>
-                        <th class="p-4">User</th>
-                        <th class="p-4">Item</th>
-                        <th class="p-4">Metode</th>
-                        <th class="p-4">Status</th>
-                        <th class="p-4">Tanggal</th>
-                        <th class="p-4 text-right">Total</th>
-                        <th class="p-4 text-center">Aksi</th>
+                    <tr class="border-b border-white/5 bg-white/3">
+                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Kode Payment</th>
+                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">User</th>
+                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 text-center">Item</th>
+                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Metode</th>
+                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Status</th>
+                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500">Tanggal</th>
+                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 text-right">Total</th>
+                        <th class="px-6 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($payments as $payment)
-                        <tr>
-                            <td class="p-4">
-                                <a href="{{ route('admin.payments.show', $payment) }}" class="font-semibold text-[#66c0f4] hover:text-white">
+                        <tr class="data-row">
+                            <td class="px-6 py-4">
+                                <a href="{{ route('admin.payments.show', $payment) }}"
+                                   class="text-sm font-black text-[#118dff] hover:text-white transition-colors tracking-tight">
                                     {{ $payment->payment_code }}
                                 </a>
                             </td>
-                            <td class="p-4">
-                                <div>
-                                    <p class="text-white font-medium">{{ $payment->user->name ?? 'User dihapus' }}</p>
-                                    <p class="text-gray-500 text-xs">{{ $payment->user->email ?? '-' }}</p>
-                                </div>
+                            <td class="px-6 py-4">
+                                <p class="text-sm font-bold text-white">{{ $payment->user->name ?? 'User dihapus' }}</p>
+                                <p class="text-xs text-gray-500 mt-0.5">{{ $payment->user->email ?? '-' }}</p>
                             </td>
-                            <td class="p-4 text-gray-300">{{ $payment->items_count }}</td>
-                            <td class="p-4 text-gray-300">{{ ucwords(str_replace('_', ' ', $payment->method)) }}</td>
-                            <td class="p-4">
-                                <span class="px-2 py-1 text-xs rounded {{ $payment->status === 'paid' ? 'bg-green-900 text-green-200' : 'bg-yellow-900 text-yellow-200' }}">
-                                    {{ ucfirst($payment->status) }}
+                            <td class="px-6 py-4 text-center">
+                                <span class="text-sm font-black text-gray-300">{{ $payment->items_count }}</span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="text-xs font-black uppercase tracking-widest text-gray-400">
+                                    {{ ucwords(str_replace('_', ' ', $payment->method)) }}
                                 </span>
                             </td>
-                            <td class="p-4 text-gray-400 text-sm">
-                                {{ $payment->paid_at?->format('d M Y H:i') ?? $payment->created_at->format('d M Y H:i') }}
+                            <td class="px-6 py-4">
+                                @if($payment->status === 'paid')
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest
+                                                 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                                        Paid
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-widest
+                                                 bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                                        Pending
+                                    </span>
+                                @endif
                             </td>
-                            <td class="p-4 text-right text-green-400 font-semibold">
-                                Rp {{ number_format($payment->display_total, 0, ',', '.') }}
+                            <td class="px-6 py-4">
+                                <span class="text-sm font-bold text-gray-400">
+                                    {{ $payment->paid_at?->format('d M Y H:i') ?? $payment->created_at->format('d M Y H:i') }}
+                                </span>
                             </td>
-                            <td class="p-4 text-center">
+                            <td class="px-6 py-4 text-right">
+                                <span class="text-sm font-black text-emerald-400">
+                                    Rp {{ number_format($payment->display_total, 0, ',', '.') }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-center">
                                 <a href="{{ route('admin.payments.show', $payment) }}"
-                                   class="px-3 py-1 text-xs bg-[#1b2838] hover:bg-[#2a475e] text-[#66c0f4] border border-[#2a475e] rounded transition">
+                                   class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest
+                                          bg-[#118dff]/10 text-[#118dff] border border-[#118dff]/20 hover:bg-[#118dff]/20 transition-all">
                                     Detail
                                 </a>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="p-10 text-center text-gray-500">
-                                <svg class="w-12 h-12 mx-auto mb-3 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2m0-6h2a2 2 0 012 2v2a2 2 0 01-2 2h-2m0-6v6"></path>
-                                </svg>
-                                <p>Belum ada payment yang ditemukan.</p>
+                            <td colspan="8" class="px-6 py-16 text-center">
+                                <div class="flex flex-col items-center gap-3">
+                                    <div class="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-gray-600">
+                                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-2m0-6h2a2 2 0 012 2v2a2 2 0 01-2 2h-2m0-6v6"/>
+                                        </svg>
+                                    </div>
+                                    <p class="text-sm font-bold text-gray-500">Belum ada payment yang ditemukan.</p>
+                                </div>
                             </td>
                         </tr>
                     @endforelse
@@ -127,8 +189,10 @@
             </table>
         </div>
 
-        <div class="p-4 border-t border-[#2a475e] bg-[#1b2838] flex items-center justify-between">
-            <p class="text-sm text-gray-400">Total: {{ $payments->total() }} payment</p>
+        <div class="px-6 py-4 border-t border-white/5 bg-white/2 flex items-center justify-between gap-4">
+            <p class="text-xs font-bold text-gray-500">
+                Total: <span class="text-gray-300">{{ $payments->total() }}</span> payment
+            </p>
             {{ $payments->links() }}
         </div>
     </div>

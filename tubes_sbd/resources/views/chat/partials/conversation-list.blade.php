@@ -36,7 +36,7 @@
                     <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#07111d] to-[#16202d] text-xl font-black text-white shadow-lg group-hover:scale-105 transition-transform">
                         {{ strtoupper(substr($listFriend->name, 0, 1)) }}
                     </span>
-                    <div class="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-[#0f1923] bg-success"></div>
+                    <div class="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-[#0f1923] bg-emerald-400"></div>
                 </div>
 
                 <div class="min-w-0 flex-1">

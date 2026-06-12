@@ -2,49 +2,12 @@
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 @endphp
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Profile - PlayMart</title>
+@extends('layouts.store')
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://cdn.tailwindcss.com"></script>
+@section('title', 'Edit Profile - PlayMart')
 
-    <style>
-        body {
-            background: #1b2838;
-            color: white;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        .steam-blue {
-            background: linear-gradient(90deg,#06bfff,#2d73ff);
-        }
-
-        .glass {
-            background: rgba(255,255,255,0.04);
-            backdrop-filter: blur(10px);
-        }
-
-        .profile-input {
-            background: #0f1923;
-            border: 1px solid #316282;
-            color: #fff;
-        }
-
-        .profile-input:focus {
-            border-color: #66c0f4;
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(102, 192, 244, 0.16);
-        }
-    </style>
-</head>
-<body class="min-h-screen">
-    <x-store-nav />
-
-    <main class="max-w-7xl mx-auto px-6 py-12">
+@section('content')
+    <main class="page-shell">
         <div class="mb-10 flex flex-col md:flex-row md:items-end md:justify-between gap-5">
             <div>
                 <p class="text-[#66c0f4] uppercase tracking-[0.25em] text-xs font-bold mb-3">
@@ -65,7 +28,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 
         <div class="grid lg:grid-cols-3 gap-8">
             <section class="lg:col-span-2 space-y-8">
-                <article class="glass border border-[#2a475e] rounded-3xl p-8">
+                <article class="glass border border-[#2a475e] rounded-3xl p-5 sm:p-8">
                     <div class="mb-6">
                         <h2 class="text-2xl font-bold">
                             Informasi Profile
@@ -149,7 +112,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
                     </form>
                 </article>
 
-                <article class="glass border border-[#2a475e] rounded-3xl p-8">
+                <article class="glass border border-[#2a475e] rounded-3xl p-5 sm:p-8">
                     <div class="mb-6">
                         <h2 class="text-2xl font-bold">
                             Update Password
@@ -227,7 +190,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
             </section>
 
             <aside class="space-y-8">
-                <article class="glass border border-[#2a475e] rounded-3xl p-8">
+                <article class="glass border border-[#2a475e] rounded-3xl p-5 sm:p-8">
                     <div class="flex items-center gap-4 mb-6">
                         <div class="w-16 h-16 rounded-full steam-blue flex items-center justify-center text-3xl font-bold">
                             {{ strtoupper(substr($user->name, 0, 1)) }}
@@ -255,7 +218,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
                     </div>
                 </article>
 
-                <article class="border border-red-500/40 rounded-3xl p-8 bg-red-950/20">
+                <article class="rounded-3xl border border-red-500/40 bg-red-950/20 p-5 sm:p-8">
                     <h2 class="text-2xl font-bold text-red-100">
                         Hapus Akun
                     </h2>
@@ -263,7 +226,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
                         Akun dan semua data terkait akan dihapus permanen.
                     </p>
 
-                    <form method="POST" action="{{ route('profile.destroy') }}" class="space-y-4" onsubmit="return confirm('Yakin hapus akun ini?')">
+                    <form method="POST" action="{{ route('profile.destroy') }}" class="space-y-4" onsubmit="return adminConfirmSubmit(event, 'Apakah Anda yakin ingin menghapus akun ini secara permanen? Semua data game, library, dan riwayat transaksi akan hilang selamanya.', 'danger', 'Hapus Akun');">
                         @csrf
                         @method('delete')
 
@@ -291,6 +254,4 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
             </aside>
         </div>
     </main>
-    <x-store-footer />
-</body>
-</html>
+@endsection

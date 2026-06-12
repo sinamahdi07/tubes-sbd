@@ -22,7 +22,7 @@
     </style>
 @endonce
 
-<section class="relative z-[60] {{ $contained ? 'mx-auto max-w-[1700px] px-4 py-5 sm:px-6 lg:px-8' : '' }}">
+<section class="relative z-30 {{ $contained ? 'mx-auto max-w-[1700px] px-4 py-5 sm:px-6 lg:px-8' : '' }}">
     <div class="rounded-xl border border-[#118dff]/35 bg-[#02060d]/95 p-3 shadow-[0_18px_48px_rgba(0,0,0,0.45),inset_0_1px_0_rgba(102,192,244,0.08)] backdrop-blur-xl">
         <div class="relative" data-game-search data-autocomplete-url="{{ route('games.autocomplete') }}">
             <form action="{{ route('games.search') }}" method="GET" class="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_220px_240px_140px]">
@@ -99,7 +99,7 @@
 
             <div
                 data-game-search-results
-                class="relative z-[70] mt-4 hidden max-h-96 w-full overflow-auto rounded-xl border border-[#118dff]/35 bg-[#030912] shadow-2xl shadow-black/50"
+                class="relative z-40 mt-4 hidden max-h-96 w-full overflow-auto rounded-xl border border-[#118dff]/35 bg-[#030912] shadow-2xl shadow-black/50"
             ></div>
         </div>
     </div>

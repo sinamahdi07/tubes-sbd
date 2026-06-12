@@ -16,9 +16,10 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0">
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 shadow-md overflow-hidden sm:rounded-lg">
+    <body class="font-sans text-white antialiased">
+        <div class="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-8 sm:px-6">
+            <div class="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(17,141,255,0.18),transparent_34rem)]"></div>
+            <div class="relative w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-[#0b1420]/85 px-5 py-6 shadow-2xl shadow-black/40 backdrop-blur-2xl sm:px-8 sm:py-8">
                 {{ $slot }}
             </div>
         </div>

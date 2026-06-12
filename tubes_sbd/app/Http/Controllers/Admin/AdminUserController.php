@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Auth\Events\Verified;
 use Illuminate\Http\Request;
 
 class AdminUserController extends Controller
@@ -44,6 +45,19 @@ class AdminUserController extends Controller
         $status = $user->is_admin ? 'dijadikan Admin' : 'dicabut status Admin-nya';
 
         return back()->with('success', "User {$user->name} berhasil {$status}.");
+    }
+
+    public function verifyEmail(User $user)
+    {
+        if ($user->hasVerifiedEmail()) {
+            return back()->with('success', "Email {$user->name} sudah terverifikasi.");
+        }
+
+        if ($user->markEmailAsVerified()) {
+            event(new Verified($user));
+        }
+
+        return back()->with('success', "Email {$user->name} berhasil diverifikasi.");
     }
 
     public function destroy(User $user)

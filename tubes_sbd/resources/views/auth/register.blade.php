@@ -4,24 +4,33 @@
             margin: 0;
             min-height: 100vh;
             overflow-x: hidden;
-            background-attachment: scroll;
-            background:
-                radial-gradient(circle at 18% 18%, rgba(47, 183, 255, .13), transparent 34%),
-                linear-gradient(135deg, rgba(2, 6, 13, .72), rgba(8, 17, 30, .62)),
-                url('/images/The-Best-Survival-Games-For-Android (1).jpg');
-            background-position: center;
-            background-size: cover;
+            background: transparent !important;
             color: #f8fafc;
         }
 
+        /* Latar belakang gambar yang di-blur */
         body::before {
             content: "";
-            position: absolute;
+            position: fixed;
+            inset: -15px;
+            pointer-events: none;
+            background: url('/images/auth_bg.jpg') center/cover no-repeat;
+            filter: blur(6px);
+            z-index: -2;
+        }
+
+        /* Lapisan gradasi gelap di atas gambar blur agar teks tetap kontras dan terbaca */
+        body::after {
+            content: "";
+            position: fixed;
             inset: 0;
             pointer-events: none;
             background:
                 linear-gradient(90deg, rgba(2, 6, 13, .78) 0%, rgba(2, 6, 13, .46) 48%, rgba(2, 6, 13, .74) 100%),
-                radial-gradient(circle at 78% 20%, rgba(102, 192, 244, .12), transparent 28%);
+                radial-gradient(circle at 78% 20%, rgba(102, 192, 244, .12), transparent 28%),
+                radial-gradient(circle at 18% 18%, rgba(47, 183, 255, .13), transparent 34%),
+                linear-gradient(135deg, rgba(2, 6, 13, .72), rgba(8, 17, 30, .62));
+            z-index: -1;
         }
 
         body > .min-h-screen {
@@ -44,6 +53,9 @@
             padding: 0 !important;
             overflow: visible !important;
             box-shadow: none !important;
+            background: transparent !important;
+            border: none !important;
+            backdrop-filter: none !important;
         }
 
         @media (max-height: 760px) {

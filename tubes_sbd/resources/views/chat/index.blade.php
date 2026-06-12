@@ -40,7 +40,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.86 9.86 0 0 1-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8Z"/>
                         </svg>
                     </div>
-                    <div class="absolute -bottom-2 -right-2 h-8 w-8 rounded-full border-4 border-[#07111d] bg-success"></div>
+                    <div class="absolute -bottom-2 -right-2 h-8 w-8 rounded-full border-4 border-[#07111d] bg-emerald-400"></div>
                 </div>
 
                 <h1 class="text-4xl font-black tracking-tighter text-white lg:text-5xl">Your Hub for <br><span class="text-[#66c0f4]">Gaming Talk.</span></h1>

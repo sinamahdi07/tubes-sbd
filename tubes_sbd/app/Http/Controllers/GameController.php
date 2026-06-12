@@ -295,8 +295,8 @@ class GameController extends Controller
             'developer',
             'screenshots',
             'trailers',
-            'genres',
-            'categories',
+            'genres' => fn ($query) => $query->withCount('games'),
+            'categories' => fn ($query) => $query->withCount('games'),
             'platforms',
             'detail',
         ])->findOrFail($id);
@@ -318,6 +318,7 @@ class GameController extends Controller
 
         $totalReviews = $game->reviews()->count();
         $recommendedReviews = $game->reviews()->where('is_recommended', true)->count();
+        $notRecommendedReviews = $totalReviews - $recommendedReviews;
         $reviewPercentage = $totalReviews > 0 ? (int) round(($recommendedReviews / $totalReviews) * 100) : 0;
         
         $reviewLabel = 'No Reviews';
@@ -343,6 +344,9 @@ class GameController extends Controller
 
         $genreIds = $game->genres->pluck('genre_id');
         $relatedGames = Game::with(['detail', 'genres'])
+            ->withCount('reviews')
+            ->withAvg('reviews as recommendation_ratio', 'is_recommended')
+            ->withPaidPurchasesCount()
             ->where('game_id', '!=', $game->game_id)
             ->when($genreIds->isNotEmpty(), function ($query) use ($genreIds) {
                 $query->whereHas('genres', function ($genreQuery) use ($genreIds) {
@@ -355,6 +359,9 @@ class GameController extends Controller
 
         if ($relatedGames->count() < 4) {
             $fallbackGames = Game::with(['detail', 'genres'])
+                ->withCount('reviews')
+                ->withAvg('reviews as recommendation_ratio', 'is_recommended')
+                ->withPaidPurchasesCount()
                 ->where('game_id', '!=', $game->game_id)
                 ->whereNotIn('game_id', $relatedGames->pluck('game_id'))
                 ->orderByDesc('release_date')
@@ -370,10 +377,11 @@ class GameController extends Controller
             'relatedGames', 
             'reviews', 
             'totalReviews', 
+            'recommendedReviews',
+            'notRecommendedReviews',
             'reviewPercentage', 
             'reviewLabel',
             'canReview'
         ));
     }
 }
-

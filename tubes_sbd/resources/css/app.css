@@ -1,3 +1,151 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    :root {
+        color-scheme: dark;
+        --pm-bg: #050a12;
+        --pm-surface: #0b1420;
+        --pm-surface-soft: rgba(15, 25, 35, 0.78);
+        --pm-border: rgba(148, 163, 184, 0.16);
+        --pm-primary: #118dff;
+        --pm-primary-soft: #66c0f4;
+        --pm-success: #22c55e;
+    }
+
+    html {
+        scroll-behavior: smooth;
+        background: var(--pm-bg);
+    }
+
+    body {
+        min-width: 320px;
+        overflow-x: hidden;
+        background:
+            radial-gradient(circle at 15% 0%, rgba(17, 141, 255, 0.12), transparent 34rem),
+            var(--pm-bg);
+        color: #f8fafc;
+    }
+
+    * {
+        scrollbar-color: rgba(102, 192, 244, 0.45) transparent;
+        scrollbar-width: thin;
+    }
+
+    *:focus-visible {
+        outline: 2px solid var(--pm-primary-soft);
+        outline-offset: 3px;
+    }
+
+    img,
+    video,
+    iframe {
+        max-width: 100%;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+}
+
+@layer components {
+    .store-container {
+        @apply mx-auto w-full max-w-[1700px] px-4 sm:px-6 lg:px-8 xl:px-12;
+    }
+
+    .page-shell {
+        @apply mx-auto w-full max-w-7xl px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-14;
+    }
+
+    .surface-card,
+    .glass,
+    .steam-card,
+    .premium-card {
+        @apply border border-white/10 bg-[#0b1420]/80 shadow-2xl shadow-black/20 backdrop-blur-xl;
+    }
+
+    .surface-card,
+    .glass {
+        @apply rounded-2xl sm:rounded-3xl;
+    }
+
+    .steam-card {
+        @apply rounded-2xl;
+    }
+
+    .btn-primary,
+    .steam-blue,
+    .steam-btn-primary {
+        @apply inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-[#118dff] to-[#66c0f4] px-5 py-3 font-extrabold text-white shadow-lg shadow-blue-950/30 transition duration-200 hover:-translate-y-0.5 hover:brightness-110 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50;
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center justify-center rounded-xl border border-white/10 bg-white/5 px-5 py-3 font-bold text-slate-200 transition hover:border-[#66c0f4]/50 hover:bg-white/10 hover:text-white;
+    }
+
+    .steam-btn-danger {
+        @apply inline-flex items-center justify-center rounded-xl border border-red-500/30 bg-red-500/10 px-5 py-3 font-bold text-red-300 transition hover:bg-red-500 hover:text-white;
+    }
+
+    .form-field,
+    .profile-input,
+    .steam-input {
+        @apply w-full rounded-xl border border-slate-600/70 bg-[#07111d] px-4 py-3 text-white placeholder:text-slate-500 transition focus:border-[#66c0f4] focus:ring-4 focus:ring-[#118dff]/15;
+    }
+
+    .steam-table {
+        @apply min-w-[720px] w-full text-left text-sm;
+    }
+
+    .steam-table thead {
+        @apply border-b border-white/10 bg-white/[0.03] text-[10px] font-black uppercase tracking-widest text-slate-500;
+    }
+
+    .steam-table th {
+        @apply whitespace-nowrap px-4 py-4;
+    }
+
+    .steam-table td {
+        @apply border-b border-white/5 px-4 py-4 align-middle text-slate-300;
+    }
+
+    .steam-table tbody tr {
+        @apply transition hover:bg-white/[0.03];
+    }
+
+    .section-eyebrow {
+        @apply text-[11px] font-black uppercase tracking-[0.28em] text-[#66c0f4];
+    }
+
+    .section-title {
+        @apply text-3xl font-black tracking-tight text-white sm:text-4xl lg:text-5xl;
+    }
+
+    .responsive-table {
+        @apply w-full overflow-x-auto overscroll-x-contain;
+    }
+
+    .responsive-table table {
+        @apply min-w-[720px] w-full;
+    }
+
+    .safe-bottom {
+        padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+    }
+}
+
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+}

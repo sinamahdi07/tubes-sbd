@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Notifications\VerifyPlayMartEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -52,6 +53,11 @@ class User extends Authenticatable implements MustVerifyEmail
             'is_admin' => 'boolean',
             'deleted_at' => 'datetime',
         ];
+    }
+
+    public function sendEmailVerificationNotification(): void
+    {
+        $this->notify(new VerifyPlayMartEmail);
     }
 
     public function carts()

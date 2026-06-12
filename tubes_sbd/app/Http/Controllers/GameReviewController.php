@@ -21,7 +21,7 @@ class GameReviewController extends Controller
 
         $validated = $request->validate([
             'is_recommended' => ['required', 'boolean'],
-            'body' => ['required', 'string', 'min:5', 'max:2000'],
+            'body' => ['required', 'string', 'min:5', 'max:500'],
         ]);
 
         GameReview::create([
@@ -47,7 +47,9 @@ class GameReviewController extends Controller
     private function payload(Request $request, Game $game): array
     {
         $reviews = $game->reviews()
-            ->with('user:id,name')
+            ->with(['user' => fn ($query) => $query
+                ->select('id', 'name')
+                ->withCount('gameReviews')])
             ->latest()
             ->take(20)
             ->get();
@@ -71,9 +73,12 @@ class GameReviewController extends Controller
                 'id' => $review->id,
                 'user_name' => $review->user?->name ?? 'Deleted User',
                 'initial' => strtoupper(substr($review->user?->name ?? 'U', 0, 1)),
+                'avatar_url' => 'https://ui-avatars.com/api/?name=' . urlencode($review->user?->name ?? 'User') . '&background=118dff&color=fff&bold=true',
+                'user_reviews_count' => (int) ($review->user?->game_reviews_count ?? 0),
                 'is_recommended' => (bool) $review->is_recommended,
                 'body' => $review->body,
                 'created_at' => $review->created_at?->diffForHumans() ?? 'Just now',
+                'posted_at' => $review->created_at?->translatedFormat('d F Y') ?? 'Baru saja',
                 'updated_at' => $review->updated_at?->diffForHumans() ?? 'Just now',
                 'is_owner' => $currentUserId && (int) $currentUserId === (int) $review->user_id,
             ]),

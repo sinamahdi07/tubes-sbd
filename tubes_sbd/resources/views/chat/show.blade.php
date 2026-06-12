@@ -5,11 +5,17 @@
 @push('styles')
     <style>
         .chat-container-main {
-            background: radial-gradient(circle at top right, rgba(17, 141, 255, 0.05), transparent 40%),
-                        radial-gradient(circle at bottom left, rgba(45, 115, 255, 0.05), transparent 40%);
+            background:
+                radial-gradient(circle at top right, rgba(17, 141, 255, 0.1), transparent 38%),
+                radial-gradient(circle at bottom left, rgba(45, 115, 255, 0.07), transparent 40%),
+                #050a12;
         }
         .chat-thread-surface {
-            background: rgba(0, 0, 0, 0.2);
+            background:
+                linear-gradient(rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.012) 1px, transparent 1px),
+                #07111d;
+            background-size: 32px 32px;
             overscroll-behavior: contain;
         }
 
@@ -23,10 +29,11 @@
         }
 
         .chat-bubble-in {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            color: #fff;
+            background: #18283a;
+            border: 1px solid rgba(102, 192, 244, 0.16);
+            color: #f8fafc;
             border-radius: 4px 20px 20px 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
         .chat-bubble-out {
@@ -50,9 +57,20 @@
         .chat-panel {
             height: calc(100vh - 160px);
             min-height: 600px;
-            background: rgba(15, 25, 35, 0.6);
+            background: #0b1420;
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(102, 192, 244, 0.14);
+            box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42), 0 0 0 1px rgba(255, 255, 255, 0.02) inset;
+        }
+
+        .chat-header-surface {
+            background: #132131;
+            border-color: rgba(102, 192, 244, 0.12);
+        }
+
+        .chat-composer-surface {
+            background: #132131;
+            border-color: rgba(102, 192, 244, 0.12);
         }
 
         @media (min-width: 1024px) {
@@ -71,35 +89,18 @@
 
             <div class="chat-panel flex flex-col overflow-hidden rounded-[2rem] shadow-2xl">
                 <!-- Chat Header -->
-                <div class="flex items-center justify-between gap-4 border-b border-white/5 bg-white/5 p-6 backdrop-blur-md">
+                <div class="chat-header-surface flex items-center gap-4 border-b p-5 backdrop-blur-md sm:p-6">
                     <div class="flex min-w-0 items-center gap-4">
-                        <div class="relative">
+                        <div>
                             <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#07111d] to-[#16202d] text-xl font-black text-white shadow-lg">
                                 {{ strtoupper(substr($friend->name, 0, 1)) }}
                             </span>
-                            <div class="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-[#0f1923] bg-success"></div>
                         </div>
                         <div class="min-w-0">
                             <h1 class="truncate text-xl font-black tracking-tighter text-white">{{ $friend->name }}</h1>
-                            <div class="flex items-center gap-2">
-                                <div class="h-2 w-2 rounded-full bg-success"></div>
-                                <span class="text-xs font-bold text-success uppercase tracking-widest">Online</span>
-                            </div>
                         </div>
                     </div>
 
-                    <div class="flex items-center gap-3">
-                        <button class="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                            </svg>
-                        </button>
-                        <button class="h-10 w-10 rounded-xl bg-white/5 flex items-center justify-center text-white/40 hover:bg-white/10 hover:text-white transition-all">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                        </button>
-                    </div>
                 </div>
 
                 @php
@@ -165,7 +166,7 @@
                 </div>
 
                 <!-- Input Area -->
-                <form action="{{ route('chat.store', $friend) }}" method="POST" class="bg-white/5 p-6 backdrop-blur-xl border-t border-white/5" data-chat-form>
+                <form action="{{ route('chat.store', $friend) }}" method="POST" class="chat-composer-surface border-t p-4 backdrop-blur-xl sm:p-5" data-chat-form>
                     @csrf
                     <div class="flex items-end gap-4">
                         <div class="flex-1 relative group">
@@ -176,7 +177,7 @@
                                 required
                                 maxlength="2000"
                                 placeholder="Write a message..."
-                                class="w-full min-h-[56px] max-h-32 resize-none rounded-2xl bg-black/40 border-white/5 px-5 py-4 text-sm text-white placeholder-white/20 focus:ring-1 focus:ring-[#66c0f4]/50 focus:border-transparent transition-all store-scrollbar"
+                                class="min-h-[56px] max-h-32 w-full resize-none rounded-2xl border border-white/10 bg-[#07111d] px-5 py-4 text-sm text-white shadow-inner shadow-black/20 placeholder:text-slate-500 transition-all focus:border-[#66c0f4]/50 focus:ring-4 focus:ring-[#118dff]/10 store-scrollbar"
                                 data-chat-input
                             >{{ old('body') }}</textarea>
                             <div class="absolute right-4 bottom-4 flex items-center gap-2 opacity-0 group-focus-within:opacity-100 transition-opacity">
@@ -307,4 +308,3 @@
         });
     </script>
 @endpush
-

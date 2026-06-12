@@ -326,25 +326,31 @@
     }
 
     function deleteScreenshot(screenshotId) {
-        if (confirm('Hapus screenshot ini?')) {
-            const item = document.querySelector(`.screenshot-item[data-id="${screenshotId}"]`);
-            if (item) {
-                // Mark for deletion
-                const deleteInput = item.querySelector('.delete-input');
-                deleteInput.value = screenshotId;
-                deleteInput.name = 'delete_screenshots[]';
-                
-                // Hide the item
-                item.style.opacity = '0.3';
-                item.querySelector('button').disabled = true;
-                
-                // Add a visual indicator
-                const overlay = document.createElement('div');
-                overlay.className = 'absolute inset-0 bg-red-900 bg-opacity-50 flex items-center justify-center rounded';
-                overlay.innerHTML = '<span class="text-white text-xs font-bold">AKAN DIHAPUS</span>';
-                item.appendChild(overlay);
+        window.adminConfirm({
+            title: 'Hapus Screenshot',
+            message: 'Apakah Anda yakin ingin menghapus screenshot ini?',
+            type: 'danger',
+            confirmLabel: 'Ya, Hapus',
+            onConfirm: () => {
+                const item = document.querySelector(`.screenshot-item[data-id="${screenshotId}"]`);
+                if (item) {
+                    // Mark for deletion
+                    const deleteInput = item.querySelector('.delete-input');
+                    deleteInput.value = screenshotId;
+                    deleteInput.name = 'delete_screenshots[]';
+                    
+                    // Hide the item
+                    item.style.opacity = '0.3';
+                    item.querySelector('button').disabled = true;
+                    
+                    // Add a visual indicator
+                    const overlay = document.createElement('div');
+                    overlay.className = 'absolute inset-0 bg-red-900 bg-opacity-50 flex items-center justify-center rounded';
+                    overlay.innerHTML = '<span class="text-white text-xs font-bold">AKAN DIHAPUS</span>';
+                    item.appendChild(overlay);
+                }
             }
-        }
+        });
     }
 
     // Add one screenshot input by default if no screenshots exist
@@ -380,27 +386,34 @@
         trailerIndex++;
     }
 
+    // Close on ESC key or something
     function removeTrailerInput(button) {
         button.closest('.trailer-input-group').remove();
     }
 
     function deleteTrailer(trailerId) {
-        if (confirm('Hapus trailer ini?')) {
-            const item = document.querySelector(`.trailer-item[data-id="${trailerId}"]`);
-            if (item) {
-                const deleteInput = item.querySelector('.delete-input');
-                deleteInput.value = trailerId;
-                deleteInput.name = 'delete_trailers[]';
+        window.adminConfirm({
+            title: 'Hapus Trailer',
+            message: 'Apakah Anda yakin ingin menghapus trailer ini?',
+            type: 'danger',
+            confirmLabel: 'Ya, Hapus',
+            onConfirm: () => {
+                const item = document.querySelector(`.trailer-item[data-id="${trailerId}"]`);
+                if (item) {
+                    const deleteInput = item.querySelector('.delete-input');
+                    deleteInput.value = trailerId;
+                    deleteInput.name = 'delete_trailers[]';
 
-                item.style.opacity = '0.3';
-                item.querySelector('button').disabled = true;
+                    item.style.opacity = '0.3';
+                    item.querySelector('button').disabled = true;
 
-                const overlay = document.createElement('div');
-                overlay.className = 'text-xs text-red-300 ml-2';
-                overlay.innerHTML = 'AKAN DIHAPUS';
-                item.appendChild(overlay);
+                    const overlay = document.createElement('div');
+                    overlay.className = 'text-xs text-red-300 ml-2';
+                    overlay.innerHTML = 'AKAN DIHAPUS';
+                    item.appendChild(overlay);
+                }
             }
-        }
+        });
     }
 </script>
 @endpush

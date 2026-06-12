@@ -135,7 +135,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                                 </svg>
                             </div>
-                            <h3 class="text-2xl font-black tracking-tighter text-white">Incoming</h3>
+                            <h3 class="text-2xl font-black tracking-tighter text-white">Permintaan Masuk</h3>
                         </div>
                         @if($incomingRequests->count() > 0)
                             <span class="px-3 py-1 rounded-lg bg-orange-500 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-orange-500/20">
@@ -161,7 +161,7 @@
                                     <form action="{{ route('friends.accept', $requestFriendship) }}" method="POST" class="flex-1 sm:flex-none">
                                         @csrf
                                         @method('PATCH')
-                                        <button type="submit" class="w-full px-5 py-2.5 rounded-xl bg-success text-black font-black text-xs uppercase tracking-widest hover:scale-105 transition-all">
+                                        <button type="submit" class="w-full rounded-xl bg-emerald-400 px-5 py-2.5 text-xs font-black uppercase tracking-widest text-[#07111d] transition-all hover:scale-105">
                                             Accept
                                         </button>
                                     </form>
@@ -227,7 +227,7 @@
             <div class="glass-panel p-8 lg:p-12">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10">
                     <div>
-                        <h2 class="text-3xl font-black tracking-tighter text-white">Your Friends</h2>
+                        <h2 class="text-3xl font-black tracking-tighter text-white">Daftar Teman</h2>
                         <p class="text-gray-400 mt-1 font-medium">Gamer yang terhubung dengan Anda di PlayMart.</p>
                     </div>
                     <div class="px-4 py-2 rounded-xl bg-white/5 border border-white/5 text-xs font-black text-white/60 uppercase tracking-widest">
@@ -245,7 +245,7 @@
                                         <div class="h-16 w-16 rounded-2xl bg-gradient-to-tr from-[#118dff] to-[#66c0f4] flex items-center justify-center text-2xl font-black text-white shadow-lg">
                                             {{ strtoupper(substr($friend->name, 0, 1)) }}
                                         </div>
-                                        <div class="absolute -bottom-1 -right-1 h-5 w-5 rounded-full border-4 border-[#07111d] bg-success"></div>
+                                        <div class="absolute -bottom-1 -right-1 h-5 w-5 rounded-full border-4 border-[#07111d] bg-emerald-400"></div>
                                     </div>
                                     <div class="min-w-0">
                                         <h3 class="text-xl font-black text-white tracking-tight leading-tight mb-1 truncate">{{ $friend->name }}</h3>
@@ -261,7 +261,7 @@
                                         Chat
                                     </a>
                                     
-                                    <form action="{{ route('friends.destroy', $friendship) }}" method="POST" onsubmit="return confirm('Hapus teman ini?');" class="flex-1 sm:flex-none">
+                                    <form action="{{ route('friends.destroy', $friendship) }}" method="POST" onsubmit="return adminConfirmSubmit(event, 'Apakah Anda yakin ingin menghapus teman ini?', 'danger', 'Hapus Teman');" class="flex-1 sm:flex-none">
                                         @csrf @method('DELETE')
                                         <button type="submit" class="w-full h-11 w-11 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center border border-red-500/20 hover:bg-red-500 hover:text-white transition-all active:scale-95">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

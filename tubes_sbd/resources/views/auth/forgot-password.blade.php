@@ -4,20 +4,31 @@
             margin: 0;
             min-height: 100vh;
             overflow-x: hidden;
-            background:
-                linear-gradient(135deg, rgba(2, 6, 13, .78), rgba(8, 17, 30, .68)),
-                url('/images/The-Best-Survival-Games-For-Android (1).jpg');
-            background-position: center;
-            background-size: cover;
+            background: transparent !important;
             color: #f8fafc;
         }
 
+        /* Latar belakang gambar yang di-blur */
         body::before {
+            content: "";
+            position: fixed;
+            inset: -15px;
+            pointer-events: none;
+            background: url('/images/auth_bg.jpg') center/cover no-repeat;
+            filter: blur(6px);
+            z-index: -2;
+        }
+
+        /* Lapisan gradasi gelap di atas gambar blur agar teks tetap kontras dan terbaca */
+        body::after {
             content: "";
             position: fixed;
             inset: 0;
             pointer-events: none;
-            background: linear-gradient(90deg, rgba(2, 6, 13, .82) 0%, rgba(2, 6, 13, .48) 48%, rgba(2, 6, 13, .78) 100%);
+            background:
+                linear-gradient(90deg, rgba(2, 6, 13, .82) 0%, rgba(2, 6, 13, .48) 48%, rgba(2, 6, 13, .78) 100%),
+                linear-gradient(135deg, rgba(2, 6, 13, .78), rgba(8, 17, 30, .68));
+            z-index: -1;
         }
 
         body > .min-h-screen {
@@ -39,6 +50,9 @@
             padding: 0 !important;
             overflow: visible !important;
             box-shadow: none !important;
+            background: transparent !important;
+            border: none !important;
+            backdrop-filter: none !important;
         }
 
         @media (max-height: 760px) {

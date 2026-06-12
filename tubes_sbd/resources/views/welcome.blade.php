@@ -543,49 +543,6 @@
             animation: playmart-shimmer 1.35s ease-in-out infinite;
         }
 
-        /* MOBILE BRAND HEADER */
-        .mobile-brand-header {
-            display: none;
-            padding: 20px 0 20px;
-            background: linear-gradient(to bottom, rgba(17, 141, 255, 0.08), rgba(5, 10, 18, 0.2));
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-        }
-        @media (max-width: 1024px) {
-            .mobile-brand-header { display: block; }
-        }
-
-        .mobile-quick-action {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: rgba(255, 255, 255, 0.6);
-            transition: all 0.2s ease;
-        }
-        .mobile-quick-action:active {
-            transform: scale(0.9);
-            background: rgba(102, 192, 244, 0.1);
-            color: #66c0f4;
-        }
-
-        .mobile-search-bar {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 14px;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-top: 15px;
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 13px;
-            text-decoration: none;
-        }
-
         .discount-grid-mobile {
             display: grid;
             gap: 12px;
@@ -771,6 +728,55 @@
                 height: 45px;
                 width: 80px;
             }
+
+            /* === 2x2 GRID MOBILE: Featured & Recommended side cards === */
+            /* Outer wrapper: lead (full-width) + side grid stacked */
+            #recommended .grid.gap-5 {
+                grid-template-columns: 1fr !important;
+                gap: 12px !important;
+            }
+            /* Lead card: sembunyikan di mobile, tampilkan 4 side cards 2x2 */
+            #recommended .grid.gap-5 > a:first-child {
+                display: none;
+            }
+            /* Side recommended → 2x2 grid */
+            #recommended .grid.gap-4 {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 10px !important;
+            }
+            /* Side card: lebih compact */
+            #recommended .grid.gap-4 article {
+                min-height: 140px !important;
+            }
+            #recommended .grid.gap-4 article h3 {
+                font-size: 0.8rem !important;
+                -webkit-line-clamp: 1 !important;
+                line-clamp: 1 !important;
+            }
+            #recommended .grid.gap-4 article p {
+                display: none;
+            }
+
+            /* === 2x2 GRID MOBILE: Specials & Discounts === */
+            #events .grid {
+                grid-template-columns: 1fr 1fr !important;
+                gap: 10px !important;
+            }
+            #events .discount-card {
+                min-height: 140px !important;
+                border-radius: 12px !important;
+            }
+            #events .discount-badge-premium {
+                font-size: 0.8rem;
+                padding: 3px 7px;
+            }
+            #events article h3 {
+                font-size: 0.7rem !important;
+                line-height: 1.2 !important;
+            }
+            #events article .flex.items-center.gap-3 span {
+                font-size: 0.65rem !important;
+            }
         }
         @media (max-width: 420px) {
             .hero-panel {
@@ -788,45 +794,6 @@
 
 @section('content')
     <main class="store-home">
-        <!-- MOBILE BRAND HEADER -->
-        <div class="mobile-brand-header store-container">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="h-10 w-10 rounded-xl overflow-hidden shadow-lg shadow-blue-500/20">
-                        <img src="{{ asset('GAMESTORE.png') }}" alt="PlayMart Logo" class="h-full w-full object-cover">
-                    </div>
-                    <div>
-                        <h1 class="text-xl font-black text-white leading-none tracking-tighter">PLAYMART</h1>
-                        <p class="text-[10px] font-bold text-[#66c0f4] uppercase tracking-[0.2em] mt-1">Level Up Your Library</p>
-                    </div>
-                </div>
-                
-                <div class="flex items-center gap-2">
-                    <a href="{{ route('cart.index') }}" class="mobile-quick-action relative">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                        </svg>
-                        @if($cartCount > 0)
-                            <span class="absolute top-2 right-2 flex h-2 w-2 rounded-full bg-success"></span>
-                        @endif
-                    </a>
-                    <a href="{{ route('games.search') }}" class="mobile-quick-action">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                        </svg>
-                    </a>
-                </div>
-            </div>
-
-            <!-- QUICK SEARCH BAR MOBILE -->
-            <a href="#discover" class="mobile-search-bar group">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transition-colors group-active:text-[#66c0f4]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-                <span>Cari game, genre, atau kategori...</span>
-            </a>
-        </div>
-
         @if($featuredGames->isNotEmpty())
                 <section class="store-container relative pt-5" data-hero-carousel>
                 @foreach($featuredGames as $slideIndex => $heroGame)
@@ -1332,7 +1299,7 @@
                                 <h3 class="truncate text-xs font-black uppercase text-white mb-1 group-hover:text-[#66c0f4] transition-colors">{{ $game->title }}</h3>
                                 <div class="flex items-center gap-3">
                                     <div class="flex items-center gap-1">
-                                        <div class="w-1 h-1 rounded-full bg-success"></div>
+                                        <div class="w-1 h-1 rounded-full bg-emerald-400"></div>
                                         <span class="text-[9px] font-black text-gray-500 uppercase tracking-widest">{{ number_format($purchaseCount, 0, ',', '.') }} Sold</span>
                                     </div>
                                     @if($discount > 0)

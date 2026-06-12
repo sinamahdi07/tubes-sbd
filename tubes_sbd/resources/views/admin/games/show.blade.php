@@ -17,7 +17,7 @@
                 ✏️ Edit Game
             </a>
             <form action="{{ route('admin.games.destroy', $game->game_id) }}" method="POST"
-                  onsubmit="return confirm('Yakin hapus game {{ addslashes($game->title) }}? Data tidak bisa dikembalikan!');">
+                  onsubmit="return adminConfirmSubmit(event, 'Yakin hapus game {{ addslashes($game->title) }}? Data akan dipindahkan ke tempat sampah.', 'danger', 'Hapus Game');">
                 @csrf @method('DELETE')
                 <button type="submit"
                         class="px-4 py-2 text-sm font-semibold rounded steam-btn-danger">

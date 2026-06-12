@@ -1,35 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment {{ $payment->payment_code }} - PlayMart</title>
-    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
+@extends('layouts.store')
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://cdn.tailwindcss.com"></script>
+@section('title', 'Payment ' . $payment->payment_code . ' - PlayMart')
 
-    <style>
-        body {
-            background: #1b2838;
-            color: white;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        .steam-blue {
-            background: linear-gradient(90deg,#06bfff,#2d73ff);
-        }
-
-        .glass {
-            background: rgba(255,255,255,0.04);
-            backdrop-filter: blur(10px);
-        }
-    </style>
-</head>
-<body>
-    <x-store-nav />
-
-    <main class="max-w-5xl mx-auto px-6 py-12">
+@section('content')
+    <main class="page-shell max-w-5xl">
         @if(session('success'))
             <div class="mb-6 glass border border-green-500/50 rounded-2xl p-5 text-green-200">
                 {{ session('success') }}
@@ -37,7 +11,7 @@
         @endif
 
         <section class="glass border border-[#2a475e] rounded-3xl overflow-hidden">
-            <div class="p-8 border-b border-[#2a475e] flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+            <div class="flex flex-col gap-6 border-b border-[#2a475e] p-5 sm:p-8 md:flex-row md:items-center md:justify-between">
                 <div>
                     <p class="text-[#66c0f4] uppercase tracking-[0.25em] text-xs font-bold mb-3">
                         Receipt
@@ -60,7 +34,7 @@
                 </div>
             </div>
 
-            <div class="p-8">
+            <div class="p-5 sm:p-8">
                 <div class="grid md:grid-cols-3 gap-5 mb-8">
                     <div class="bg-[#0f1923] border border-[#2a475e] rounded-2xl p-5">
                         <p class="text-gray-400 text-sm mb-2">Metode</p>
@@ -76,23 +50,56 @@
                     </div>
                 </div>
 
-                <div class="space-y-4">
+                <div class="space-y-2">
                     @foreach($payment->items as $item)
-                        <div class="bg-[#0f1923] border border-[#2a475e] rounded-2xl p-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                            <div>
-                                <h2 class="text-xl font-bold">
-                                    {{ $item->title }}
-                                </h2>
-                                <p class="text-gray-400 text-sm">
-                                    Qty {{ $item->quantity }} x Rp {{ number_format($item->price, 0, ',', '.') }}
-                                </p>
+                        @php
+                            $game      = $item->game;
+                            $thumb     = $game?->thumbnail_url
+                                         ?? 'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?q=50&w=400&auto=format&fit=crop';
+                            $publisher = $game?->publisher?->name ?? 'Indie';
+                            $disc      = (int) ($item->discount_percent ?? 0);
+                            $unitPrice = (float) ($item->unit_price ?? $item->price ?? 0);
+                            $lineTotal = (float) $item->line_total;
+                            $gameUrl   = $game ? url('/game/' . $game->game_id) : '#';
+                        @endphp
+
+                        <div class="flex items-center gap-4 bg-[#0f1923] border border-[#2a475e] rounded-xl px-4 py-3
+                                    hover:border-[#66c0f4]/40 transition-colors group">
+
+                            {{-- Thumbnail kecil --}}
+                            <a href="{{ $gameUrl }}" class="flex-shrink-0 w-20 h-12 rounded-lg overflow-hidden bg-[#07111d]">
+                                <img src="{{ $thumb }}"
+                                     alt="{{ $item->title }}"
+                                     class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                                     loading="lazy" decoding="async">
+                            </a>
+
+                            {{-- Nama + Publisher --}}
+                            <div class="flex-1 min-w-0">
+                                <a href="{{ $gameUrl }}" class="block hover:text-[#66c0f4] transition-colors">
+                                    <p class="text-sm font-black text-white truncate leading-tight">{{ $item->title }}</p>
+                                </a>
+                                <p class="text-[11px] text-gray-500 font-semibold uppercase tracking-wider mt-0.5 truncate">{{ $publisher }}</p>
+                                @if($disc > 0)
+                                    <div class="flex items-center gap-1.5 mt-1">
+                                        <span class="px-1.5 py-0.5 rounded text-[10px] font-black bg-[#4c6b22] text-[#beee11]">-{{ $disc }}%</span>
+                                        <span class="text-[11px] text-gray-500 line-through">Rp {{ number_format($unitPrice, 0, ',', '.') }}</span>
+                                    </div>
+                                @endif
                             </div>
-                            <div class="text-2xl font-bold text-[#66c0f4]">
-                                Rp {{ number_format($item->line_total, 0, ',', '.') }}
+
+                            {{-- Harga --}}
+                            <div class="flex-shrink-0 text-right">
+                                <p class="text-base font-black text-[#66c0f4] whitespace-nowrap">
+                                    Rp {{ number_format($lineTotal, 0, ',', '.') }}
+                                </p>
+                                <p class="text-[11px] text-gray-500 mt-0.5">Qty {{ $item->quantity }}</p>
                             </div>
                         </div>
                     @endforeach
                 </div>
+
+
 
                 <div class="border-t border-[#2a475e] mt-8 pt-6 space-y-3">
                     <div class="flex justify-between text-gray-300">
@@ -109,7 +116,7 @@
                     </div>
                 </div>
 
-                <div class="mt-8 flex flex-wrap gap-3">
+                <div class="mt-8 grid gap-3 sm:flex sm:flex-wrap">
                     <a href="{{ route('home') }}" class="steam-blue px-6 py-3 rounded-xl font-bold hover:opacity-90 transition">
                         Beli Game Lagi
                     </a>
@@ -120,6 +127,4 @@
             </div>
         </section>
     </main>
-    <x-store-footer />
-</body>
-</html>
+@endsection

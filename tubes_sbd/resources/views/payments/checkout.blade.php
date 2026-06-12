@@ -2,38 +2,12 @@
 use Illuminate\Support\Str;
 @endphp
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout - PlayMart</title>
-    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
+@extends('layouts.store')
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://cdn.tailwindcss.com"></script>
+@section('title', 'Checkout - PlayMart')
 
-    <style>
-        body {
-            background: #1b2838;
-            color: white;
-            font-family: Arial, Helvetica, sans-serif;
-        }
-
-        .steam-blue {
-            background: linear-gradient(90deg,#06bfff,#2d73ff);
-        }
-
-        .glass {
-            background: rgba(255,255,255,0.04);
-            backdrop-filter: blur(10px);
-        }
-    </style>
-</head>
-<body>
-    <x-store-nav active="cart" />
-
-    <main class="max-w-7xl mx-auto px-6 py-12">
+@section('content')
+    <main class="page-shell">
         <div class="mb-10">
             <p class="text-[#66c0f4] uppercase tracking-[0.25em] text-xs font-bold mb-3">
                 Payment
@@ -61,10 +35,10 @@ use Illuminate\Support\Str;
             <section class="lg:col-span-2 space-y-5">
                 @foreach($summary['items'] as $item)
                     <div class="glass border border-[#2a475e] rounded-2xl overflow-hidden">
-                        <div class="flex flex-col md:flex-row">
+                        <div class="flex flex-col sm:flex-row">
                             <img
                                 src="{{ $item['game']->thumbnail_url }}"
-                                class="w-full md:w-64 h-48 object-cover"
+                                class="h-52 w-full object-cover sm:h-auto sm:w-56 lg:w-64"
                                 alt="{{ $item['game']->title }}"
                             >
 
@@ -79,7 +53,7 @@ use Illuminate\Support\Str;
                                         </p>
                                     </div>
 
-                                    <div class="text-right shrink-0">
+                                    <div class="shrink-0 text-left md:text-right">
                                         <div class="text-sm text-gray-400">
                                             Qty: {{ $item['quantity'] }}
                                         </div>
@@ -163,6 +137,4 @@ use Illuminate\Support\Str;
             </aside>
         </form>
     </main>
-    <x-store-footer />
-</body>
-</html>
+@endsection

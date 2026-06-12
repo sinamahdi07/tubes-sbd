@@ -122,7 +122,7 @@ use Illuminate\Support\Str;
                                         <div>
                                             <div class="flex justify-between items-start gap-4 mb-2">
                                                 <h2 class="text-2xl font-black text-white tracking-tight leading-tight group-hover:text-[#66c0f4] transition-colors line-clamp-1">{{ $cart->game->title }}</h2>
-                                                <form action="{{ route('cart.remove', $cart->id) }}" method="POST" onsubmit="return confirm('Hapus dari keranjang?');">
+                                                <form action="{{ route('cart.remove', $cart->id) }}" method="POST" onsubmit="return adminConfirmSubmit(event, 'Hapus game ini dari keranjang belanja?', 'danger', 'Hapus dari Keranjang');">
                                                     @csrf @method('DELETE')
                                                     <button type="submit" class="h-9 w-9 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center border border-red-500/20 hover:bg-red-500 hover:text-white transition-all active:scale-90">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

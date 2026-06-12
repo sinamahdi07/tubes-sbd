@@ -56,7 +56,7 @@
                             <div class="avatar-glow h-32 w-32 rounded-[2.5rem] bg-gradient-to-tr from-[#118dff] to-[#66c0f4] flex items-center justify-center text-5xl font-black text-white">
                                 {{ strtoupper(substr($user->name, 0, 1)) }}
                             </div>
-                            <div class="absolute -bottom-2 -right-2 h-10 w-10 rounded-2xl border-4 border-[#07111d] bg-success flex items-center justify-center text-white shadow-lg">
+                            <div class="absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center rounded-2xl border-4 border-[#07111d] bg-emerald-400 text-white shadow-lg">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
                                 </svg>

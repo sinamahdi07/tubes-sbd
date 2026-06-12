@@ -1,3 +1,7 @@
+@props([
+    'compact' => false,
+])
+
 @php
     $user = auth()->user();
     $initial = $user ? strtoupper(substr($user->name, 0, 1)) : '';
@@ -6,25 +10,28 @@
 @auth
     <details class="relative">
         <summary
-            class="flex h-14 cursor-pointer list-none items-center gap-3 rounded-lg border border-[#2a475e] bg-[#0f1923]/86 px-3 text-sm text-white shadow-lg shadow-black/20 transition hover:border-[#66c0f4] hover:bg-[#16202d]"
+            class="flex cursor-pointer list-none items-center rounded-lg border border-[#2a475e] bg-[#0f1923]/86 text-sm text-white shadow-lg shadow-black/20 transition hover:border-[#66c0f4] hover:bg-[#16202d] {{ $compact ? 'h-11 w-11 justify-center overflow-hidden p-0' : 'h-14 gap-3 px-3' }}"
             style="list-style: none;"
+            aria-label="Buka menu akun"
         >
-            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#06bfff] to-[#2d73ff] text-lg font-black text-white shadow-md shadow-blue-950/40">
+            <span class="flex shrink-0 items-center justify-center bg-gradient-to-br from-[#06bfff] to-[#2d73ff] font-black text-white shadow-md shadow-blue-950/40 {{ $compact ? 'h-full w-full rounded-lg text-base' : 'h-10 w-10 rounded-full text-lg' }}">
                 {{ $initial }}
             </span>
 
-            <span class="hidden min-w-0 text-left sm:block">
-                <span class="block max-w-36 truncate font-black leading-tight text-white">
-                    {{ $user->is_admin ? 'Administrator' : $user->name }}
+            @unless($compact)
+                <span class="hidden min-w-0 text-left sm:block">
+                    <span class="block max-w-36 truncate font-black leading-tight text-white">
+                        {{ $user->is_admin ? 'Administrator' : $user->name }}
+                    </span>
                 </span>
-            </span>
 
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6"/>
-            </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m6 9 6 6 6-6"/>
+                </svg>
+            @endunless
         </summary>
 
-        <div class="absolute right-0 z-[999] mt-3 w-72 overflow-hidden rounded-lg border border-[#2a475e] bg-[#0f1923] shadow-2xl shadow-black/45">
+        <div class="absolute right-0 z-[999] mt-3 max-h-[calc(100vh-6rem)] w-[min(18rem,calc(100vw-2rem))] overflow-y-auto rounded-lg border border-[#2a475e] bg-[#0f1923] shadow-2xl shadow-black/45 store-scrollbar">
             <div class="border-b border-[#2a475e] p-4">
                 <p class="truncate font-black text-white">{{ $user->name }}</p>
                 <p class="truncate text-sm text-gray-400">{{ $user->email }}</p>

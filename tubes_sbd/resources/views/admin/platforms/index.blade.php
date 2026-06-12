@@ -76,12 +76,12 @@
                                     <div class="flex flex-wrap justify-center gap-2">
                                         @if($isTrash)
                                             <form action="{{ route('admin.platforms.restore', $platform->platform_id) }}" method="POST"
-                                                  onsubmit="return confirm('Restore platform {{ addslashes($platform->name) }}?');">
+                                                  onsubmit="return adminConfirmSubmit(event, 'Apakah Anda yakin ingin mengembalikan platform {{ addslashes($platform->name) }}?', 'info', 'Restore Platform');">
                                                 @csrf
                                                 <button type="submit" class="px-3 py-1 text-xs bg-green-900/50 hover:bg-green-800 text-green-300 border border-green-800 rounded transition">Restore</button>
                                             </form>
                                             <form action="{{ route('admin.platforms.force-destroy', $platform->platform_id) }}" method="POST"
-                                                  onsubmit="return confirm('Hapus permanen platform {{ addslashes($platform->name) }}? Data tidak bisa dikembalikan.');">
+                                                  onsubmit="return adminConfirmSubmit(event, 'Apakah Anda yakin ingin menghapus permanen platform {{ addslashes($platform->name) }}? Data tidak dapat dikembalikan.', 'danger', 'Hapus Permanen');">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="px-3 py-1 text-xs bg-red-900/50 hover:bg-red-800 text-red-300 border border-red-800 rounded transition">Hapus Permanen</button>
                                             </form>
@@ -89,7 +89,7 @@
                                             <button onclick="openEditModal({{ $platform->platform_id }}, '{{ addslashes($platform->name) }}', '{{ addslashes($platform->slug) }}')"
                                                     class="px-3 py-1 text-xs bg-[#1b2838] hover:bg-[#2a475e] text-[#66c0f4] border border-[#2a475e] rounded transition">Edit</button>
                                             <form action="{{ route('admin.platforms.destroy', $platform->platform_id) }}" method="POST"
-                                                  onsubmit="return confirm('Hapus platform {{ addslashes($platform->name) }}?');">
+                                                  onsubmit="return adminConfirmSubmit(event, 'Yakin ingin menghapus platform {{ addslashes($platform->name) }}?', 'danger', 'Hapus Platform');">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="px-3 py-1 text-xs bg-red-900/50 hover:bg-red-800 text-red-300 border border-red-800 rounded transition">Hapus</button>
                                             </form>

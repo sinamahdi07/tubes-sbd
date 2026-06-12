@@ -1,35 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Riwayat Payment - PlayMart</title>
-    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
+@extends('layouts.store')
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    <script src="https://cdn.tailwindcss.com"></script>
+@section('title', 'Riwayat Payment - PlayMart')
 
-    <style>
-        body {
-            background: #1b2838;
-            color: white;
-            font-family: Arial, Helvetica, sans-serif;
-        }
+@section('content')
 
-        .steam-blue {
-            background: linear-gradient(90deg,#06bfff,#2d73ff);
-        }
-
-        .glass {
-            background: rgba(255,255,255,0.04);
-            backdrop-filter: blur(10px);
-        }
-    </style>
-</head>
-<body>
-    <x-store-nav />
-
-    <main class="max-w-6xl mx-auto px-6 py-12">
+    <main class="page-shell max-w-6xl">
         <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-10">
             <div>
                 <p class="text-[#66c0f4] uppercase tracking-[0.25em] text-xs font-bold mb-3">
@@ -85,8 +60,8 @@
                 {{ $payments->links() }}
             </div>
         @else
-            <div class="glass border border-[#2a475e] rounded-3xl p-16 text-center">
-                <h2 class="text-4xl font-bold mb-4">
+            <div class="glass border border-[#2a475e] rounded-3xl p-8 text-center sm:p-16">
+                <h2 class="mb-4 text-3xl font-bold sm:text-4xl">
                     Belum ada payment
                 </h2>
                 <p class="text-gray-400 mb-8">
@@ -98,6 +73,4 @@
             </div>
         @endif
     </main>
-    <x-store-footer />
-</body>
-</html>
+@endsection

@@ -125,6 +125,7 @@ Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.'
     // Users
     Route::get('/users', [AdminUserController::class, 'index'])->name('users.index');
     Route::post('/users/{user}/toggle-admin', [AdminUserController::class, 'toggleAdmin'])->name('users.toggle-admin');
+    Route::post('/users/{user}/verify-email', [AdminUserController::class, 'verifyEmail'])->name('users.verify-email');
     Route::post('/users/{user}/restore', [AdminUserController::class, 'restore'])->name('users.restore');
     Route::delete('/users/{user}/force-destroy', [AdminUserController::class, 'forceDestroy'])->name('users.force-destroy');
     Route::delete('/users/{user}', [AdminUserController::class, 'destroy'])->name('users.destroy');
