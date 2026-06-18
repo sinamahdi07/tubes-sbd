@@ -11,10 +11,17 @@ class FriendshipSeeder extends Seeder
     public function run(): void
     {
         $users = User::where('is_admin', 0)->get();
+
+        if ($users->count() < 2) {
+            $this->command->warn('Skipping friendships: at least two non-admin users are required.');
+
+            return;
+        }
+
         $count = 0;
 
         // Super connectors (10 users with 200-400 friends)
-        $superConnectors = $users->random(10);
+        $superConnectors = $users->random(min(10, $users->count()));
         foreach ($superConnectors as $user) {
             $friends = $users->where('id', '!=', $user->id)->random(min(300, $users->count() - 1));
             foreach ($friends as $friend) {
@@ -24,7 +31,7 @@ class FriendshipSeeder extends Seeder
         }
 
         // Active users (100 users with 50-100 friends)
-        $activeUsers = $users->random(100);
+        $activeUsers = $users->random(min(100, $users->count()));
         foreach ($activeUsers as $user) {
             $friends = $users->where('id', '!=', $user->id)->random(min(80, $users->count() - 1));
             foreach ($friends as $friend) {

@@ -16,6 +16,16 @@ class TransactionSeeder extends Seeder
         $users = User::where('is_admin', 0)->get();
         $games = Game::whereIn('game_id', [1, 2, 8, 9, 11, 12, 13, 15, 16, 17, 20, 22, 23, 25, 26, 27, 28, 29, 30, 31, 66, 67, 73, 117, 118])->get();
 
+        if ($games->isEmpty()) {
+            $games = Game::all();
+        }
+
+        if ($users->isEmpty() || $games->isEmpty()) {
+            $this->command->warn('Skipping transactions: users or games are not available.');
+
+            return;
+        }
+
         $methods = ['credit_card', 'bank_transfer', 'gopay', 'dana'];
 
         // Generate 15000 transactions
